@@ -1,4 +1,4 @@
-#!/usr/bin/python3.6
+#!/usr/bin/python
 
 # converts the following three sections of diag_table to yaml format:
 # global, file, and field
@@ -97,16 +97,16 @@ class DiagTable :
     def parse_file_section(self) :
         if self.diag_table_content == [] : print( 'something is wrong' )
         for iline in self.diag_table_content[2:] :
-            if 'mod' not in iline :
-                iline_list = iline.strip().split(',')
+            iline_list = iline.strip().split(',')
+            if isinstance(iline_list[1], int) : 
                 tmp_list = [ {self.file_section_keys[i]:iline_list[i]} for i in range(len(iline_list)) ]
                 self.file_section.append( cp.deepcopy(tmp_list) )
 
     def parse_field_section(self) :
         if self.diag_table_content == [] : print( 'something is wrong' )
         for iline in self.diag_table_content[2:] :
-            if 'mod' in iline :
-                iline_list = iline.strip().split(',')
+            iline_list = iline.strip().split(',')
+            if not isinstance(iline_list[1], int) :
                 tmp_list = [ {self.field_section_keys[i]:iline_list[i]} for i in range(len(iline_list)) ]
                 self.field_section.append( cp.deepcopy(tmp_list) )
 
@@ -127,6 +127,6 @@ class DiagTable :
         write_yaml_sections( outfile, self.file_section, header='diag_files' )
         write_yaml_sections( outfile, self.field_section, header='diag_fields')
 
-test_class = DiagTable( diag_table_filename='diag_table_21' )
+test_class = DiagTable( diag_table_filename='diag_table' )
 test_class.read_and_parse_diag_table()
 test_class.write_yaml()
