@@ -1,26 +1,11 @@
 #!/usr/bin/python
+#: converts the global, file and field sections of diag_table to yaml format:
 
-# converts the following three sections of diag_table to yaml format:
-# global, file, and field
-
-# global section
-# line 1:  title of the experiment; a string
-# line 2:  base reference date > model start time
-#          format:  year month day hour minute second
-
-# file section
-#      1           2               3                 4               5                 6
-# "file_name", output_freq, "output_freq_units", file_format, "time_axis_units", "time_axis_name"
-#        7                 8                   9               10                  11
-# [, new_file_freq, "new_file_freq_units"[, "start_time"[, file_duration, "file_duration_units"]]]
-# add uriel's new contribution
-
-
-# field section
-# "module_name", "field_name", "output_name", "file_name", "time_sampling", "reduction_method", "regional_section", packing
 
 import copy as cp
 
+
+#: write yaml functions
 def init_yaml_file(outfile='') :
     with open(outfile,'w') as myfile : myfile.write('---\n')
 
@@ -29,11 +14,12 @@ def write_yaml_sections(outfile='', section=[], header='') :
         myfile.write( header + ':\n')
         for isection in range(len(section)) :
             ilist = section[isection]
-            myfile.write( '-  ' + str(list(ilist[0].keys())[0]) + ':' + str(list(ilist[0].values())[0]) +'\n')
+            myfile.write( '-  ' + str(list(ilist[0].keys())[0]) + ' : ' + str(list(ilist[0].values())[0]) +'\n')
             for i in range(1,len(ilist)) :
-                myfile.write( '   ' + str(list(ilist[i].keys())[0]) + ':' + str(list(ilist[i].values())[0])+'\n')
+                myfile.write( '   ' + str(list(ilist[i].keys())[0]) + ' : ' + str(list(ilist[i].values())[0])+'\n')
+            myfile.write('\n')
 
-# global section
+#: diag_table related attributes and functions
 class DiagTable :
 
     def __init__(self, diag_table_filename='Diag_Table' ) :
@@ -83,39 +69,33 @@ class DiagTable :
     def read_diag_table(self) :
         with open( self.diag_table_filename, 'r' ) as myfile :
             for iline in myfile.readlines() :
-                if iline.strip() != '' and '#' not in iline : self.diag_table_content.append( iline.strip() )
+                if iline.strip() != '' and '#' not in iline :
+                    iline_list = iline.strip().split(',')
+                    for i in range(len(iline_list)) :
+                        try :
+                            iline_list[i] = int(iline_list[i])
+                        except :
+                            iline_list[i] = iline_list[i].strip()
+                    self.diag_table_content.append( cp.deepcopy(iline_list) )
 
     def parse_global_section(self) :
         if self.diag_table_content == [] : print( 'something is wrong' )
         self.global_section, tmp_list = [], []
-        tmp_list.append( {self.global_section_keys[0]:self.diag_table_content[0]} )
-        line_two_list = self.diag_table_content[1].strip().split(' ')
-        for i in range(len(line_two_list)) :
-            tmp_list.append( {self.global_section_keys[i+1] : line_two_list[i] } )
+        tmp_list.append( {self.global_section_keys[0] : self.diag_table_content[0]} )
+        line_two_list = self.diag_table_content[1]
+        for i in range(len(line_two_list)) : tmp_list.append( {self.global_section_keys[i+1] : line_two_list[i]} )
         self.global_section.append(cp.deepcopy(tmp_list))
 
     def parse_file_section(self) :
         if self.diag_table_content == [] : print( 'something is wrong' )
-        for iline in self.diag_table_content[2:] :
-            iline_list = iline.strip().split(',')
-            for i in range(len(iline_list)) :
-                try :
-                    iline_list[i] = int(iline_list[i])
-                except :
-                    pass
+        for iline_list in self.diag_table_content[2:] :
             if isinstance(iline_list[1], int) :
                 tmp_list = [ {self.file_section_keys[i]:iline_list[i]} for i in range(len(iline_list)) ]
                 self.file_section.append( cp.deepcopy(tmp_list) )
 
     def parse_field_section(self) :
         if self.diag_table_content == [] : print( 'something is wrong' )
-        for iline in self.diag_table_content[2:] :
-            iline_list = iline.strip().split(',')
-            for i in range(len(iline_list)) :
-                try :
-                    iline_list[i] = int(iline_list[i])
-                except :
-                    pass
+        for iline_list in self.diag_table_content[2:] :
             if not isinstance(iline_list[1], int) :
                 tmp_list = [ {self.field_section_keys[i]:iline_list[i]} for i in range(len(self.field_section_keys)) ]
                 self.field_section.append( cp.deepcopy(tmp_list) )
