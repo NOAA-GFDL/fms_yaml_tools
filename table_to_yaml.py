@@ -20,14 +20,15 @@
 # "module_name", "field_name", "output_name", "file_name", "time_sampling", "reduction_method", "regional_section", packing
 
 import copy as cp
-#import yaml
 
+def init_yaml_file(outfile='') :
+    with open(outfile,'w') as myfile : myfile.write('---\n')
 
-def write_yaml_sections(outfile='', insection=[], header='') :
+def write_yaml_sections(outfile='', section=[], header='') :
     with open(outfile, 'a+') as myfile :
         myfile.write( header + '\n')
-        for i_insection in range(len(insection)) :
-            ilist = insection[i_insection]
+        for isection in range(len(section)) :
+            ilist = section[isection]
             myfile.write( '-  ' + list(ilist[0].keys())[0] + ':' + list(ilist[0].values())[0]+'\n')
             for i in range(1,len(ilist)) :
                 myfile.write( '   ' + list(ilist[i].keys())[0] + ':' + list(ilist[i].values())[0]+'\n')
@@ -43,12 +44,12 @@ class DiagTable :
 
         self.global_section = []
         self.global_section_keys = ['title',
-                                    'base_year',
-                                    'base_month',
-                                    'base_day',
-                                    'base_hour',
-                                    'base_minute',
-                                    'base_second']
+                                    'base_date_year',
+                                    'base_date_month',
+                                    'base_date_day',
+                                    'base_date_hour',
+                                    'base_date_minute',
+                                    'base_date_second']
 
         self.file_section = []
         self.file_section_keys = ['file_name',
@@ -86,11 +87,12 @@ class DiagTable :
 
     def parse_global_section(self) :
         if self.diag_table_content == [] : print( 'something is wrong' )
-        self.global_section = []
-        self.global_section.append( {self.global_section_keys[0]:self.diag_table_content[0]} )
+        self.global_section, tmp_list = [], []
+        tmp_list.append( {self.global_section_keys[0]:self.diag_table_content[0]} )
         line_two_list = self.diag_table_content[1].strip().split(' ')
         for i in range(len(line_two_list)) :
-            self.global_section.append( {self.global_section_keys[i+1] : line_two_list[i] } )
+            tmp_list.append( {self.global_section_keys[i+1] : line_two_list[i] } )
+        self.global_section.append(cp.deepcopy(tmp_list))
 
     def parse_file_section(self) :
         if self.diag_table_content == [] : print( 'something is wrong' )
@@ -108,26 +110,23 @@ class DiagTable :
                 tmp_list = [ {self.field_section_keys[i]:iline_list[i]} for i in range(len(iline_list)) ]
                 self.field_section.append( cp.deepcopy(tmp_list) )
 
-    def parse_all_sections(self) :
+    def parse_diag_table(self) :
         if self.diag_table_content == [] : print( 'something is wrong' )
         self.parse_global_section()
         self.parse_file_section()
         self.parse_field_section()
 
-    def read_and_parse_all_sections(self) :
+    def read_and_parse_diag_table(self) :
         self.read_diag_table()
-        self.parse_all_sections()
+        self.parse_diag_table()
 
     def write_yaml(self, outfile='DEFAULT') :
         if outfile == 'DEFAULT' : outfile=self.diag_table_filename+'.yaml'
-        with open(outfile, 'w') as myfile : myfile.write('---\n')
+        init_yaml_file(outfile)
+        write_yaml_sections( outfile, self.global_section, header='diag_global' )
         write_yaml_sections( outfile, self.file_section, header='diag_files' )
         write_yaml_sections( outfile, self.field_section, header='diag_fields')
 
 test_class = DiagTable( diag_table_filename='diag_table_21' )
-test_class.read_diag_table()
-test_class.parse_global_section()
-test_class.parse_file_section()
-test_class.parse_field_section()
-#print( test_class.field_section )
+test_class.read_and_parse_diag_table()
 test_class.write_yaml()
