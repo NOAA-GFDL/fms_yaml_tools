@@ -79,10 +79,11 @@ class DiagTable :
                     self.diag_table_content.append( cp.deepcopy(iline_list) )
 
     def check_diag_table(self) :
-        #: checks diag_table for correct number of elements for each line
-        #: checks for missing commas
+        #: checks diag_table for correct number of elements for each section, checks for missing commas
         if self.diag_table_content == [] : exit( 'diag_table_content is empty.' )
-        #for iline in
+        #: global_section
+        #if len(self.global_section[0]) != 0 : exit( 'Error in
+
 
     def parse_global_section(self) :
         if self.diag_table_content == [] : exit( 'diag_table_content is empty.' )
@@ -103,8 +104,11 @@ class DiagTable :
         if self.diag_table_content == [] : exit( 'diag_table_content is empty.' )
         for iline_list in self.diag_table_content[2:] :
             if not isinstance(iline_list[1], int) :
-                tmp_list = [ {self.field_section_keys[i]:iline_list[i]} for i in range(len(self.field_section_keys)) ]
-                self.field_section.append( cp.deepcopy(tmp_list) )
+                try :
+                    tmp_list = [ {self.field_section_keys[i]:iline_list[i]} for i in range(len(self.field_section_keys)) ]
+                    self.field_section.append( cp.deepcopy(tmp_list) )
+                except :
+                    exit( iline_list )
 
     def parse_diag_table(self) :
         if self.diag_table_content == [] : exit( 'diag_table_content is empty.' )
