@@ -14,9 +14,9 @@ def write_yaml_sections(outfile='', section=[], header='') :
         myfile.write( header + ':\n')
         for isection in range(len(section)) :
             ilist = section[isection]
-            myfile.write( '-  ' + str(list(ilist[0].keys())[0]) + ' : ' + str(list(ilist[0].values())[0]) +'\n')
+            myfile.write( '-  ' + str(list(ilist[0].keys())[0]) + ' : ' + str(list(ilist[0].values())[0]) + '\n')
             for i in range(1,len(ilist)) :
-                myfile.write( '   ' + str(list(ilist[i].keys())[0]) + ' : ' + str(list(ilist[i].values())[0])+'\n')
+                myfile.write( '   ' + str(list(ilist[i].keys())[0]) + ' : ' + str(list(ilist[i].values())[0])+ '\n')
             myfile.write('\n')
 
 #: diag_table related attributes and functions
@@ -24,7 +24,7 @@ class DiagTable :
 
     def __init__(self, diag_table_filename='Diag_Table' ) :
 
-        ''' add description of this class later'''
+        '''add description of this class later'''
 
         self.diag_table_filename = diag_table_filename
 
@@ -69,17 +69,23 @@ class DiagTable :
     def read_diag_table(self) :
         with open( self.diag_table_filename, 'r' ) as myfile :
             for iline in myfile.readlines() :
-                if iline.strip() != '' and '#' not in iline :
+                if iline.strip() != '' and '#' not in iline.strip()[0] :
                     iline_list = iline.strip().split(',')
                     for i in range(len(iline_list)) :
                         try :
                             iline_list[i] = int(iline_list[i])
                         except :
-                            iline_list[i] = iline_list[i].strip()
+                            iline_list[i] = iline_list[i].strip().split('#')[0]
                     self.diag_table_content.append( cp.deepcopy(iline_list) )
 
+    def check_diag_table(self) :
+        #: checks diag_table for correct number of elements for each line
+        #: checks for missing commas
+        if self.diag_table_content == [] : exit( 'diag_table_content is empty.' )
+        #for iline in
+
     def parse_global_section(self) :
-        if self.diag_table_content == [] : print( 'something is wrong' )
+        if self.diag_table_content == [] : exit( 'diag_table_content is empty.' )
         self.global_section, tmp_list = [], []
         tmp_list.append( {self.global_section_keys[0] : self.diag_table_content[0]} )
         line_two_list = self.diag_table_content[1]
@@ -87,21 +93,21 @@ class DiagTable :
         self.global_section.append(cp.deepcopy(tmp_list))
 
     def parse_file_section(self) :
-        if self.diag_table_content == [] : print( 'something is wrong' )
+        if self.diag_table_content == [] : exit( 'diag_table_content is empty.' )
         for iline_list in self.diag_table_content[2:] :
             if isinstance(iline_list[1], int) :
                 tmp_list = [ {self.file_section_keys[i]:iline_list[i]} for i in range(len(iline_list)) ]
                 self.file_section.append( cp.deepcopy(tmp_list) )
 
     def parse_field_section(self) :
-        if self.diag_table_content == [] : print( 'something is wrong' )
+        if self.diag_table_content == [] : exit( 'diag_table_content is empty.' )
         for iline_list in self.diag_table_content[2:] :
             if not isinstance(iline_list[1], int) :
                 tmp_list = [ {self.field_section_keys[i]:iline_list[i]} for i in range(len(self.field_section_keys)) ]
                 self.field_section.append( cp.deepcopy(tmp_list) )
 
     def parse_diag_table(self) :
-        if self.diag_table_content == [] : print( 'something is wrong' )
+        if self.diag_table_content == [] : exit( 'diag_table_content is empty.' )
         self.parse_global_section()
         self.parse_file_section()
         self.parse_field_section()
