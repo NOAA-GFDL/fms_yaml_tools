@@ -26,12 +26,12 @@ def init_yaml_file(outfile='') :
 
 def write_yaml_sections(outfile='', section=[], header='') :
     with open(outfile, 'a+') as myfile :
-        myfile.write( header + '\n')
+        myfile.write( header + ':\n')
         for isection in range(len(section)) :
             ilist = section[isection]
-            myfile.write( '-  ' + list(ilist[0].keys())[0] + ':' + list(ilist[0].values())[0]+'\n')
+            myfile.write( '-  ' + str(list(ilist[0].keys())[0]) + ':' + str(list(ilist[0].values())[0]) +'\n')
             for i in range(1,len(ilist)) :
-                myfile.write( '   ' + list(ilist[i].keys())[0] + ':' + list(ilist[i].values())[0]+'\n')
+                myfile.write( '   ' + str(list(ilist[i].keys())[0]) + ':' + str(list(ilist[i].values())[0])+'\n')
 
 # global section
 class DiagTable :
@@ -98,7 +98,12 @@ class DiagTable :
         if self.diag_table_content == [] : print( 'something is wrong' )
         for iline in self.diag_table_content[2:] :
             iline_list = iline.strip().split(',')
-            if isinstance(iline_list[1], int) : 
+            for i in range(len(iline_list)) :
+                try :
+                    iline_list[i] = int(iline_list[i])
+                except :
+                    pass
+            if isinstance(iline_list[1], int) :
                 tmp_list = [ {self.file_section_keys[i]:iline_list[i]} for i in range(len(iline_list)) ]
                 self.file_section.append( cp.deepcopy(tmp_list) )
 
@@ -106,8 +111,13 @@ class DiagTable :
         if self.diag_table_content == [] : print( 'something is wrong' )
         for iline in self.diag_table_content[2:] :
             iline_list = iline.strip().split(',')
+            for i in range(len(iline_list)) :
+                try :
+                    iline_list[i] = int(iline_list[i])
+                except :
+                    pass
             if not isinstance(iline_list[1], int) :
-                tmp_list = [ {self.field_section_keys[i]:iline_list[i]} for i in range(len(iline_list)) ]
+                tmp_list = [ {self.field_section_keys[i]:iline_list[i]} for i in range(len(self.field_section_keys)) ]
                 self.field_section.append( cp.deepcopy(tmp_list) )
 
     def parse_diag_table(self) :
