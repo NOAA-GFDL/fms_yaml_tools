@@ -22,6 +22,16 @@
 import copy as cp
 #import yaml
 
+
+def write_yaml_sections(outfile='', insection=[], header='') :
+    with open(outfile, 'a+') as myfile :
+        myfile.write( header + '\n')
+        for i_insection in range(len(insection)) :
+            ilist = insection[i_insection]
+            myfile.write( '-  ' + list(ilist[0].keys())[0] + ':' + list(ilist[0].values())[0]+'\n')
+            for i in range(1,len(ilist)) :
+                myfile.write( '   ' + list(ilist[i].keys())[0] + ':' + list(ilist[i].values())[0]+'\n')
+
 # global section
 class DiagTable :
 
@@ -110,17 +120,14 @@ class DiagTable :
 
     def write_yaml(self, outfile='DEFAULT') :
         if outfile == 'DEFAULT' : outfile=self.diag_table_filename+'.yaml'
-        with open(outfile, 'w') as myfile :
-            myfile.write('---')
-            myfile.write('diag_files:')
-            #for ifile in range(self.file_section) :
-
+        with open(outfile, 'w') as myfile : myfile.write('---\n')
+        write_yaml_sections( outfile, self.file_section, header='diag_files' )
+        write_yaml_sections( outfile, self.field_section, header='diag_fields')
 
 test_class = DiagTable( diag_table_filename='diag_table_21' )
 test_class.read_diag_table()
 test_class.parse_global_section()
 test_class.parse_file_section()
-print( test_class.file_section )
 test_class.parse_field_section()
 #print( test_class.field_section )
 test_class.write_yaml()
