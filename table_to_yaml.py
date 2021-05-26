@@ -3,7 +3,7 @@
 
 
 import copy as cp
-
+from os import path
 
 #: write yaml functions
 def init_yaml_file(outfile='') :
@@ -12,21 +12,22 @@ def init_yaml_file(outfile='') :
 def write_yaml_sections(outfile='', section=[], header='') :
     with open(outfile, 'a+') as myfile :
         myfile.write( header + ':\n')
-        for isection in range(len(section)) :
-            ilist = section[isection]
-            myfile.write( '-  ' + str(list(ilist[0].keys())[0]) + ' : ' + str(list(ilist[0].values())[0]) + '\n')
+        for ilist in section :
+            mystr = ' {:2s}' + '{:17s} : ' + '{:' + str(len(ilist[0].values())) + 's} \n'
+            myfile.write( mystr.format( '-', str(*ilist[0].keys()) , str(*ilist[0].values()) ))
             for i in range(1,len(ilist)) :
-                myfile.write( '   ' + str(list(ilist[i].keys())[0]) + ' : ' + str(list(ilist[i].values())[0])+ '\n')
+                mystr = ' {:2s}' + '{:17s} : ' + '{:' + str(len(ilist[i].values())) + 's} \n'
+                myfile.write( mystr.format( '', str(*ilist[i].keys()) , str(*ilist[i].values()) ))
             myfile.write('\n')
 
 #: diag_table related attributes and functions
 class DiagTable :
 
-    def __init__(self, diag_table_filename='Diag_Table' ) :
+    def __init__(self, diag_table_file='Diag_Table' ) :
 
         '''add description of this class later'''
 
-        self.diag_table_filename = diag_table_filename
+        self.diag_table_file = diag_table_file
 
         self.global_section = []
         self.global_section_keys = ['title',
@@ -64,10 +65,45 @@ class DiagTable :
         self.diag_table_content = []
 
         #: check if diag_table file exists
-        #if self.diag_table_filename
+        if not path.exists( self.diag_table_file ) : exit( 'file '+self.diag_table_file+' does not exist' )
+
+    def check_diag_table(self) :
+        #: checks diag_table for correct number of elements for each section
+        if self.diag_table_content == [] : exit( 'diag_table_content is empty.' )
+
+        global_length = 6  #: base date section
+        file_length   = 6  #: required fields
+        field_length  = 8  #: required fields
+        nerrors, nfiles_counted, nfields_counted = 0, 0, 0
+        #: global_section
+        if len(self.diag_table_content[0]) != 1 :
+            print( 'ERROR:  ' + str(self.diag_table_content[0]) )
+            nerrors += 1
+        if len(self.diag_table_content[1]) != global_length :
+            print( 'ERROR:  ' + str(self.diag_table_content[1]) )
+            nerrors += 1
+        for i in range( 2,len(self.diag_table_content) ) :
+            if isinstance(self.diag_table_content[i][1], int) : #: file section
+                if len(self.diag_table_content[i]) < file_length :
+                    print( 'ERROR: ' + str( self.diag_table_content[i]) )
+                    nerrors += 1
+                else :
+                    nfiles_counted += 1
+            else : #: field section
+                if len(self.diag_table_content[i]) != field_length :
+                    print( 'ERROR:  ' + str(self.diag_table_content[i]) )
+                    nerrors += 1
+                else :
+                    nfields_counted += 1
+
+        if nerrors != 0 :
+            exit( 'fix errors in ' + self.diag_table_file )
+        else :
+            print( 'number of files counted = ' + str(nfiles_counted) )
+            print( 'number of fields counted = ' + str(nfields_counted) )
 
     def read_diag_table(self) :
-        with open( self.diag_table_filename, 'r' ) as myfile :
+        with open( self.diag_table_file, 'r' ) as myfile :
             for iline in myfile.readlines() :
                 if iline.strip() != '' and '#' not in iline.strip()[0] :
                     iline_list = iline.strip().split(',')
@@ -77,18 +113,13 @@ class DiagTable :
                         except :
                             iline_list[i] = iline_list[i].strip().split('#')[0]
                     self.diag_table_content.append( cp.deepcopy(iline_list) )
-
-    def check_diag_table(self) :
-        #: checks diag_table for correct number of elements for each section, checks for missing commas
-        if self.diag_table_content == [] : exit( 'diag_table_content is empty.' )
-        #: global_section
-        #if len(self.global_section[0]) != 0 : exit( 'Error in
-
+            self.diag_table_content[1] = [ int(iele) for iele in self.diag_table_content[1][0].split() ]
+            self.check_diag_table()
 
     def parse_global_section(self) :
         if self.diag_table_content == [] : exit( 'diag_table_content is empty.' )
         self.global_section, tmp_list = [], []
-        tmp_list.append( {self.global_section_keys[0] : self.diag_table_content[0]} )
+        tmp_list.append( {self.global_section_keys[0] : self.diag_table_content[0][0]} )
         line_two_list = self.diag_table_content[1]
         for i in range(len(line_two_list)) : tmp_list.append( {self.global_section_keys[i+1] : line_two_list[i]} )
         self.global_section.append(cp.deepcopy(tmp_list))
@@ -121,12 +152,12 @@ class DiagTable :
         self.parse_diag_table()
 
     def write_yaml(self, outfile='DEFAULT') :
-        if outfile == 'DEFAULT' : outfile=self.diag_table_filename+'.yaml'
+        if outfile == 'DEFAULT' : outfile=self.diag_table_file+'.yaml'
         init_yaml_file(outfile)
         write_yaml_sections( outfile, self.global_section, header='diag_global' )
         write_yaml_sections( outfile, self.file_section, header='diag_files' )
         write_yaml_sections( outfile, self.field_section, header='diag_fields')
 
-test_class = DiagTable( diag_table_filename='diag_table' )
+test_class = DiagTable( diag_table_file='spear_diag_table' )
 test_class.read_and_parse_diag_table()
 test_class.write_yaml()
