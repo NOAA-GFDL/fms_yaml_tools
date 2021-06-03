@@ -3,6 +3,7 @@ test_diag_manager_21
 
 #output files
  "diag_test_21_file1", 1, "days", 1, "days", "time"
+ "diag_test_21_file2", 1, "days", 1, "days", "time"
 
 #output variables
 "test_diag_manager_mod", "dat1",              "dat1",           "diag_test_21_file1", "all", .true., "none", 2

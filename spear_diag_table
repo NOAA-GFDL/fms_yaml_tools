@@ -32,7 +32,7 @@ SPEAR_c192_o1_Hist_AllForc_IC1921_Q50_ens_01_03
 #
 #===============================================================================
 # ICE DIAGNOSTICS:
-#=============================================================================== 
+#===============================================================================
 "ice_model", "CN",         "CN",         "ice_daily", "all", .true., "none", 2
 "ice_model", "HI",         "HI",         "ice_daily", "all", .true., "none", 2
 "ice_model", "SST",        "SST",        "ice_daily", "all", .true., "none", 2
@@ -89,7 +89,7 @@ SPEAR_c192_o1_Hist_AllForc_IC1921_Q50_ens_01_03
 #
 #===============================================================================
 # OCEAN DIAGNOSTICS:
-#=============================================================================== 
+#===============================================================================
 "ocean_model", "SSS_global",             "SSS_global",             "ocean_scalar_month", "all", "mean", "none",2
 "ocean_model", "SST_global",             "SST_global",             "ocean_scalar_month", "all", "mean", "none",2
 "ocean_model", "soga",                   "soga",                   "ocean_scalar_month", "all", "mean", "none",2
@@ -232,7 +232,7 @@ SPEAR_c192_o1_Hist_AllForc_IC1921_Q50_ens_01_03
 #
 #===============================================================================
 # ATMOS DIAGNOSTICS:
-#=============================================================================== 
+#===============================================================================
 # #########
 # grid_spec
 # #########
@@ -476,7 +476,7 @@ SPEAR_c192_o1_Hist_AllForc_IC1921_Q50_ens_01_03
 "land",    "precip",     "precip",     "land_daily",  "all", .true.,  "none", 2
 "land",    "snow",       "snow",       "land_daily",  "all", .true.,  "none", 2
 "land",    "runf",       "runf",       "land_daily",  "all", .true.,  "none", 2
-"land",      "swdn_dif",   "swdn_dif",   "land_month",  "all", .true., "none", 2 
+"land",      "swdn_dif",   "swdn_dif",   "land_month",  "all", .true., "none", 2
 "land",      "swdn_dir",   "swdn_dir",   "land_month",  "all", .true., "none", 2
 "land",      "swup_dif",   "swup_dif",   "land_month",  "all", .true., "none", 2
 "land",      "swup_dir",   "swup_dir",   "land_month",  "all", .true., "none", 2
@@ -542,7 +542,7 @@ SPEAR_c192_o1_Hist_AllForc_IC1921_Q50_ens_01_03
 "vegn",    "bwood_crop", "crop_bwood", "land_month",  "all", .true., "none", 2
 "vegn",    "bwood_past", "past_bwood", "land_month",  "all", .true., "none", 2
 "vegn",    "bwood_scnd", "scnd_bwood", "land_month",  "all", .true., "none", 2
-"vegn",    "height"      "height",     "land_month",  "all", .true., "none", 2
+"vegn",    "height",     "height",     "land_month",  "all", .true., "none", 2
 "land",    "meltg_glac", "meltg_glac", "land_month",  "all", .true.,  "none", 2
 "soil",    "soil_T",     "soil_T",     "land_month",  "all", .true., "none", 2
 #"lake",    "lake_T",     "lake_T",     "land_month",  "all", .true., "none", 2
