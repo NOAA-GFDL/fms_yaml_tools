@@ -21,7 +21,8 @@ def init_yaml_file(outfile='') :
     with open(outfile,'w') as myfile : myfile.write('---\n')
 
 
-#: section = [ [list1], [list2], [list3], ... ]
+#: section = [ list1, list2, list3, ... ]
+#: list1   = [ {key1:val1}, {key2:val2}, ... ]
 def write_yaml_sections(outfile='', section=[], header='') :
     with open(outfile, 'a+') as myfile :
         myfile.write( header + ':\n')
@@ -124,11 +125,11 @@ class DiagTable :
         while global_count < 2 :
             iline = self.diag_table_content[iline_count]
             iline_count += 1
-            if iline.strip() != '' and '#' not in iline.strip()[0] : #: if not blank line or comment
+            if iline.strip() != '' and '#' not in iline.strip()[0] : #: if not blank or comment
                 #: line 2
                 if global_count == 1 :
                     try :
-                        iline_list, tmp_list = iline.split(), []     #: not comma separated integers
+                        iline_list, tmp_list = iline.split('#')[0].split(), [] #: not comma separated integers
                         for i in range(1,len(self.global_section_keys) ) :
                             mykey   = self.global_section_keys[i]
                             myfunct = self.global_section_values[mykey]
@@ -187,8 +188,14 @@ class DiagTable :
         write_yaml_sections( outfile, self.file_section,   header='diag_files' )
         write_yaml_sections( outfile, self.field_section,  header='diag_fields')
 
+    def read_and_parse_diag_table(self) :
+        self.read_diag_table()
+        self.parse_diag_table()
+
+
+    def convert_diag_table(self) :
+        self.read_and_parse_diag_table()
+        self.write_yaml()
 
 test_class = DiagTable( diag_table_file=in_diag_table )
-test_class.read_diag_table()
-test_class.parse_diag_table()
-test_class.write_yaml()
+test_class.convert_diag_table()
