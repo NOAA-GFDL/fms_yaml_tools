@@ -1,0 +1,4791 @@
+---
+diag_global:
+ - title             : "SPEAR_c192_o1_Hist_AllForc_IC1921_Q50_ens_01_03" 
+   base_year         : 1921 
+   base_month        : 1 
+   base_day          : 1 
+   base_hour         : 0 
+   base_minute       : 0 
+   base_second       : 0 
+
+diag_files:
+ - file_name         : "ocean_z_top300" 
+   output_freq       : 1 
+   output_freq_units : "months" 
+   file_format       : 1 
+   time_units        : "days" 
+   long_name         : "time" 
+
+ - file_name         : "grid_spec" 
+   output_freq       : -1 
+   output_freq_units : "months" 
+   file_format       : 1 
+   time_units        : "days" 
+   long_name         : "time" 
+
+ - file_name         : "atmos_4xdaily" 
+   output_freq       : 6 
+   output_freq_units : "hours" 
+   file_format       : 1 
+   time_units        : "days" 
+   long_name         : "time" 
+
+ - file_name         : "atmos_4xdaily_avg" 
+   output_freq       : 6 
+   output_freq_units : "hours" 
+   file_format       : 1 
+   time_units        : "days" 
+   long_name         : "time" 
+
+ - file_name         : "atmos_daily" 
+   output_freq       : 24 
+   output_freq_units : "hours" 
+   file_format       : 1 
+   time_units        : "days" 
+   long_name         : "time" 
+
+ - file_name         : "atmos_month" 
+   output_freq       : 1 
+   output_freq_units : "months" 
+   file_format       : 1 
+   time_units        : "days" 
+   long_name         : "time" 
+
+ - file_name         : "atmos_month_aer" 
+   output_freq       : 1 
+   output_freq_units : "months" 
+   file_format       : 1 
+   time_units        : "days" 
+   long_name         : "time" 
+
+ - file_name         : "atmos_scalar" 
+   output_freq       : 1 
+   output_freq_units : "months" 
+   file_format       : 1 
+   time_units        : "days" 
+   long_name         : "time" 
+
+ - file_name         : "ice_daily" 
+   output_freq       : 24 
+   output_freq_units : "hours" 
+   file_format       : 1 
+   time_units        : "days" 
+   long_name         : "time" 
+
+ - file_name         : "ice_month" 
+   output_freq       : 1 
+   output_freq_units : "months" 
+   file_format       : 1 
+   time_units        : "days" 
+   long_name         : "time" 
+
+ - file_name         : "iceberg_month" 
+   output_freq       : 1 
+   output_freq_units : "months" 
+   file_format       : 1 
+   time_units        : "days" 
+   long_name         : "time" 
+
+ - file_name         : "land_static" 
+   output_freq       : -1 
+   output_freq_units : "months" 
+   file_format       : 1 
+   time_units        : "days" 
+   long_name         : "time" 
+
+ - file_name         : "land_daily" 
+   output_freq       : 24 
+   output_freq_units : "hours" 
+   file_format       : 1 
+   time_units        : "days" 
+   long_name         : "time" 
+
+ - file_name         : "land_month" 
+   output_freq       : 1 
+   output_freq_units : "months" 
+   file_format       : 1 
+   time_units        : "days" 
+   long_name         : "time" 
+
+ - file_name         : "land_static_sg" 
+   output_freq       : -1 
+   output_freq_units : "months" 
+   file_format       : 1 
+   time_units        : "days" 
+   long_name         : "time" 
+
+ - file_name         : "land_month_inst" 
+   output_freq       : 1 
+   output_freq_units : "months" 
+   file_format       : 1 
+   time_units        : "days" 
+   long_name         : "time" 
+
+ - file_name         : "river_static" 
+   output_freq       : -1 
+   output_freq_units : "months" 
+   file_format       : 1 
+   time_units        : "days" 
+   long_name         : "time" 
+
+ - file_name         : "river_daily" 
+   output_freq       : 24 
+   output_freq_units : "hours" 
+   file_format       : 1 
+   time_units        : "days" 
+   long_name         : "time" 
+
+ - file_name         : "river_month" 
+   output_freq       : 1 
+   output_freq_units : "months" 
+   file_format       : 1 
+   time_units        : "days" 
+   long_name         : "time" 
+
+ - file_name         : "river_month_inst" 
+   output_freq       : 1 
+   output_freq_units : "months" 
+   file_format       : 1 
+   time_units        : "days" 
+   long_name         : "time" 
+
+ - file_name         : "ocean_scalar_month" 
+   output_freq       : 1 
+   output_freq_units : "months" 
+   file_format       : 1 
+   time_units        : "days" 
+   long_name         : "time" 
+
+ - file_name         : "ocean_static" 
+   output_freq       : -1 
+   output_freq_units : "months" 
+   file_format       : 1 
+   time_units        : "days" 
+   long_name         : "time" 
+
+ - file_name         : "ocean_month" 
+   output_freq       : 1 
+   output_freq_units : "months" 
+   file_format       : 1 
+   time_units        : "days" 
+   long_name         : "time" 
+
+ - file_name         : "ocean_z_month" 
+   output_freq       : 1 
+   output_freq_units : "months" 
+   file_format       : 1 
+   time_units        : "days" 
+   long_name         : "time" 
+
+ - file_name         : "ocean_month_rho2" 
+   output_freq       : 1 
+   output_freq_units : "months" 
+   file_format       : 1 
+   time_units        : "days" 
+   long_name         : "time" 
+
+ - file_name         : "ocean_annual" 
+   output_freq       : 12 
+   output_freq_units : "months" 
+   file_format       : 1 
+   time_units        : "days" 
+   long_name         : "time" 
+
+ - file_name         : "ocean_z_annual" 
+   output_freq       : 12 
+   output_freq_units : "months" 
+   file_format       : 1 
+   time_units        : "days" 
+   long_name         : "time" 
+
+diag_fields:
+ - module_name       : "ocean_model_ztop" 
+   field_name        : "thetao" 
+   output_name       : "thetao" 
+   file_name         : "ocean_z_top300" 
+   time_sampling     : "all" 
+   time_method       : "mean" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ice_model" 
+   field_name        : "CN" 
+   output_name       : "CN" 
+   file_name         : "ice_daily" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ice_model" 
+   field_name        : "HI" 
+   output_name       : "HI" 
+   file_name         : "ice_daily" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ice_model" 
+   field_name        : "SST" 
+   output_name       : "SST" 
+   file_name         : "ice_daily" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ice_model" 
+   field_name        : "ALB" 
+   output_name       : "ALB" 
+   file_name         : "ice_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ice_model" 
+   field_name        : "BHEAT" 
+   output_name       : "BHEAT" 
+   file_name         : "ice_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ice_model" 
+   field_name        : "BMELT" 
+   output_name       : "BMELT" 
+   file_name         : "ice_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ice_model" 
+   field_name        : "BSNK" 
+   output_name       : "BSNK" 
+   file_name         : "ice_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ice_model" 
+   field_name        : "CALVING" 
+   output_name       : "CALVING" 
+   file_name         : "ice_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ice_model" 
+   field_name        : "CELL_AREA" 
+   output_name       : "CELL_AREA" 
+   file_name         : "ice_month" 
+   time_sampling     : "all" 
+   time_method       : .false. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ice_model" 
+   field_name        : "CN" 
+   output_name       : "CN" 
+   file_name         : "ice_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ice_model" 
+   field_name        : "COSROT" 
+   output_name       : "COSROT" 
+   file_name         : "ice_month" 
+   time_sampling     : "all" 
+   time_method       : .false. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ice_model" 
+   field_name        : "EXT" 
+   output_name       : "EXT" 
+   file_name         : "ice_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ice_model" 
+   field_name        : "EXT" 
+   output_name       : "EXT_max" 
+   file_name         : "ice_month" 
+   time_sampling     : "all" 
+   time_method       : max 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ice_model" 
+   field_name        : "EXT" 
+   output_name       : "EXT_min" 
+   file_name         : "ice_month" 
+   time_sampling     : "all" 
+   time_method       : min 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ice_model" 
+   field_name        : "FA_X" 
+   output_name       : "FA_X" 
+   file_name         : "ice_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ice_model" 
+   field_name        : "FA_Y" 
+   output_name       : "FA_Y" 
+   file_name         : "ice_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ice_model" 
+   field_name        : "FI_X" 
+   output_name       : "FI_X" 
+   file_name         : "ice_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ice_model" 
+   field_name        : "FI_Y" 
+   output_name       : "FI_Y" 
+   file_name         : "ice_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ice_model" 
+   field_name        : "FRAZIL" 
+   output_name       : "FRAZIL" 
+   file_name         : "ice_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ice_model" 
+   field_name        : "GEOLAT" 
+   output_name       : "GEOLAT" 
+   file_name         : "ice_month" 
+   time_sampling     : "all" 
+   time_method       : .false. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ice_model" 
+   field_name        : "GEOLON" 
+   output_name       : "GEOLON" 
+   file_name         : "ice_month" 
+   time_sampling     : "all" 
+   time_method       : .false. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ice_model" 
+   field_name        : "HI" 
+   output_name       : "HI" 
+   file_name         : "ice_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ice_model" 
+   field_name        : "HS" 
+   output_name       : "HS" 
+   file_name         : "ice_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ice_model" 
+   field_name        : "IX_TRANS" 
+   output_name       : "IX_TRANS" 
+   file_name         : "ice_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ice_model" 
+   field_name        : "IY_TRANS" 
+   output_name       : "IY_TRANS" 
+   file_name         : "ice_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ice_model" 
+   field_name        : "LH" 
+   output_name       : "LH" 
+   file_name         : "ice_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ice_model" 
+   field_name        : "LSNK" 
+   output_name       : "LSNK" 
+   file_name         : "ice_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ice_model" 
+   field_name        : "LSRC" 
+   output_name       : "LSRC" 
+   file_name         : "ice_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ice_model" 
+   field_name        : "LW" 
+   output_name       : "LW" 
+   file_name         : "ice_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ice_model" 
+   field_name        : "MI" 
+   output_name       : "MI" 
+   file_name         : "ice_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ice_model" 
+   field_name        : "RAIN" 
+   output_name       : "RAIN" 
+   file_name         : "ice_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ice_model" 
+   field_name        : "RUNOFF" 
+   output_name       : "RUNOFF" 
+   file_name         : "ice_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ice_model" 
+   field_name        : "SALTF" 
+   output_name       : "SALTF" 
+   file_name         : "ice_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ice_model" 
+   field_name        : "SH" 
+   output_name       : "SH" 
+   file_name         : "ice_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ice_model" 
+   field_name        : "SINROT" 
+   output_name       : "SINROT" 
+   file_name         : "ice_month" 
+   time_sampling     : "all" 
+   time_method       : .false. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ice_model" 
+   field_name        : "SN2IC" 
+   output_name       : "SN2IC" 
+   file_name         : "ice_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ice_model" 
+   field_name        : "SNOWFL" 
+   output_name       : "SNOWFL" 
+   file_name         : "ice_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ice_model" 
+   field_name        : "SSH" 
+   output_name       : "SSH" 
+   file_name         : "ice_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ice_model" 
+   field_name        : "SSS" 
+   output_name       : "SSS" 
+   file_name         : "ice_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ice_model" 
+   field_name        : "SST" 
+   output_name       : "SST" 
+   file_name         : "ice_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ice_model" 
+   field_name        : "SW" 
+   output_name       : "SW" 
+   file_name         : "ice_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ice_model" 
+   field_name        : "T1" 
+   output_name       : "T1" 
+   file_name         : "ice_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ice_model" 
+   field_name        : "T2" 
+   output_name       : "T2" 
+   file_name         : "ice_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ice_model" 
+   field_name        : "TMELT" 
+   output_name       : "TMELT" 
+   file_name         : "ice_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ice_model" 
+   field_name        : "TS" 
+   output_name       : "TS" 
+   file_name         : "ice_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ice_model" 
+   field_name        : "UI" 
+   output_name       : "UI" 
+   file_name         : "ice_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ice_model" 
+   field_name        : "UO" 
+   output_name       : "UO" 
+   file_name         : "ice_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ice_model" 
+   field_name        : "VI" 
+   output_name       : "VI" 
+   file_name         : "ice_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ice_model" 
+   field_name        : "VO" 
+   output_name       : "VO" 
+   file_name         : "ice_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ice_model" 
+   field_name        : "XPRT" 
+   output_name       : "XPRT" 
+   file_name         : "ice_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "icebergs" 
+   field_name        : "BERG_MELT" 
+   output_name       : "BERG_MELT" 
+   file_name         : "iceberg_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "icebergs" 
+   field_name        : "MASS" 
+   output_name       : "MASS" 
+   file_name         : "iceberg_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "icebergs" 
+   field_name        : "MELT" 
+   output_name       : "MELT" 
+   file_name         : "iceberg_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model" 
+   field_name        : "SSS_global" 
+   output_name       : "SSS_global" 
+   file_name         : "ocean_scalar_month" 
+   time_sampling     : "all" 
+   time_method       : "mean" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model" 
+   field_name        : "SST_global" 
+   output_name       : "SST_global" 
+   file_name         : "ocean_scalar_month" 
+   time_sampling     : "all" 
+   time_method       : "mean" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model" 
+   field_name        : "soga" 
+   output_name       : "soga" 
+   file_name         : "ocean_scalar_month" 
+   time_sampling     : "all" 
+   time_method       : "mean" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model" 
+   field_name        : "thetaoga" 
+   output_name       : "thetaoga" 
+   file_name         : "ocean_scalar_month" 
+   time_sampling     : "all" 
+   time_method       : "mean" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model" 
+   field_name        : "tosga" 
+   output_name       : "tosga" 
+   file_name         : "ocean_scalar_month" 
+   time_sampling     : "all" 
+   time_method       : "mean" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model" 
+   field_name        : "ave_wfo" 
+   output_name       : "ave_wfo" 
+   file_name         : "ocean_scalar_month" 
+   time_sampling     : "all" 
+   time_method       : "mean" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model" 
+   field_name        : "ave_hfds" 
+   output_name       : "ave_hfds" 
+   file_name         : "ocean_scalar_month" 
+   time_sampling     : "all" 
+   time_method       : "mean" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model" 
+   field_name        : "ave_rsntds" 
+   output_name       : "ave_rsntds" 
+   file_name         : "ocean_scalar_month" 
+   time_sampling     : "all" 
+   time_method       : "mean" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model" 
+   field_name        : "LwLatSens_ga" 
+   output_name       : "LwLatSens_ga" 
+   file_name         : "ocean_scalar_month" 
+   time_sampling     : "all" 
+   time_method       : "mean" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model" 
+   field_name        : "masso" 
+   output_name       : "masso" 
+   file_name         : "ocean_scalar_month" 
+   time_sampling     : "all" 
+   time_method       : "mean" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model" 
+   field_name        : "Coriolis" 
+   output_name       : "Coriolis" 
+   file_name         : "ocean_static" 
+   time_sampling     : "all" 
+   time_method       : "none" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model" 
+   field_name        : "area_t" 
+   output_name       : "area_t" 
+   file_name         : "ocean_static" 
+   time_sampling     : "all" 
+   time_method       : "none" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model" 
+   field_name        : "areacello" 
+   output_name       : "areacello" 
+   file_name         : "ocean_static" 
+   time_sampling     : "all" 
+   time_method       : "none" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model" 
+   field_name        : "areacello_bu" 
+   output_name       : "areacello_bu" 
+   file_name         : "ocean_static" 
+   time_sampling     : "all" 
+   time_method       : "none" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model" 
+   field_name        : "areacello_cu" 
+   output_name       : "areacello_cu" 
+   file_name         : "ocean_static" 
+   time_sampling     : "all" 
+   time_method       : "none" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model" 
+   field_name        : "areacello_cv" 
+   output_name       : "areacello_cv" 
+   file_name         : "ocean_static" 
+   time_sampling     : "all" 
+   time_method       : "none" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model" 
+   field_name        : "depth_ocean" 
+   output_name       : "depth_ocean" 
+   file_name         : "ocean_static" 
+   time_sampling     : "all" 
+   time_method       : "none" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model" 
+   field_name        : "deptho" 
+   output_name       : "deptho" 
+   file_name         : "ocean_static" 
+   time_sampling     : "all" 
+   time_method       : "none" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model" 
+   field_name        : "dxCu" 
+   output_name       : "dxCu" 
+   file_name         : "ocean_static" 
+   time_sampling     : "all" 
+   time_method       : "none" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model" 
+   field_name        : "dxCv" 
+   output_name       : "dxCv" 
+   file_name         : "ocean_static" 
+   time_sampling     : "all" 
+   time_method       : "none" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model" 
+   field_name        : "dxt" 
+   output_name       : "dxt" 
+   file_name         : "ocean_static" 
+   time_sampling     : "all" 
+   time_method       : "none" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model" 
+   field_name        : "dyCu" 
+   output_name       : "dyCu" 
+   file_name         : "ocean_static" 
+   time_sampling     : "all" 
+   time_method       : "none" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model" 
+   field_name        : "dyCv" 
+   output_name       : "dyCv" 
+   file_name         : "ocean_static" 
+   time_sampling     : "all" 
+   time_method       : "none" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model" 
+   field_name        : "dyt" 
+   output_name       : "dyt" 
+   file_name         : "ocean_static" 
+   time_sampling     : "all" 
+   time_method       : "none" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model" 
+   field_name        : "geolat" 
+   output_name       : "geolat" 
+   file_name         : "ocean_static" 
+   time_sampling     : "all" 
+   time_method       : "none" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model" 
+   field_name        : "geolat_c" 
+   output_name       : "geolat_c" 
+   file_name         : "ocean_static" 
+   time_sampling     : "all" 
+   time_method       : "none" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model" 
+   field_name        : "geolat_u" 
+   output_name       : "geolat_u" 
+   file_name         : "ocean_static" 
+   time_sampling     : "all" 
+   time_method       : "none" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model" 
+   field_name        : "geolat_v" 
+   output_name       : "geolat_v" 
+   file_name         : "ocean_static" 
+   time_sampling     : "all" 
+   time_method       : "none" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model" 
+   field_name        : "geolon" 
+   output_name       : "geolon" 
+   file_name         : "ocean_static" 
+   time_sampling     : "all" 
+   time_method       : "none" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model" 
+   field_name        : "geolon_c" 
+   output_name       : "geolon_c" 
+   file_name         : "ocean_static" 
+   time_sampling     : "all" 
+   time_method       : "none" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model" 
+   field_name        : "geolon_u" 
+   output_name       : "geolon_u" 
+   file_name         : "ocean_static" 
+   time_sampling     : "all" 
+   time_method       : "none" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model" 
+   field_name        : "geolon_v" 
+   output_name       : "geolon_v" 
+   file_name         : "ocean_static" 
+   time_sampling     : "all" 
+   time_method       : "none" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model" 
+   field_name        : "sftof" 
+   output_name       : "sftof" 
+   file_name         : "ocean_static" 
+   time_sampling     : "all" 
+   time_method       : "none" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model" 
+   field_name        : "wet" 
+   output_name       : "wet" 
+   file_name         : "ocean_static" 
+   time_sampling     : "all" 
+   time_method       : "none" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model" 
+   field_name        : "wet_c" 
+   output_name       : "wet_c" 
+   file_name         : "ocean_static" 
+   time_sampling     : "all" 
+   time_method       : "none" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model" 
+   field_name        : "wet_u" 
+   output_name       : "wet_u" 
+   file_name         : "ocean_static" 
+   time_sampling     : "all" 
+   time_method       : "none" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model" 
+   field_name        : "wet_v" 
+   output_name       : "wet_v" 
+   file_name         : "ocean_static" 
+   time_sampling     : "all" 
+   time_method       : "none" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model" 
+   field_name        : "Heat_PmE" 
+   output_name       : "Heat_PmE" 
+   file_name         : "ocean_month" 
+   time_sampling     : "all" 
+   time_method       : "mean" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model" 
+   field_name        : "LW" 
+   output_name       : "LW" 
+   file_name         : "ocean_month" 
+   time_sampling     : "all" 
+   time_method       : "mean" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model" 
+   field_name        : "LwLatSens" 
+   output_name       : "LwLatSens" 
+   file_name         : "ocean_month" 
+   time_sampling     : "all" 
+   time_method       : "mean" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model" 
+   field_name        : "MLD_003" 
+   output_name       : "MLD_003" 
+   file_name         : "ocean_month" 
+   time_sampling     : "all" 
+   time_method       : "mean" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model" 
+   field_name        : "MLD_003" 
+   output_name       : "MLD_003_max" 
+   file_name         : "ocean_month" 
+   time_sampling     : "all" 
+   time_method       : "max" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model" 
+   field_name        : "MLD_003" 
+   output_name       : "MLD_003_min" 
+   file_name         : "ocean_month" 
+   time_sampling     : "all" 
+   time_method       : "min" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model" 
+   field_name        : "ML_buoy_restrat" 
+   output_name       : "ML_buoy_restrat" 
+   file_name         : "ocean_month" 
+   time_sampling     : "all" 
+   time_method       : "mean" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model" 
+   field_name        : "PRCmE" 
+   output_name       : "PRCmE" 
+   file_name         : "ocean_month" 
+   time_sampling     : "all" 
+   time_method       : "mean" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model" 
+   field_name        : "SSH" 
+   output_name       : "ssh" 
+   file_name         : "ocean_month" 
+   time_sampling     : "all" 
+   time_method       : "mean" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model" 
+   field_name        : "SSS" 
+   output_name       : "sss" 
+   file_name         : "ocean_month" 
+   time_sampling     : "all" 
+   time_method       : "mean" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model" 
+   field_name        : "SST" 
+   output_name       : "SST" 
+   file_name         : "ocean_month" 
+   time_sampling     : "all" 
+   time_method       : "mean" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model" 
+   field_name        : "SST" 
+   output_name       : "sst_max" 
+   file_name         : "ocean_month" 
+   time_sampling     : "all" 
+   time_method       : "max" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model" 
+   field_name        : "SST" 
+   output_name       : "sst_min" 
+   file_name         : "ocean_month" 
+   time_sampling     : "all" 
+   time_method       : "min" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model" 
+   field_name        : "SW" 
+   output_name       : "SW" 
+   file_name         : "ocean_month" 
+   time_sampling     : "all" 
+   time_method       : "mean" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model" 
+   field_name        : "S_adx_2d" 
+   output_name       : "S_adx_2d" 
+   file_name         : "ocean_month" 
+   time_sampling     : "all" 
+   time_method       : "mean" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model" 
+   field_name        : "S_ady_2d" 
+   output_name       : "S_ady_2d" 
+   file_name         : "ocean_month" 
+   time_sampling     : "all" 
+   time_method       : "mean" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model" 
+   field_name        : "TKE_tidal" 
+   output_name       : "TKE_tidal" 
+   file_name         : "ocean_month" 
+   time_sampling     : "all" 
+   time_method       : "mean" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model" 
+   field_name        : "T_adx_2d" 
+   output_name       : "T_adx_2d" 
+   file_name         : "ocean_month" 
+   time_sampling     : "all" 
+   time_method       : "mean" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model" 
+   field_name        : "T_ady_2d" 
+   output_name       : "T_ady_2d" 
+   file_name         : "ocean_month" 
+   time_sampling     : "all" 
+   time_method       : "mean" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model" 
+   field_name        : "evap" 
+   output_name       : "evap" 
+   file_name         : "ocean_month" 
+   time_sampling     : "all" 
+   time_method       : "mean" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model" 
+   field_name        : "evs" 
+   output_name       : "evs" 
+   file_name         : "ocean_month" 
+   time_sampling     : "all" 
+   time_method       : "mean" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model" 
+   field_name        : "ficeberg" 
+   output_name       : "ficeberg" 
+   file_name         : "ocean_month" 
+   time_sampling     : "all" 
+   time_method       : "mean" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model" 
+   field_name        : "fprec" 
+   output_name       : "fprec" 
+   file_name         : "ocean_month" 
+   time_sampling     : "all" 
+   time_method       : "mean" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model" 
+   field_name        : "friver" 
+   output_name       : "friver" 
+   file_name         : "ocean_month" 
+   time_sampling     : "all" 
+   time_method       : "mean" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model" 
+   field_name        : "frunoff" 
+   output_name       : "frunoff" 
+   file_name         : "ocean_month" 
+   time_sampling     : "all" 
+   time_method       : "mean" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model" 
+   field_name        : "heat_content_cond" 
+   output_name       : "heat_content_cond" 
+   file_name         : "ocean_month" 
+   time_sampling     : "all" 
+   time_method       : "mean" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model" 
+   field_name        : "heat_content_fprec" 
+   output_name       : "heat_content_fprec" 
+   file_name         : "ocean_month" 
+   time_sampling     : "all" 
+   time_method       : "mean" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model" 
+   field_name        : "heat_content_frunoff" 
+   output_name       : "heat_content_frunoff" 
+   file_name         : "ocean_month" 
+   time_sampling     : "all" 
+   time_method       : "mean" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model" 
+   field_name        : "heat_content_lprec" 
+   output_name       : "heat_content_lprec" 
+   file_name         : "ocean_month" 
+   time_sampling     : "all" 
+   time_method       : "mean" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model" 
+   field_name        : "heat_content_lrunoff" 
+   output_name       : "heat_content_lrunoff" 
+   file_name         : "ocean_month" 
+   time_sampling     : "all" 
+   time_method       : "mean" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model" 
+   field_name        : "heat_content_massin" 
+   output_name       : "heat_content_massin" 
+   file_name         : "ocean_month" 
+   time_sampling     : "all" 
+   time_method       : "mean" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model" 
+   field_name        : "heat_content_massout" 
+   output_name       : "heat_content_massout" 
+   file_name         : "ocean_month" 
+   time_sampling     : "all" 
+   time_method       : "mean" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model" 
+   field_name        : "heat_content_surfwater" 
+   output_name       : "heat_content_surfwater" 
+   file_name         : "ocean_month" 
+   time_sampling     : "all" 
+   time_method       : "mean" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model" 
+   field_name        : "hfds" 
+   output_name       : "hfds" 
+   file_name         : "ocean_month" 
+   time_sampling     : "all" 
+   time_method       : "mean" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model" 
+   field_name        : "hfevapds" 
+   output_name       : "hfevapds" 
+   file_name         : "ocean_month" 
+   time_sampling     : "all" 
+   time_method       : "mean" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model" 
+   field_name        : "hfibthermds" 
+   output_name       : "hfibthermds" 
+   file_name         : "ocean_month" 
+   time_sampling     : "all" 
+   time_method       : "mean" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model" 
+   field_name        : "hflso" 
+   output_name       : "hflso" 
+   file_name         : "ocean_month" 
+   time_sampling     : "all" 
+   time_method       : "mean" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model" 
+   field_name        : "hfrainds" 
+   output_name       : "hfrainds" 
+   file_name         : "ocean_month" 
+   time_sampling     : "all" 
+   time_method       : "mean" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model" 
+   field_name        : "hfrunoffds" 
+   output_name       : "hfrunoffds" 
+   file_name         : "ocean_month" 
+   time_sampling     : "all" 
+   time_method       : "mean" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model" 
+   field_name        : "hfsifrazil" 
+   output_name       : "hfsifrazil" 
+   file_name         : "ocean_month" 
+   time_sampling     : "all" 
+   time_method       : "mean" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model" 
+   field_name        : "hfsnthermds" 
+   output_name       : "hfsnthermds" 
+   file_name         : "ocean_month" 
+   time_sampling     : "all" 
+   time_method       : "mean" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model" 
+   field_name        : "hfsso" 
+   output_name       : "hfsso" 
+   file_name         : "ocean_month" 
+   time_sampling     : "all" 
+   time_method       : "mean" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model" 
+   field_name        : "latent" 
+   output_name       : "latent" 
+   file_name         : "ocean_month" 
+   time_sampling     : "all" 
+   time_method       : "mean" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model" 
+   field_name        : "lprec" 
+   output_name       : "lprec" 
+   file_name         : "ocean_month" 
+   time_sampling     : "all" 
+   time_method       : "mean" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model" 
+   field_name        : "lrunoff" 
+   output_name       : "lrunoff" 
+   file_name         : "ocean_month" 
+   time_sampling     : "all" 
+   time_method       : "mean" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model" 
+   field_name        : "net_heat_coupler" 
+   output_name       : "net_heat_coupler" 
+   file_name         : "ocean_month" 
+   time_sampling     : "all" 
+   time_method       : "mean" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model" 
+   field_name        : "net_heat_surface" 
+   output_name       : "net_heat_surface" 
+   file_name         : "ocean_month" 
+   time_sampling     : "all" 
+   time_method       : "mean" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model" 
+   field_name        : "net_massin" 
+   output_name       : "net_massin" 
+   file_name         : "ocean_month" 
+   time_sampling     : "all" 
+   time_method       : "mean" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model" 
+   field_name        : "net_massout" 
+   output_name       : "net_massout" 
+   file_name         : "ocean_month" 
+   time_sampling     : "all" 
+   time_method       : "mean" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model" 
+   field_name        : "p_surf" 
+   output_name       : "p_surf" 
+   file_name         : "ocean_month" 
+   time_sampling     : "all" 
+   time_method       : "mean" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model" 
+   field_name        : "prlq" 
+   output_name       : "prlq" 
+   file_name         : "ocean_month" 
+   time_sampling     : "all" 
+   time_method       : "mean" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model" 
+   field_name        : "prsn" 
+   output_name       : "prsn" 
+   file_name         : "ocean_month" 
+   time_sampling     : "all" 
+   time_method       : "mean" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model" 
+   field_name        : "rlntds" 
+   output_name       : "rlntds" 
+   file_name         : "ocean_month" 
+   time_sampling     : "all" 
+   time_method       : "mean" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model" 
+   field_name        : "rsntds" 
+   output_name       : "rsntds" 
+   file_name         : "ocean_month" 
+   time_sampling     : "all" 
+   time_method       : "mean" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model" 
+   field_name        : "salt_flux" 
+   output_name       : "salt_flux" 
+   file_name         : "ocean_month" 
+   time_sampling     : "all" 
+   time_method       : "mean" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model" 
+   field_name        : "sensible" 
+   output_name       : "sensible" 
+   file_name         : "ocean_month" 
+   time_sampling     : "all" 
+   time_method       : "mean" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model" 
+   field_name        : "sfdsi" 
+   output_name       : "sfdsi" 
+   file_name         : "ocean_month" 
+   time_sampling     : "all" 
+   time_method       : "mean" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model" 
+   field_name        : "speed" 
+   output_name       : "speed" 
+   file_name         : "ocean_month" 
+   time_sampling     : "all" 
+   time_method       : "mean" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model" 
+   field_name        : "tauuo" 
+   output_name       : "tauuo" 
+   file_name         : "ocean_month" 
+   time_sampling     : "all" 
+   time_method       : "mean" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model" 
+   field_name        : "tauvo" 
+   output_name       : "tauvo" 
+   file_name         : "ocean_month" 
+   time_sampling     : "all" 
+   time_method       : "mean" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model" 
+   field_name        : "taux" 
+   output_name       : "taux" 
+   file_name         : "ocean_month" 
+   time_sampling     : "all" 
+   time_method       : "mean" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model" 
+   field_name        : "tauy" 
+   output_name       : "tauy" 
+   file_name         : "ocean_month" 
+   time_sampling     : "all" 
+   time_method       : "mean" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model" 
+   field_name        : "ustar" 
+   output_name       : "ustar" 
+   file_name         : "ocean_month" 
+   time_sampling     : "all" 
+   time_method       : "mean" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model" 
+   field_name        : "wfo" 
+   output_name       : "wfo" 
+   file_name         : "ocean_month" 
+   time_sampling     : "all" 
+   time_method       : "mean" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model" 
+   field_name        : "Kd_interface" 
+   output_name       : "Kd_interface" 
+   file_name         : "ocean_annual" 
+   time_sampling     : "all" 
+   time_method       : "mean" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model_z" 
+   field_name        : "S_advection_xy" 
+   output_name       : "S_advection_xy" 
+   file_name         : "ocean_z_month" 
+   time_sampling     : "all" 
+   time_method       : "mean" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model_z" 
+   field_name        : "Sh_tendency_vert_remap" 
+   output_name       : "Sh_tendency_vert_remap" 
+   file_name         : "ocean_z_month" 
+   time_sampling     : "all" 
+   time_method       : "mean" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model_z" 
+   field_name        : "T_advection_xy" 
+   output_name       : "T_advection_xy" 
+   file_name         : "ocean_z_month" 
+   time_sampling     : "all" 
+   time_method       : "mean" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model_z" 
+   field_name        : "Th_tendency_vert_remap" 
+   output_name       : "Th_tendency_vert_remap" 
+   file_name         : "ocean_z_month" 
+   time_sampling     : "all" 
+   time_method       : "mean" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model_z" 
+   field_name        : "boundary_forcing_heat_tendency" 
+   output_name       : "boundary_forcing_heat_tendency" 
+   file_name         : "ocean_z_month" 
+   time_sampling     : "all" 
+   time_method       : "mean" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model_z" 
+   field_name        : "boundary_forcing_salt_tendency" 
+   output_name       : "boundary_forcing_salt_tendency" 
+   file_name         : "ocean_z_month" 
+   time_sampling     : "all" 
+   time_method       : "mean" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model_z" 
+   field_name        : "difvho" 
+   output_name       : "difvho" 
+   file_name         : "ocean_z_month" 
+   time_sampling     : "all" 
+   time_method       : "mean" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model_z" 
+   field_name        : "frazil_heat_tendency" 
+   output_name       : "frazil_heat_tendency" 
+   file_name         : "ocean_z_month" 
+   time_sampling     : "all" 
+   time_method       : "mean" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model_z" 
+   field_name        : "opottempdiff" 
+   output_name       : "opottempdiff" 
+   file_name         : "ocean_z_month" 
+   time_sampling     : "all" 
+   time_method       : "mean" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model_z" 
+   field_name        : "opottemppmdiff" 
+   output_name       : "opottemppmdiff" 
+   file_name         : "ocean_z_month" 
+   time_sampling     : "all" 
+   time_method       : "mean" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model_z" 
+   field_name        : "opottemptend" 
+   output_name       : "opottemptend" 
+   file_name         : "ocean_z_month" 
+   time_sampling     : "all" 
+   time_method       : "mean" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model_z" 
+   field_name        : "osaltdiff" 
+   output_name       : "osaltdiff" 
+   file_name         : "ocean_z_month" 
+   time_sampling     : "all" 
+   time_method       : "mean" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model_z" 
+   field_name        : "osaltpmdiff" 
+   output_name       : "osaltpmdiff" 
+   file_name         : "ocean_z_month" 
+   time_sampling     : "all" 
+   time_method       : "mean" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model_z" 
+   field_name        : "osalttend" 
+   output_name       : "osalttend" 
+   file_name         : "ocean_z_month" 
+   time_sampling     : "all" 
+   time_method       : "mean" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model_z" 
+   field_name        : "rhoinsitu" 
+   output_name       : "rhoinsitu" 
+   file_name         : "ocean_z_month" 
+   time_sampling     : "all" 
+   time_method       : "mean" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model_z" 
+   field_name        : "rhopot0" 
+   output_name       : "rhopot0" 
+   file_name         : "ocean_z_month" 
+   time_sampling     : "all" 
+   time_method       : "mean" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model_z" 
+   field_name        : "rhopot2" 
+   output_name       : "rhopot2" 
+   file_name         : "ocean_z_month" 
+   time_sampling     : "all" 
+   time_method       : "mean" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model_z" 
+   field_name        : "rsdoabsorb" 
+   output_name       : "rsdoabsorb" 
+   file_name         : "ocean_z_month" 
+   time_sampling     : "all" 
+   time_method       : "mean" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model_z" 
+   field_name        : "so" 
+   output_name       : "so" 
+   file_name         : "ocean_z_month" 
+   time_sampling     : "all" 
+   time_method       : "mean" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model_z" 
+   field_name        : "thetao" 
+   output_name       : "thetao" 
+   file_name         : "ocean_z_month" 
+   time_sampling     : "all" 
+   time_method       : "mean" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model_z" 
+   field_name        : "uh" 
+   output_name       : "uh" 
+   file_name         : "ocean_z_month" 
+   time_sampling     : "all" 
+   time_method       : "mean" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model_z" 
+   field_name        : "uhGM" 
+   output_name       : "uhGM" 
+   file_name         : "ocean_z_month" 
+   time_sampling     : "all" 
+   time_method       : "mean" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model_z" 
+   field_name        : "uhml" 
+   output_name       : "uhml" 
+   file_name         : "ocean_z_month" 
+   time_sampling     : "all" 
+   time_method       : "mean" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model_z" 
+   field_name        : "umo" 
+   output_name       : "umo" 
+   file_name         : "ocean_z_month" 
+   time_sampling     : "all" 
+   time_method       : "mean" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model_z" 
+   field_name        : "uo" 
+   output_name       : "uo" 
+   file_name         : "ocean_z_month" 
+   time_sampling     : "all" 
+   time_method       : "mean" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model_z" 
+   field_name        : "vh" 
+   output_name       : "vh" 
+   file_name         : "ocean_z_month" 
+   time_sampling     : "all" 
+   time_method       : "mean" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model_z" 
+   field_name        : "vhGM" 
+   output_name       : "vhGM" 
+   file_name         : "ocean_z_month" 
+   time_sampling     : "all" 
+   time_method       : "mean" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model_z" 
+   field_name        : "vhml" 
+   output_name       : "vhml" 
+   file_name         : "ocean_z_month" 
+   time_sampling     : "all" 
+   time_method       : "mean" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model_z" 
+   field_name        : "vmo" 
+   output_name       : "vmo" 
+   file_name         : "ocean_z_month" 
+   time_sampling     : "all" 
+   time_method       : "mean" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model_z" 
+   field_name        : "vo" 
+   output_name       : "vo" 
+   file_name         : "ocean_z_month" 
+   time_sampling     : "all" 
+   time_method       : "mean" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model_z" 
+   field_name        : "age" 
+   output_name       : "age" 
+   file_name         : "ocean_z_annual" 
+   time_sampling     : "all" 
+   time_method       : "mean" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model_z" 
+   field_name        : "thetao_xyave" 
+   output_name       : "thetao_xyave" 
+   file_name         : "ocean_z_annual" 
+   time_sampling     : "all" 
+   time_method       : "mean" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model_z" 
+   field_name        : "so_xyave" 
+   output_name       : "so_xyave" 
+   file_name         : "ocean_z_annual" 
+   time_sampling     : "all" 
+   time_method       : "mean" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model_rho2" 
+   field_name        : "umo" 
+   output_name       : "umo" 
+   file_name         : "ocean_month_rho2" 
+   time_sampling     : "all" 
+   time_method       : "mean" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "ocean_model_rho2" 
+   field_name        : "vmo" 
+   output_name       : "vmo" 
+   file_name         : "ocean_month_rho2" 
+   time_sampling     : "all" 
+   time_method       : "mean" 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "dynamics" 
+   field_name        : "grid_lon" 
+   output_name       : "grid_lon" 
+   file_name         : "grid_spec" 
+   time_sampling     : "all" 
+   time_method       : .false. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "dynamics" 
+   field_name        : "grid_lat" 
+   output_name       : "grid_lat" 
+   file_name         : "grid_spec" 
+   time_sampling     : "all" 
+   time_method       : .false. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "dynamics" 
+   field_name        : "grid_lont" 
+   output_name       : "grid_lont" 
+   file_name         : "grid_spec" 
+   time_sampling     : "all" 
+   time_method       : .false. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "dynamics" 
+   field_name        : "grid_latt" 
+   output_name       : "grid_latt" 
+   file_name         : "grid_spec" 
+   time_sampling     : "all" 
+   time_method       : .false. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "dynamics" 
+   field_name        : "area" 
+   output_name       : "area" 
+   file_name         : "grid_spec" 
+   time_sampling     : "all" 
+   time_method       : .false. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "dynamics" 
+   field_name        : "bk" 
+   output_name       : "bk" 
+   file_name         : "grid_spec" 
+   time_sampling     : "all" 
+   time_method       : .false. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "dynamics" 
+   field_name        : "pk" 
+   output_name       : "pk" 
+   file_name         : "grid_spec" 
+   time_sampling     : "all" 
+   time_method       : .false. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "flux" 
+   field_name        : "land_mask" 
+   output_name       : "land_mask" 
+   file_name         : "grid_spec" 
+   time_sampling     : "all" 
+   time_method       : .false. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "dynamics" 
+   field_name        : "zsurf" 
+   output_name       : "zsurf" 
+   file_name         : "grid_spec" 
+   time_sampling     : "all" 
+   time_method       : .false. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "dynamics" 
+   field_name        : "ps" 
+   output_name       : "ps" 
+   file_name         : "atmos_4xdaily" 
+   time_sampling     : "all" 
+   time_method       : .false. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "dynamics" 
+   field_name        : "pv350" 
+   output_name       : "pv350" 
+   file_name         : "atmos_4xdaily" 
+   time_sampling     : "all" 
+   time_method       : .false. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "dynamics" 
+   field_name        : "slp" 
+   output_name       : "slp_dyn" 
+   file_name         : "atmos_4xdaily" 
+   time_sampling     : "all" 
+   time_method       : .false. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "dynamics" 
+   field_name        : "tm" 
+   output_name       : "tm" 
+   file_name         : "atmos_4xdaily" 
+   time_sampling     : "all" 
+   time_method       : .false. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "dynamics" 
+   field_name        : "u200" 
+   output_name       : "u200" 
+   file_name         : "atmos_4xdaily" 
+   time_sampling     : "all" 
+   time_method       : .false. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "dynamics" 
+   field_name        : "u850" 
+   output_name       : "u850" 
+   file_name         : "atmos_4xdaily" 
+   time_sampling     : "all" 
+   time_method       : .false. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "dynamics" 
+   field_name        : "v200" 
+   output_name       : "v200" 
+   file_name         : "atmos_4xdaily" 
+   time_sampling     : "all" 
+   time_method       : .false. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "dynamics" 
+   field_name        : "v300" 
+   output_name       : "v300" 
+   file_name         : "atmos_4xdaily" 
+   time_sampling     : "all" 
+   time_method       : .false. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "dynamics" 
+   field_name        : "v850" 
+   output_name       : "v850" 
+   file_name         : "atmos_4xdaily" 
+   time_sampling     : "all" 
+   time_method       : .false. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "dynamics" 
+   field_name        : "vort850" 
+   output_name       : "vort850" 
+   file_name         : "atmos_4xdaily" 
+   time_sampling     : "all" 
+   time_method       : .false. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "dynamics" 
+   field_name        : "z300" 
+   output_name       : "z300" 
+   file_name         : "atmos_4xdaily" 
+   time_sampling     : "all" 
+   time_method       : .false. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "dynamics" 
+   field_name        : "z500" 
+   output_name       : "z500" 
+   file_name         : "atmos_4xdaily" 
+   time_sampling     : "all" 
+   time_method       : .false. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "dynamics" 
+   field_name        : "z850" 
+   output_name       : "z850" 
+   file_name         : "atmos_4xdaily" 
+   time_sampling     : "all" 
+   time_method       : .false. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "flux" 
+   field_name        : "q_ref" 
+   output_name       : "q_ref" 
+   file_name         : "atmos_4xdaily" 
+   time_sampling     : "all" 
+   time_method       : .false. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "flux" 
+   field_name        : "slp" 
+   output_name       : "slp" 
+   file_name         : "atmos_4xdaily" 
+   time_sampling     : "all" 
+   time_method       : .false. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "flux" 
+   field_name        : "t_ref" 
+   output_name       : "t_ref" 
+   file_name         : "atmos_4xdaily" 
+   time_sampling     : "all" 
+   time_method       : .false. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "flux" 
+   field_name        : "u_ref" 
+   output_name       : "u_ref" 
+   file_name         : "atmos_4xdaily" 
+   time_sampling     : "all" 
+   time_method       : .false. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "flux" 
+   field_name        : "v_ref" 
+   output_name       : "v_ref" 
+   file_name         : "atmos_4xdaily" 
+   time_sampling     : "all" 
+   time_method       : .false. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "moist" 
+   field_name        : "cape" 
+   output_name       : "cape" 
+   file_name         : "atmos_4xdaily" 
+   time_sampling     : "all" 
+   time_method       : .false. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "moist" 
+   field_name        : "cin" 
+   output_name       : "cin" 
+   file_name         : "atmos_4xdaily" 
+   time_sampling     : "all" 
+   time_method       : .false. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "dynamics" 
+   field_name        : "ps" 
+   output_name       : "ps" 
+   file_name         : "atmos_4xdaily_avg" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "dynamics" 
+   field_name        : "vort200" 
+   output_name       : "vort200" 
+   file_name         : "atmos_4xdaily_avg" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "flux" 
+   field_name        : "evap" 
+   output_name       : "evap" 
+   file_name         : "atmos_4xdaily_avg" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "flux" 
+   field_name        : "wind_ref" 
+   output_name       : "wind_ref" 
+   file_name         : "atmos_4xdaily_avg" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "moist" 
+   field_name        : "precip" 
+   output_name       : "precip" 
+   file_name         : "atmos_4xdaily_avg" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "moist" 
+   field_name        : "snow_tot" 
+   output_name       : "snow_tot" 
+   file_name         : "atmos_4xdaily_avg" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "moist" 
+   field_name        : "WVP" 
+   output_name       : "WVP" 
+   file_name         : "atmos_4xdaily_avg" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "dynamics" 
+   field_name        : "pv350" 
+   output_name       : "pv350" 
+   file_name         : "atmos_daily" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "dynamics" 
+   field_name        : "z200" 
+   output_name       : "z200" 
+   file_name         : "atmos_daily" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "dynamics" 
+   field_name        : "z250" 
+   output_name       : "z250" 
+   file_name         : "atmos_daily" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "dynamics" 
+   field_name        : "z500" 
+   output_name       : "z500" 
+   file_name         : "atmos_daily" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "dynamics" 
+   field_name        : "z700" 
+   output_name       : "z700" 
+   file_name         : "atmos_daily" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "dynamics" 
+   field_name        : "z850" 
+   output_name       : "z850" 
+   file_name         : "atmos_daily" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "dynamics" 
+   field_name        : "z925" 
+   output_name       : "z925" 
+   file_name         : "atmos_daily" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "dynamics" 
+   field_name        : "ps" 
+   output_name       : "ps" 
+   file_name         : "atmos_daily" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "dynamics" 
+   field_name        : "q200" 
+   output_name       : "q200" 
+   file_name         : "atmos_daily" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "dynamics" 
+   field_name        : "q250" 
+   output_name       : "q250" 
+   file_name         : "atmos_daily" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "dynamics" 
+   field_name        : "q500" 
+   output_name       : "q500" 
+   file_name         : "atmos_daily" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "dynamics" 
+   field_name        : "q700" 
+   output_name       : "q700" 
+   file_name         : "atmos_daily" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "dynamics" 
+   field_name        : "q850" 
+   output_name       : "q850" 
+   file_name         : "atmos_daily" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "dynamics" 
+   field_name        : "q925" 
+   output_name       : "q925" 
+   file_name         : "atmos_daily" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "dynamics" 
+   field_name        : "slp" 
+   output_name       : "slp_dyn" 
+   file_name         : "atmos_daily" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "dynamics" 
+   field_name        : "t200" 
+   output_name       : "t200" 
+   file_name         : "atmos_daily" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "dynamics" 
+   field_name        : "t250" 
+   output_name       : "t250" 
+   file_name         : "atmos_daily" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "dynamics" 
+   field_name        : "t500" 
+   output_name       : "t500" 
+   file_name         : "atmos_daily" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "dynamics" 
+   field_name        : "t700" 
+   output_name       : "t700" 
+   file_name         : "atmos_daily" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "dynamics" 
+   field_name        : "t850" 
+   output_name       : "t850" 
+   file_name         : "atmos_daily" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "dynamics" 
+   field_name        : "t925" 
+   output_name       : "t925" 
+   file_name         : "atmos_daily" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "dynamics" 
+   field_name        : "u200" 
+   output_name       : "u200" 
+   file_name         : "atmos_daily" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "dynamics" 
+   field_name        : "u250" 
+   output_name       : "u250" 
+   file_name         : "atmos_daily" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "dynamics" 
+   field_name        : "u50" 
+   output_name       : "u50" 
+   file_name         : "atmos_daily" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "dynamics" 
+   field_name        : "u500" 
+   output_name       : "u500" 
+   file_name         : "atmos_daily" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "dynamics" 
+   field_name        : "u700" 
+   output_name       : "u700" 
+   file_name         : "atmos_daily" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "dynamics" 
+   field_name        : "u850" 
+   output_name       : "u850" 
+   file_name         : "atmos_daily" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "dynamics" 
+   field_name        : "u925" 
+   output_name       : "u925" 
+   file_name         : "atmos_daily" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "dynamics" 
+   field_name        : "v200" 
+   output_name       : "v200" 
+   file_name         : "atmos_daily" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "dynamics" 
+   field_name        : "v250" 
+   output_name       : "v250" 
+   file_name         : "atmos_daily" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "dynamics" 
+   field_name        : "v500" 
+   output_name       : "v500" 
+   file_name         : "atmos_daily" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "dynamics" 
+   field_name        : "v700" 
+   output_name       : "v700" 
+   file_name         : "atmos_daily" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "dynamics" 
+   field_name        : "v850" 
+   output_name       : "v850" 
+   file_name         : "atmos_daily" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "dynamics" 
+   field_name        : "v925" 
+   output_name       : "v925" 
+   file_name         : "atmos_daily" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "dynamics" 
+   field_name        : "vort200" 
+   output_name       : "vort200" 
+   file_name         : "atmos_daily" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "dynamics" 
+   field_name        : "vort500" 
+   output_name       : "vort500" 
+   file_name         : "atmos_daily" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "flux" 
+   field_name        : "evap" 
+   output_name       : "evap" 
+   file_name         : "atmos_daily" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "flux" 
+   field_name        : "q_ref" 
+   output_name       : "q_ref" 
+   file_name         : "atmos_daily" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "flux" 
+   field_name        : "slp" 
+   output_name       : "slp" 
+   file_name         : "atmos_daily" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "flux" 
+   field_name        : "rh_ref" 
+   output_name       : "rh_ref" 
+   file_name         : "atmos_daily" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "flux" 
+   field_name        : "t_ref" 
+   output_name       : "t_ref" 
+   file_name         : "atmos_daily" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "flux" 
+   field_name        : "t_ref" 
+   output_name       : "t_ref_max" 
+   file_name         : "atmos_daily" 
+   time_sampling     : "all" 
+   time_method       : max 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "flux" 
+   field_name        : "t_ref" 
+   output_name       : "t_ref_min" 
+   file_name         : "atmos_daily" 
+   time_sampling     : "all" 
+   time_method       : min 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "flux" 
+   field_name        : "t_surf" 
+   output_name       : "t_surf" 
+   file_name         : "atmos_daily" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "flux" 
+   field_name        : "tau_x" 
+   output_name       : "tau_x" 
+   file_name         : "atmos_daily" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "flux" 
+   field_name        : "tau_y" 
+   output_name       : "tau_y" 
+   file_name         : "atmos_daily" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "flux" 
+   field_name        : "u_ref" 
+   output_name       : "u_ref" 
+   file_name         : "atmos_daily" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "flux" 
+   field_name        : "v_ref" 
+   output_name       : "v_ref" 
+   file_name         : "atmos_daily" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "moist" 
+   field_name        : "WVP" 
+   output_name       : "WVP" 
+   file_name         : "atmos_daily" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "moist" 
+   field_name        : "prec_ls" 
+   output_name       : "prec_ls" 
+   file_name         : "atmos_daily" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "moist" 
+   field_name        : "precip" 
+   output_name       : "precip" 
+   file_name         : "atmos_daily" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "moist" 
+   field_name        : "snow_ls" 
+   output_name       : "snow_ls" 
+   file_name         : "atmos_daily" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "moist" 
+   field_name        : "snow_tot" 
+   output_name       : "snow_tot" 
+   file_name         : "atmos_daily" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "radiation" 
+   field_name        : "lwdn_sfc" 
+   output_name       : "lwdn_sfc" 
+   file_name         : "atmos_daily" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "radiation" 
+   field_name        : "lwup_sfc" 
+   output_name       : "lwup_sfc" 
+   file_name         : "atmos_daily" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "radiation" 
+   field_name        : "olr" 
+   output_name       : "olr" 
+   file_name         : "atmos_daily" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "radiation" 
+   field_name        : "swdn_sfc" 
+   output_name       : "swdn_sfc" 
+   file_name         : "atmos_daily" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "flux" 
+   field_name        : "wind_ref" 
+   output_name       : "wind_ref" 
+   file_name         : "atmos_daily" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "cloudrad" 
+   field_name        : "high_cld_amt" 
+   output_name       : "high_cld_amt" 
+   file_name         : "atmos_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "cloudrad" 
+   field_name        : "low_cld_amt" 
+   output_name       : "low_cld_amt" 
+   file_name         : "atmos_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "cloudrad" 
+   field_name        : "mid_cld_amt" 
+   output_name       : "mid_cld_amt" 
+   file_name         : "atmos_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "cloudrad" 
+   field_name        : "tot_cld_amt" 
+   output_name       : "tot_cld_amt" 
+   file_name         : "atmos_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "dynamics" 
+   field_name        : "bk" 
+   output_name       : "bk" 
+   file_name         : "atmos_month" 
+   time_sampling     : "all" 
+   time_method       : .false. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "dynamics" 
+   field_name        : "omega" 
+   output_name       : "omega" 
+   file_name         : "atmos_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "dynamics" 
+   field_name        : "pk" 
+   output_name       : "pk" 
+   file_name         : "atmos_month" 
+   time_sampling     : "all" 
+   time_method       : .false. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "dynamics" 
+   field_name        : "ps" 
+   output_name       : "ps" 
+   file_name         : "atmos_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "dynamics" 
+   field_name        : "slp" 
+   output_name       : "slp_dyn" 
+   file_name         : "atmos_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "dynamics" 
+   field_name        : "sphum" 
+   output_name       : "sphum" 
+   file_name         : "atmos_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "dynamics" 
+   field_name        : "temp" 
+   output_name       : "temp" 
+   file_name         : "atmos_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "dynamics" 
+   field_name        : "ucomp" 
+   output_name       : "ucomp" 
+   file_name         : "atmos_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "dynamics" 
+   field_name        : "uq" 
+   output_name       : "uq" 
+   file_name         : "atmos_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "dynamics" 
+   field_name        : "uq_vi" 
+   output_name       : "uq_vi" 
+   file_name         : "atmos_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "dynamics" 
+   field_name        : "ut" 
+   output_name       : "ut" 
+   file_name         : "atmos_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "dynamics" 
+   field_name        : "ut_vi" 
+   output_name       : "ut_vi" 
+   file_name         : "atmos_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "dynamics" 
+   field_name        : "uu" 
+   output_name       : "uu" 
+   file_name         : "atmos_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "dynamics" 
+   field_name        : "uu_vi" 
+   output_name       : "uu_vi" 
+   file_name         : "atmos_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "dynamics" 
+   field_name        : "uv" 
+   output_name       : "uv" 
+   file_name         : "atmos_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "dynamics" 
+   field_name        : "uv_vi" 
+   output_name       : "uv_vi" 
+   file_name         : "atmos_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "dynamics" 
+   field_name        : "vcomp" 
+   output_name       : "vcomp" 
+   file_name         : "atmos_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "dynamics" 
+   field_name        : "vort850" 
+   output_name       : "vort850" 
+   file_name         : "atmos_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "dynamics" 
+   field_name        : "vq" 
+   output_name       : "vq" 
+   file_name         : "atmos_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "dynamics" 
+   field_name        : "vq_vi" 
+   output_name       : "vq_vi" 
+   file_name         : "atmos_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "dynamics" 
+   field_name        : "vt" 
+   output_name       : "vt" 
+   file_name         : "atmos_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "dynamics" 
+   field_name        : "vt_vi" 
+   output_name       : "vt_vi" 
+   file_name         : "atmos_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "dynamics" 
+   field_name        : "vv" 
+   output_name       : "vv" 
+   file_name         : "atmos_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "dynamics" 
+   field_name        : "vv_vi" 
+   output_name       : "vv_vi" 
+   file_name         : "atmos_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "dynamics" 
+   field_name        : "z200" 
+   output_name       : "z200" 
+   file_name         : "atmos_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "dynamics" 
+   field_name        : "zsurf" 
+   output_name       : "zsurf" 
+   file_name         : "atmos_month" 
+   time_sampling     : "all" 
+   time_method       : .false. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "flux" 
+   field_name        : "evap" 
+   output_name       : "evap" 
+   file_name         : "atmos_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "flux" 
+   field_name        : "ice_mask" 
+   output_name       : "ice_mask" 
+   file_name         : "atmos_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "flux" 
+   field_name        : "land_mask" 
+   output_name       : "land_mask" 
+   file_name         : "atmos_month" 
+   time_sampling     : "all" 
+   time_method       : .false. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "flux" 
+   field_name        : "lwflx" 
+   output_name       : "lwflx" 
+   file_name         : "atmos_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "flux" 
+   field_name        : "rh_ref" 
+   output_name       : "rh_ref" 
+   file_name         : "atmos_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "flux" 
+   field_name        : "shflx" 
+   output_name       : "shflx" 
+   file_name         : "atmos_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "flux" 
+   field_name        : "t_ref" 
+   output_name       : "t_ref" 
+   file_name         : "atmos_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "flux" 
+   field_name        : "t_ref" 
+   output_name       : "t_ref_max" 
+   file_name         : "atmos_month" 
+   time_sampling     : "all" 
+   time_method       : max 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "flux" 
+   field_name        : "t_ref" 
+   output_name       : "t_ref_min" 
+   file_name         : "atmos_month" 
+   time_sampling     : "all" 
+   time_method       : min 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "flux" 
+   field_name        : "t_surf" 
+   output_name       : "t_surf" 
+   file_name         : "atmos_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "flux" 
+   field_name        : "tau_x" 
+   output_name       : "tau_x" 
+   file_name         : "atmos_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "flux" 
+   field_name        : "tau_y" 
+   output_name       : "tau_y" 
+   file_name         : "atmos_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "flux" 
+   field_name        : "u_ref" 
+   output_name       : "u_ref" 
+   file_name         : "atmos_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "flux" 
+   field_name        : "v_ref" 
+   output_name       : "v_ref" 
+   file_name         : "atmos_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "moist" 
+   field_name        : "IWP" 
+   output_name       : "IWP" 
+   file_name         : "atmos_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "moist" 
+   field_name        : "LWP" 
+   output_name       : "LWP" 
+   file_name         : "atmos_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "moist" 
+   field_name        : "WVP" 
+   output_name       : "WVP" 
+   file_name         : "atmos_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "moist" 
+   field_name        : "prec_conv" 
+   output_name       : "prec_conv" 
+   file_name         : "atmos_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "moist" 
+   field_name        : "prec_ls" 
+   output_name       : "prec_ls" 
+   file_name         : "atmos_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "moist" 
+   field_name        : "precip" 
+   output_name       : "precip" 
+   file_name         : "atmos_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "moist" 
+   field_name        : "rh" 
+   output_name       : "rh" 
+   file_name         : "atmos_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "moist" 
+   field_name        : "snow_conv" 
+   output_name       : "snow_conv" 
+   file_name         : "atmos_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "moist" 
+   field_name        : "snow_ls" 
+   output_name       : "snow_ls" 
+   file_name         : "atmos_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "moist" 
+   field_name        : "snow_tot" 
+   output_name       : "snow_tot" 
+   file_name         : "atmos_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "radiation" 
+   field_name        : "alb_sfc" 
+   output_name       : "alb_sfc" 
+   file_name         : "atmos_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "radiation" 
+   field_name        : "lwdn_sfc" 
+   output_name       : "lwdn_sfc" 
+   file_name         : "atmos_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "radiation" 
+   field_name        : "lwdn_sfc_clr" 
+   output_name       : "lwdn_sfc_clr" 
+   file_name         : "atmos_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "radiation" 
+   field_name        : "lwup_sfc" 
+   output_name       : "lwup_sfc" 
+   file_name         : "atmos_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "radiation" 
+   field_name        : "lwup_sfc_clr" 
+   output_name       : "lwup_sfc_clr" 
+   file_name         : "atmos_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "radiation" 
+   field_name        : "netrad_toa" 
+   output_name       : "netrad_toa" 
+   file_name         : "atmos_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "radiation" 
+   field_name        : "olr" 
+   output_name       : "olr" 
+   file_name         : "atmos_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "radiation" 
+   field_name        : "olr_clr" 
+   output_name       : "olr_clr" 
+   file_name         : "atmos_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "radiation" 
+   field_name        : "qo3_col" 
+   output_name       : "qo3_col" 
+   file_name         : "atmos_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "radiation" 
+   field_name        : "swdn_sfc" 
+   output_name       : "swdn_sfc" 
+   file_name         : "atmos_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "radiation" 
+   field_name        : "swdn_sfc_clr" 
+   output_name       : "swdn_sfc_clr" 
+   file_name         : "atmos_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "radiation" 
+   field_name        : "swdn_toa" 
+   output_name       : "swdn_toa" 
+   file_name         : "atmos_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "radiation" 
+   field_name        : "swdn_toa_clr" 
+   output_name       : "swdn_toa_clr" 
+   file_name         : "atmos_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "radiation" 
+   field_name        : "swup_sfc" 
+   output_name       : "swup_sfc" 
+   file_name         : "atmos_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "radiation" 
+   field_name        : "swup_sfc_clr" 
+   output_name       : "swup_sfc_clr" 
+   file_name         : "atmos_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "radiation" 
+   field_name        : "swup_toa" 
+   output_name       : "swup_toa" 
+   file_name         : "atmos_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "radiation" 
+   field_name        : "swup_toa_clr" 
+   output_name       : "swup_toa_clr" 
+   file_name         : "atmos_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "flux" 
+   field_name        : "wind_ref" 
+   output_name       : "wind_ref" 
+   file_name         : "atmos_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "dynamics" 
+   field_name        : "area" 
+   output_name       : "area" 
+   file_name         : "atmos_month_aer" 
+   time_sampling     : "all" 
+   time_method       : .false. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "dynamics" 
+   field_name        : "bk" 
+   output_name       : "bk" 
+   file_name         : "atmos_month_aer" 
+   time_sampling     : "all" 
+   time_method       : .false. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "dynamics" 
+   field_name        : "pk" 
+   output_name       : "pk" 
+   file_name         : "atmos_month_aer" 
+   time_sampling     : "all" 
+   time_method       : .false. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "dynamics" 
+   field_name        : "zsurf" 
+   output_name       : "zsurf" 
+   file_name         : "atmos_month_aer" 
+   time_sampling     : "all" 
+   time_method       : .false. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "flux" 
+   field_name        : "land_mask" 
+   output_name       : "land_mask" 
+   file_name         : "atmos_month_aer" 
+   time_sampling     : "all" 
+   time_method       : .false. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "dynamics" 
+   field_name        : "ps" 
+   output_name       : "ps" 
+   file_name         : "atmos_month_aer" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "dynamics" 
+   field_name        : "temp" 
+   output_name       : "temp" 
+   file_name         : "atmos_month_aer" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "moist" 
+   field_name        : "rh" 
+   output_name       : "rh" 
+   file_name         : "atmos_month_aer" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "radiation" 
+   field_name        : "so4" 
+   output_name       : "sulfate" 
+   file_name         : "atmos_month_aer" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "radiation" 
+   field_name        : "so4_col" 
+   output_name       : "sulfate_col" 
+   file_name         : "atmos_month_aer" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "radiation" 
+   field_name        : "small_dust" 
+   output_name       : "sm_dust" 
+   file_name         : "atmos_month_aer" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "radiation" 
+   field_name        : "small_dust_col" 
+   output_name       : "sm_dust_col" 
+   file_name         : "atmos_month_aer" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "radiation" 
+   field_name        : "large_dust" 
+   output_name       : "lg_dust" 
+   file_name         : "atmos_month_aer" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "radiation" 
+   field_name        : "large_dust_col" 
+   output_name       : "lg_dust_col" 
+   file_name         : "atmos_month_aer" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "radiation" 
+   field_name        : "sea_salt" 
+   output_name       : "salt" 
+   file_name         : "atmos_month_aer" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "radiation" 
+   field_name        : "sea_salt_col" 
+   output_name       : "salt_col" 
+   file_name         : "atmos_month_aer" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "radiation" 
+   field_name        : "black_carbon" 
+   output_name       : "blk_crb" 
+   file_name         : "atmos_month_aer" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "radiation" 
+   field_name        : "black_carbon_col" 
+   output_name       : "blk_crb_col" 
+   file_name         : "atmos_month_aer" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "radiation" 
+   field_name        : "organic_carbon" 
+   output_name       : "org_crb" 
+   file_name         : "atmos_month_aer" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "radiation" 
+   field_name        : "organic_carbon_col" 
+   output_name       : "org_crb_col" 
+   file_name         : "atmos_month_aer" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "radiation" 
+   field_name        : "aerosol_col" 
+   output_name       : "aer_c" 
+   file_name         : "atmos_month_aer" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "radiation" 
+   field_name        : "pm2.5" 
+   output_name       : "pm2.5" 
+   file_name         : "atmos_month_aer" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "radiation" 
+   field_name        : "so4_exopdep_col_vis" 
+   output_name       : "sulfate_ex_c_vs" 
+   file_name         : "atmos_month_aer" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "radiation" 
+   field_name        : "so4_abopdep_col_vis" 
+   output_name       : "sulfate_ab_c_vs" 
+   file_name         : "atmos_month_aer" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "radiation" 
+   field_name        : "so4_abopdep_vis" 
+   output_name       : "sulfate_ab_vs" 
+   file_name         : "atmos_month_aer" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "radiation" 
+   field_name        : "small_dust_exopdep_col_vis" 
+   output_name       : "sm_dst_ex_c_vs" 
+   file_name         : "atmos_month_aer" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "radiation" 
+   field_name        : "large_dust_exopdep_col_vis" 
+   output_name       : "lg_dst_ex_c_vs" 
+   file_name         : "atmos_month_aer" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "radiation" 
+   field_name        : "dust_exopdep_col_vis" 
+   output_name       : "dust_ex_c_vs" 
+   file_name         : "atmos_month_aer" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "radiation" 
+   field_name        : "black_carbon_exopdep_col_vis" 
+   output_name       : "blk_crb_ex_c_vs" 
+   file_name         : "atmos_month_aer" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "radiation" 
+   field_name        : "organic_carbon_exopdep_col_vis" 
+   output_name       : "org_crb_ex_c_vs" 
+   file_name         : "atmos_month_aer" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "radiation" 
+   field_name        : "sea_salt_exopdep_col_vis" 
+   output_name       : "salt_ex_c_vs" 
+   file_name         : "atmos_month_aer" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "radiation" 
+   field_name        : "aerosol_exopdep_col_vis" 
+   output_name       : "aer_ex_c_vs" 
+   file_name         : "atmos_month_aer" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "radiation" 
+   field_name        : "aerosol_exopdep_vis" 
+   output_name       : "aer_ex_vs" 
+   file_name         : "atmos_month_aer" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "radiation" 
+   field_name        : "dust_abopdep_col_vis" 
+   output_name       : "dust_ab_c_vs" 
+   file_name         : "atmos_month_aer" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "radiation" 
+   field_name        : "dust_abopdep_vis" 
+   output_name       : "dust_ab_vs" 
+   file_name         : "atmos_month_aer" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "radiation" 
+   field_name        : "small_dust_abopdep_col_vis" 
+   output_name       : "sm_dst_ab_c_vs" 
+   file_name         : "atmos_month_aer" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "radiation" 
+   field_name        : "large_dust_abopdep_col_vis" 
+   output_name       : "lg_dst_ab_c_vs" 
+   file_name         : "atmos_month_aer" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "radiation" 
+   field_name        : "black_carbon_abopdep_col_vis" 
+   output_name       : "blk_crb_ab_c_vs" 
+   file_name         : "atmos_month_aer" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "radiation" 
+   field_name        : "organic_carbon_abopdep_col_vis" 
+   output_name       : "org_crb_ab_c_vs" 
+   file_name         : "atmos_month_aer" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "radiation" 
+   field_name        : "aerosol_abopdep_col_vis" 
+   output_name       : "aer_ab_c_vs" 
+   file_name         : "atmos_month_aer" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "radiation" 
+   field_name        : "aerosol_abopdep_vis" 
+   output_name       : "aer_ab_vs" 
+   file_name         : "atmos_month_aer" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "radiation" 
+   field_name        : "rrvch4" 
+   output_name       : "rrvch4" 
+   file_name         : "atmos_scalar" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "radiation" 
+   field_name        : "rrvco2" 
+   output_name       : "rrvco2" 
+   file_name         : "atmos_scalar" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "radiation" 
+   field_name        : "rrvf11" 
+   output_name       : "rrvf11" 
+   file_name         : "atmos_scalar" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "radiation" 
+   field_name        : "rrvf113" 
+   output_name       : "rrvf113" 
+   file_name         : "atmos_scalar" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "radiation" 
+   field_name        : "rrvf12" 
+   output_name       : "rrvf12" 
+   file_name         : "atmos_scalar" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "radiation" 
+   field_name        : "rrvf22" 
+   output_name       : "rrvf22" 
+   file_name         : "atmos_scalar" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "radiation" 
+   field_name        : "rrvn2o" 
+   output_name       : "rrvn2o" 
+   file_name         : "atmos_scalar" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "radiation" 
+   field_name        : "solar_constant" 
+   output_name       : "solar_constant" 
+   file_name         : "atmos_scalar" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "land_sg" 
+   field_name        : "cell_area" 
+   output_name       : "cell_area" 
+   file_name         : "land_static_sg" 
+   time_sampling     : "all" 
+   time_method       : .false. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "land" 
+   field_name        : "area_lake" 
+   output_name       : "lake_area" 
+   file_name         : "land_static" 
+   time_sampling     : "all" 
+   time_method       : .false. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "land" 
+   field_name        : "area_land" 
+   output_name       : "land_area" 
+   file_name         : "land_static" 
+   time_sampling     : "all" 
+   time_method       : .false. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "land" 
+   field_name        : "area_soil" 
+   output_name       : "soil_area" 
+   file_name         : "land_static" 
+   time_sampling     : "all" 
+   time_method       : .false. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "land" 
+   field_name        : "cell_area" 
+   output_name       : "cell_area" 
+   file_name         : "land_static" 
+   time_sampling     : "all" 
+   time_method       : .false. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "land" 
+   field_name        : "frac_soil" 
+   output_name       : "frac_soil" 
+   file_name         : "land_static" 
+   time_sampling     : "all" 
+   time_method       : .false. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "land" 
+   field_name        : "geolat_t" 
+   output_name       : "geolat_t" 
+   file_name         : "land_static" 
+   time_sampling     : "all" 
+   time_method       : .false. 
+   spatial_ops       : "none" 
+   pack              : 1 
+
+ - module_name       : "land" 
+   field_name        : "geolon_t" 
+   output_name       : "geolon_t" 
+   file_name         : "land_static" 
+   time_sampling     : "all" 
+   time_method       : .false. 
+   spatial_ops       : "none" 
+   pack              : 1 
+
+ - module_name       : "land" 
+   field_name        : "land_frac" 
+   output_name       : "land_frac" 
+   file_name         : "land_static" 
+   time_sampling     : "all" 
+   time_method       : .false. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "land" 
+   field_name        : "precip" 
+   output_name       : "precip" 
+   file_name         : "land_daily" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "land" 
+   field_name        : "snow" 
+   output_name       : "snow" 
+   file_name         : "land_daily" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "land" 
+   field_name        : "runf" 
+   output_name       : "runf" 
+   file_name         : "land_daily" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "land" 
+   field_name        : "swdn_dif" 
+   output_name       : "swdn_dif" 
+   file_name         : "land_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "land" 
+   field_name        : "swdn_dir" 
+   output_name       : "swdn_dir" 
+   file_name         : "land_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "land" 
+   field_name        : "swup_dif" 
+   output_name       : "swup_dif" 
+   file_name         : "land_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "land" 
+   field_name        : "swup_dir" 
+   output_name       : "swup_dir" 
+   file_name         : "land_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "flux_land" 
+   field_name        : "t_ref" 
+   output_name       : "t_ref" 
+   file_name         : "land_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "land" 
+   field_name        : "FWS" 
+   output_name       : "FWS" 
+   file_name         : "land_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "land" 
+   field_name        : "LWS" 
+   output_name       : "LWS" 
+   file_name         : "land_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "land" 
+   field_name        : "water_lake" 
+   output_name       : "water_lake" 
+   file_name         : "land_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "land" 
+   field_name        : "water_soil" 
+   output_name       : "water_soil" 
+   file_name         : "land_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "river" 
+   field_name        : "FWSr" 
+   output_name       : "FWSr" 
+   file_name         : "river_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "river" 
+   field_name        : "LWSr" 
+   output_name       : "LWSr" 
+   file_name         : "river_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "cmor_land" 
+   field_name        : "cSoil" 
+   output_name       : "cSoil" 
+   file_name         : "land_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "cmor_land" 
+   field_name        : "cSoil_crop" 
+   output_name       : "cSoil_crop" 
+   file_name         : "land_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "cmor_land" 
+   field_name        : "cSoil_ntrl" 
+   output_name       : "cSoil_ntrl" 
+   file_name         : "land_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "cmor_land" 
+   field_name        : "cSoil_past" 
+   output_name       : "cSoil_past" 
+   file_name         : "land_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "cmor_land" 
+   field_name        : "cSoil_scnd" 
+   output_name       : "cSoil_scnd" 
+   file_name         : "land_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "vegn" 
+   field_name        : "btot" 
+   output_name       : "btot" 
+   file_name         : "land_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "vegn" 
+   field_name        : "btot_crop" 
+   output_name       : "btot_crop" 
+   file_name         : "land_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "vegn" 
+   field_name        : "btot_ntrl" 
+   output_name       : "btot_ntrl" 
+   file_name         : "land_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "vegn" 
+   field_name        : "btot_past" 
+   output_name       : "btot_past" 
+   file_name         : "land_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "vegn" 
+   field_name        : "btot_scnd" 
+   output_name       : "btot_scnd" 
+   file_name         : "land_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "vegn" 
+   field_name        : "harv_pool" 
+   output_name       : "harv_pool" 
+   file_name         : "land_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "vegn" 
+   field_name        : "harv_pool_crop" 
+   output_name       : "harv_pool_crop" 
+   file_name         : "land_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "vegn" 
+   field_name        : "harv_pool_past" 
+   output_name       : "harv_pool_past" 
+   file_name         : "land_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "vegn" 
+   field_name        : "harv_pool_scnd" 
+   output_name       : "harv_pool_scnd" 
+   file_name         : "land_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "vegn" 
+   field_name        : "harv_rate" 
+   output_name       : "harv_rate" 
+   file_name         : "land_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "vegn" 
+   field_name        : "harv_rate_crop" 
+   output_name       : "harv_rate_crop" 
+   file_name         : "land_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "vegn" 
+   field_name        : "harv_rate_past" 
+   output_name       : "harv_rate_past" 
+   file_name         : "land_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "vegn" 
+   field_name        : "harv_rate_scnd" 
+   output_name       : "harv_rate_scnd" 
+   file_name         : "land_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "cmor_land" 
+   field_name        : "tws" 
+   output_name       : "tws" 
+   file_name         : "land_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "land" 
+   field_name        : "area" 
+   output_name       : "area" 
+   file_name         : "land_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "land" 
+   field_name        : "area_glac" 
+   output_name       : "glac_area" 
+   file_name         : "land_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "land" 
+   field_name        : "evap" 
+   output_name       : "evap_land" 
+   file_name         : "land_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "land" 
+   field_name        : "flw" 
+   output_name       : "flw" 
+   file_name         : "land_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "land" 
+   field_name        : "frac_glac" 
+   output_name       : "frac_glac" 
+   file_name         : "land_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "land" 
+   field_name        : "frac_lake" 
+   output_name       : "frac_lake" 
+   file_name         : "land_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "land" 
+   field_name        : "frunf" 
+   output_name       : "frunf" 
+   file_name         : "land_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "land" 
+   field_name        : "fsw" 
+   output_name       : "fsw" 
+   file_name         : "land_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "land" 
+   field_name        : "hevap" 
+   output_name       : "hevap" 
+   file_name         : "land_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "land" 
+   field_name        : "hprec" 
+   output_name       : "hprec" 
+   file_name         : "land_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "land" 
+   field_name        : "levapg" 
+   output_name       : "levapg" 
+   file_name         : "land_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "land" 
+   field_name        : "levapv" 
+   output_name       : "levapv" 
+   file_name         : "land_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "land" 
+   field_name        : "lwdn" 
+   output_name       : "lwdn" 
+   file_name         : "land_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "land" 
+   field_name        : "melt" 
+   output_name       : "melt" 
+   file_name         : "land_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "land" 
+   field_name        : "precip" 
+   output_name       : "precip" 
+   file_name         : "land_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "land" 
+   field_name        : "runf" 
+   output_name       : "runf" 
+   file_name         : "land_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "land" 
+   field_name        : "sens" 
+   output_name       : "sens" 
+   file_name         : "land_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "land" 
+   field_name        : "snow" 
+   output_name       : "snow" 
+   file_name         : "land_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "land" 
+   field_name        : "transp" 
+   output_name       : "transp" 
+   file_name         : "land_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "soil" 
+   field_name        : "soil_ice" 
+   output_name       : "soil_ice" 
+   file_name         : "land_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "soil" 
+   field_name        : "soil_liq" 
+   output_name       : "soil_liq" 
+   file_name         : "land_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "vegn" 
+   field_name        : "LAI" 
+   output_name       : "LAI" 
+   file_name         : "land_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "vegn" 
+   field_name        : "npp" 
+   output_name       : "npp" 
+   file_name         : "land_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "land" 
+   field_name        : "area_ntrl" 
+   output_name       : "ntrl_area" 
+   file_name         : "land_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "land" 
+   field_name        : "area_crop" 
+   output_name       : "crop_area" 
+   file_name         : "land_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "land" 
+   field_name        : "area_past" 
+   output_name       : "past_area" 
+   file_name         : "land_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "land" 
+   field_name        : "area_scnd" 
+   output_name       : "scnd_area" 
+   file_name         : "land_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "land" 
+   field_name        : "frac_ntrl" 
+   output_name       : "frac_ntrl" 
+   file_name         : "land_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "land" 
+   field_name        : "frac_crop" 
+   output_name       : "frac_crop" 
+   file_name         : "land_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "land" 
+   field_name        : "frac_past" 
+   output_name       : "frac_past" 
+   file_name         : "land_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "land" 
+   field_name        : "frac_scnd" 
+   output_name       : "frac_scnd" 
+   file_name         : "land_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "vegn" 
+   field_name        : "bwood_ntrl" 
+   output_name       : "ntrl_bwood" 
+   file_name         : "land_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "vegn" 
+   field_name        : "bwood_crop" 
+   output_name       : "crop_bwood" 
+   file_name         : "land_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "vegn" 
+   field_name        : "bwood_past" 
+   output_name       : "past_bwood" 
+   file_name         : "land_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "vegn" 
+   field_name        : "bwood_scnd" 
+   output_name       : "scnd_bwood" 
+   file_name         : "land_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "vegn" 
+   field_name        : "height" 
+   output_name       : "height" 
+   file_name         : "land_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "land" 
+   field_name        : "meltg_glac" 
+   output_name       : "meltg_glac" 
+   file_name         : "land_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "soil" 
+   field_name        : "soil_T" 
+   output_name       : "soil_T" 
+   file_name         : "land_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "lake" 
+   field_name        : "lake_T" 
+   output_name       : "lake_T" 
+   file_name         : "land_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "-1  -1 -1  -1 0 0.1" 
+   pack              : 2 
+
+ - module_name       : "land" 
+   field_name        : "LWSg_lake" 
+   output_name       : "LWSg_lake" 
+   file_name         : "land_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "land" 
+   field_name        : "FWSg_lake" 
+   output_name       : "FWSg_lake" 
+   file_name         : "land_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "land" 
+   field_name        : "LWSs_lake" 
+   output_name       : "LWSs_lake" 
+   file_name         : "land_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "land" 
+   field_name        : "T_snow_subs" 
+   output_name       : "T_snow_subs" 
+   file_name         : "land_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "land" 
+   field_name        : "LWS" 
+   output_name       : "LWS" 
+   file_name         : "land_month_inst" 
+   time_sampling     : "all" 
+   time_method       : .false. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "land" 
+   field_name        : "FWS" 
+   output_name       : "FWS" 
+   file_name         : "land_month_inst" 
+   time_sampling     : "all" 
+   time_method       : .false. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "land" 
+   field_name        : "HS" 
+   output_name       : "HS" 
+   file_name         : "land_month_inst" 
+   time_sampling     : "all" 
+   time_method       : .false. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "river" 
+   field_name        : "rv_basin" 
+   output_name       : "rv_basin" 
+   file_name         : "river_static" 
+   time_sampling     : "all" 
+   time_method       : .false. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "river" 
+   field_name        : "area_land" 
+   output_name       : "land_area" 
+   file_name         : "river_static" 
+   time_sampling     : "all" 
+   time_method       : .false. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "river" 
+   field_name        : "cell_area" 
+   output_name       : "cell_area" 
+   file_name         : "river_static" 
+   time_sampling     : "all" 
+   time_method       : .false. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "river" 
+   field_name        : "rv_o_h2o" 
+   output_name       : "rv_o_h2o" 
+   file_name         : "river_daily" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "river" 
+   field_name        : "LWSr" 
+   output_name       : "LWSr" 
+   file_name         : "river_month_inst" 
+   time_sampling     : "all" 
+   time_method       : .false. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "river" 
+   field_name        : "FWSr" 
+   output_name       : "FWSr" 
+   file_name         : "river_month_inst" 
+   time_sampling     : "all" 
+   time_method       : .false. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "river" 
+   field_name        : "HSr" 
+   output_name       : "HSr" 
+   file_name         : "river_month_inst" 
+   time_sampling     : "all" 
+   time_method       : .false. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "river" 
+   field_name        : "dis_heat" 
+   output_name       : "dis_heat" 
+   file_name         : "river_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "river" 
+   field_name        : "dis_ice" 
+   output_name       : "dis_ice" 
+   file_name         : "river_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "river" 
+   field_name        : "dis_liq" 
+   output_name       : "dis_liq" 
+   file_name         : "river_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "river" 
+   field_name        : "rv_i_h2o" 
+   output_name       : "rv_i_h2o" 
+   file_name         : "river_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "river" 
+   field_name        : "rv_i_ice" 
+   output_name       : "rv_i_ice" 
+   file_name         : "river_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "river" 
+   field_name        : "rv_i_het" 
+   output_name       : "rv_i_het" 
+   file_name         : "river_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "river" 
+   field_name        : "rv_o_h2o" 
+   output_name       : "rv_o_h2o" 
+   file_name         : "river_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "river" 
+   field_name        : "rv_o_ice" 
+   output_name       : "rv_o_ice" 
+   file_name         : "river_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+
+ - module_name       : "river" 
+   field_name        : "rv_o_het" 
+   output_name       : "rv_o_het" 
+   file_name         : "river_month" 
+   time_sampling     : "all" 
+   time_method       : .true. 
+   spatial_ops       : "none" 
+   pack              : 2 
+

@@ -56,6 +56,7 @@ class DiagTable :
                                       'base_hour'  : int,
                                       'base_minute': int,
                                       'base_second': int}
+        self.max_global_section = len(self.global_section_keys) - 1 #: minus title
 
         self.file_section = []
         self.file_section_keys = ['file_name',
@@ -82,6 +83,7 @@ class DiagTable :
                                     'file_duration'       : int,
                                     'file_duration_units' : str,
                                     'filename_time_bounds': str }
+        self.max_file_section = len(self.file_section_keys)
 
         self.field_section = []
         self.field_section_keys = ['module_name',
@@ -100,6 +102,7 @@ class DiagTable :
                                      'time_method'   : str,
                                      'spatial_ops'   : str,
                                      'pack'          : int }
+        self.max_field_section = len(self.field_section_keys)
 
         self.diag_table_content = []
 
@@ -150,7 +153,7 @@ class DiagTable :
                              " CHECK:            " + str(iline) + '\n' )
 
         #: rest are either going to be file or field section
-        for iline in self.diag_table_content[iline_count+1:] :
+        for iline in self.diag_table_content[iline_count:] :
             iline_count += 1
             if iline.strip() != '' and '#' not in iline.strip()[0] : #: if not blank line or comment
                 iline_list = iline.split('#')[0].split(',')          #:get rid of comment at the end

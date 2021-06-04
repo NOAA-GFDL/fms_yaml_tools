@@ -1,0 +1,9 @@
+---
+data_table:
+ - gridname          : "LND" 
+   fieldname_code    : "phot_co2" 
+   fieldname_file    : "co2" 
+   file_name         : "INPUT/co2_data.nc" 
+   interpol_method   : "bilinear" 
+   factor            : 1e-06 
+

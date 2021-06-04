@@ -10,8 +10,8 @@ SPEAR_c192_o1_Hist_AllForc_IC1921_Q50_ens_01_03
 "atmos_month_aer",       1,  "months",  1, "days", "time"
 "atmos_scalar",          1,  "months",  1, "days", "time"
 "ice_daily",             24, "hours",  1, "days", "time"
-"ice_month",              1, "months", 1, "days", "time",
-"iceberg_month",          1, "months", 1, "days", "time",
+"ice_month",              1, "months", 1, "days", "time"
+"iceberg_month",          1, "months", 1, "days", "time"
 "land_static",           -1, "months",  1, "days", "time"
 "land_daily",           24, "hours",  1, "days", "time"
 "land_month",             1, "months",  1, "days", "time"
