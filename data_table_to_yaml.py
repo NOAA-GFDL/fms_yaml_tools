@@ -1,6 +1,14 @@
 #!/usr/bin/python3.6
 
 import copy as cp
+from os import path
+import argparse
+
+
+#: parse user input
+parser = argparse.ArgumentParser(prog='data_table_to_yaml', description="converts data_table to yaml format")
+parser.add_argument('-f', type=str, help='data_table file' )
+in_data_table = parser.parse_args().f
 
 
 #: write '---' at top of the yaml file
@@ -8,7 +16,8 @@ def init_yaml_file(outfile='') :
     with open(outfile,'w') as myfile : myfile.write('---\n')
 
 
-#: section = [ [list1], [list2], [list3], ... ]
+#: section = [ list1, list2, list3, ... ]
+#: list1   = [ {key1:val1}, {key2:val2}, ... ]
 def write_yaml_sections(outfile='', section=[], header='') :
     with open(outfile, 'a+') as myfile :
         myfile.write( header + ':\n')
@@ -39,44 +48,48 @@ class DataType :
                                'lat_start',
                                'lat_end',
                                'region_type']
-
-        self.data_type_values = [ {'gridname' : str},
-                                  {'fieldname_code' : str},
-                                  {'fieldname_file' : str},
-                                  {'file_name' : str},
-                                  {'interpol_method' : str},
-                                  {'factor': float},
-                                  {'lon_start': float},
-                                  {'lon_end': float},
-                                  {'lat_start': float},
-                                  {'lat_end': float},
-                                  {'region_type': int} ]
+        self.data_type_values = {'gridname' : str,
+                                 'fieldname_code' : str,
+                                 'fieldname_file' : str,
+                                 'file_name' : str,
+                                 'interpol_method' : str,
+                                 'factor': float,
+                                 'lon_start': float,
+                                 'lon_end': float,
+                                 'lat_start': float,
+                                 'lat_end': float,
+                                 'region_type': int}
 
         self.data_table_content = []
 
+        #: check if data_table file exists
+        if not path.exists( self.data_table_file ) : exit( 'file '+self.data_table_file+' does not exist' )
+
+
     def read_data_table(self) :
-        if self.data_table_content != [] : self.data_table_content = []
-        iline_count = 0
-        with open(self.data_table_file, 'r') as myfile :
-            for iline in myfile.readlines() :
-                iline_count += 1
-                if iline.strip() != '' and '#' not in iline.strip()[0] :
-                    iline_list = iline.split(',')
-                    for i in range( len(iline_list) ) :
-                        try :
-                            myfunct= self.data_type_values[i][self.data_type_keys[i]]
-                            iline_list[i] = myfunct( iline_list[i].strip() )
-                        except :
-                            exit( '\nERROR in line ' + str(iline_count) + ": " + iline +
-                                  '\nCHECK element ' + str(iline_list[i]) )
-                self.data_table_content.append( cp.deepcopy(iline_list) )
+        with open( self.data_table_file, 'r' ) as myfile :
+            self.data_table_content = myfile.readlines()
 
 
     def parse_data_table(self) :
-        if self.data_table_content == [] : exit('somethings wrong')
-        for iline_list in self.data_table_content :
-            tmp_list = [ {self.data_type_keys[i]:iline_list[i]} for i in range(len(iline_list)) ]
-            self.data_type.append( cp.deepcopy(tmp_list) )
+        if self.data_table_content == [] : exit('ERROR:  data_table_content is empty')
+
+        iline_count = 0
+        for iline in self.data_table_content :
+            iline_count += 1
+            if iline.strip() != '' and '#' not in iline.strip()[0] :
+                iline_list = iline.split('#')[0].split(',') #: get rid of comment at the end of line
+                try :
+                    tmp_list = []
+                    for i in range(len(iline_list)) :
+                        mykey   = self.data_type_keys[i]
+                        myfunct = self.data_type_values[mykey]
+                        myval   = myfunct( iline_list[i].strip() )
+                        tmp_list.append( {mykey:myval} )
+                    self.data_type.append( cp.deepcopy(tmp_list) )
+                except :
+                    exit( '\nERROR in line # ' + str(iline_count) +
+                          '\nCHECK           ' + str(iline) )
 
 
     def read_and_parse_data_table(self) :
@@ -85,14 +98,16 @@ class DataType :
         self.parse_data_table()
 
 
-    def write_yaml( self ) :
+    def write_yaml(self) :
         outfile = self.data_table_file + '.yaml'
         init_yaml_file(outfile)
         write_yaml_sections( outfile, self.data_type, header='data_table' )
 
 
+    def convert_data_table(self) :
+        self.read_and_parse_data_table()
+        self.write_yaml()
 
-test_class = DataType(data_table_file='data_table')
-test_class.read_and_parse_data_table()
-test_class.write_yaml()
-print( test_class.data_type )
+
+test_class = DataType(data_table_file=in_data_table)
+test_class.convert_data_table()

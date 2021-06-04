@@ -8,11 +8,8 @@ from os import path
 
 
 #: parse user input
-parser = argparse.ArgumentParser(prog='diag_table_to_yaml',
-                                 description="converts the user-specified diag_table to -yaml format")
-parser.add_argument('-f',
-                    type=str,
-                    help='diag_table file' )
+parser = argparse.ArgumentParser(prog='diag_table_to_yaml', description="converts diag_table to yaml format")
+parser.add_argument('-f', type=str, help='diag_table file' )
 in_diag_table = parser.parse_args().f
 
 
@@ -197,5 +194,7 @@ class DiagTable :
         self.read_and_parse_diag_table()
         self.write_yaml()
 
+
+#: start
 test_class = DiagTable( diag_table_file=in_diag_table )
 test_class.convert_diag_table()
