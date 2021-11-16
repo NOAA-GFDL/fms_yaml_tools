@@ -5,32 +5,12 @@
 import copy as cp
 import argparse
 from os import path
-
+import yaml
 
 #: parse user input
 parser = argparse.ArgumentParser(prog='diag_table_to_yaml', description="converts diag_table to yaml format")
 parser.add_argument('-f', type=str, help='diag_table file' )
 in_diag_table = parser.parse_args().f
-
-
-#: write '---' at top of the yaml file
-def init_yaml_file(outfile='') :
-    with open(outfile,'w') as myfile : myfile.write('---\n')
-
-
-#: section = [ list1, list2, list3, ... ]
-#: list1   = [ {key1:val1}, {key2:val2}, ... ]
-def write_yaml_sections(outfile='', section=[], header='') :
-    with open(outfile, 'a+') as myfile :
-        myfile.write( header + ':\n')
-        for ilist in section :
-            mystr = ' {:2s}' + '{:17s} : ' + '{:' + str(len(ilist[0].values())) + 's} \n'
-            myfile.write( mystr.format( '-', str(*ilist[0].keys()) , str(*ilist[0].values()) ))
-            for i in range(1,len(ilist)) :
-                mystr = ' {:2s}' + '{:17s} : ' + '{:' + str(len(ilist[i].values())) + 's} \n'
-                myfile.write( mystr.format( '', str(*ilist[i].keys()) , str(*ilist[i].values()) ))
-            myfile.write('\n')
-
 
 #: diag_table related attributes and functions
 class DiagTable :
@@ -41,21 +21,10 @@ class DiagTable :
 
         self.diag_table_file = diag_table_file
 
-        self.global_section = []
-        self.global_section_keys = ['title',
-                                    'base_year',
-                                    'base_month',
-                                    'base_day',
-                                    'base_hour',
-                                    'base_minute',
-                                    'base_second']
-        self.global_section_values = {'title'      : str,
-                                      'base_year'  : int,
-                                      'base_month' : int,
-                                      'base_day'   : int,
-                                      'base_hour'  : int,
-                                      'base_minute': int,
-                                      'base_second': int}
+        self.global_section = {}
+        self.global_section_keys = ['title','baseDate' ]
+        self.global_section_fvalues = {'title'    : str,
+                                      'baseDate' : [int,int,int,int,int,int]}
         self.max_global_section = len(self.global_section_keys) - 1 #: minus title
 
         self.file_section = []
@@ -71,7 +40,7 @@ class DiagTable :
                                   'file_duration',
                                   'file_duration_units',
                                   'filename_time_bounds' ]
-        self.file_section_values = {'file_name'           : str,
+        self.file_section_fvalues = {'file_name'           : str,
                                     'output_freq'         : int,
                                     'output_freq_units'   : str,
                                     'file_format'         : int,
@@ -94,7 +63,7 @@ class DiagTable :
                                    'time_method',
                                    'spatial_ops',
                                    'pack']
-        self.field_section_values = {'module_name'   : str,
+        self.field_section_fvalues = {'module_name'   : str,
                                      'field_name'    : str,
                                      'output_name'   : str,
                                      'file_name'     : str,
@@ -130,12 +99,10 @@ class DiagTable :
                 if global_count == 1 :
                     try :
                         iline_list, tmp_list = iline.split('#')[0].split(), [] #: not comma separated integers
-                        for i in range(1,len(self.global_section_keys) ) :
-                            mykey   = self.global_section_keys[i]
-                            myfunct = self.global_section_values[mykey]
-                            myval   = myfunct( iline_list[i-1].strip() )
-                            tmp_list.append( {mykey:myval} )
-                        self.global_section[0][1:] = tmp_list
+                        mykey    = self.global_section_keys[1]
+                        #tmp_list = [ self.global_section_fvalues[mykey][i](iline_list[i].strip()) for i in range(6) ]
+                        #self.global_section[mykey] = tmp_list
+                        self.global_section[mykey] = iline.split('#')[0].strip()
                         global_count += 1
                     except :
                         exit(" ERROR with line # " + str(iline_count) + '\n'
@@ -144,9 +111,9 @@ class DiagTable :
                 if global_count == 0 :
                     try :
                         mykey   = self.global_section_keys[0]
-                        myfunct = self.global_section_values[mykey]
-                        myval   = '"' + myfunct( iline.strip() ) + '"'
-                        self.global_section.append( [{mykey:myval}] )
+                        myfunct = self.global_section_fvalues[mykey]
+                        myval   = myfunct( iline.strip().strip('"').strip("'") )
+                        self.global_section[mykey] = myval
                         global_count += 1
                     except :
                         exit(" ERROR with line # " + str(iline_count) + '\n'
@@ -159,45 +126,54 @@ class DiagTable :
                 iline_list = iline.split('#')[0].split(',')          #:get rid of comment at the end
                 try :
                     #: see if file section
-                    tmp_list = []
+                    tmp_dict = {}
                     for i in range(len(iline_list)) :
                         mykey   = self.file_section_keys[i]
-                        myfunct = self.file_section_values[mykey]
-                        myval   = myfunct( iline_list[i].strip() )
-                        tmp_list.append( {mykey:myval} )
-                    self.file_section.append( cp.deepcopy(tmp_list) )
+                        myfunct = self.file_section_fvalues[mykey]
+                        myval   = myfunct( iline_list[i].strip().strip('"').strip("'"))
+                        tmp_dict[mykey] = myval
+                    self.file_section.append( cp.deepcopy(tmp_dict) )
                 except :
                     #: see if field section
                     try :
-                        tmp_list = []
+                        tmp_dict = {}
                         for i in range(len(self.field_section_keys)) :
                             mykey   = self.field_section_keys[i]
-                            myfunct = self.field_section_values[mykey]
-                            myval   = myfunct( iline_list[i].strip() )
-                            tmp_list.append( {mykey:myval} )
-                        self.field_section.append( cp.deepcopy(tmp_list) )
+                            myfunct = self.field_section_fvalues[mykey]
+                            myval   = myfunct( iline_list[i].strip().strip('"').strip("'") )
+                            tmp_dict[mykey] = myval
+                        self.field_section.append( cp.deepcopy(tmp_dict) )
                     except :
                         exit(" ERROR with line # " + str(iline_count) + '\n'
                              " CHECK:            " + str(iline) + '\n' )
 
-
-    def write_yaml(self, outfile='DEFAULT') :
-        if outfile == 'DEFAULT' : outfile=self.diag_table_file+'.yaml'
-        init_yaml_file(outfile)
-        write_yaml_sections( outfile, self.global_section, header='diag_global' )
-        write_yaml_sections( outfile, self.file_section,   header='diag_files' )
-        write_yaml_sections( outfile, self.field_section,  header='diag_fields')
+    def construct_yaml(self) :
+        yaml_doc= {}
+        #: title
+        mykey = self.global_section_keys[0]
+        yaml_doc[mykey]=self.global_section[mykey]
+        #: basedate
+        mykey = self.global_section_keys[1]
+        yaml_doc[mykey]=self.global_section[mykey]
+        #: diag_files
+        yaml_doc['diag_files']=[]
+        #: go through each file
+        for ifile_dict in self.file_section : #: file_section = [ {}, {}, {} ]
+            ifile_dict['varlist']=[]
+            for ifield_dict in self.field_section : #: field_section = [ {}, {}. {} ]
+                if ifield_dict['file_name'] == ifile_dict['file_name'] :
+                    tmp_dict=cp.deepcopy(ifield_dict)
+                    del tmp_dict['file_name']
+                    ifile_dict['varlist'].append(tmp_dict)
+            yaml_doc['diag_files'].append(ifile_dict)
+        myfile = open(self.diag_table_file+'.yaml', 'w')
+        yaml.dump(yaml_doc, myfile, sort_keys=False)
 
     def read_and_parse_diag_table(self) :
         self.read_diag_table()
         self.parse_diag_table()
 
-
-    def convert_diag_table(self) :
-        self.read_and_parse_diag_table()
-        self.write_yaml()
-
-
 #: start
 test_class = DiagTable( diag_table_file=in_diag_table )
-test_class.convert_diag_table()
+test_class.read_and_parse_diag_table()
+test_class.construct_yaml()

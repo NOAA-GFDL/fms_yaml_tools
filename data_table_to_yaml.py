@@ -13,8 +13,7 @@ in_data_table = parser.parse_args().f
 
 #: write '---' at top of the yaml file
 def init_yaml_file(outfile='') :
-    with open(outfile,'w') as myfile : myfile.write('---\n')
-
+    myfile = open(outfile,'w')
 
 #: section = [ list1, list2, list3, ... ]
 #: list1   = [ {key1:val1}, {key2:val2}, ... ]
@@ -58,7 +57,7 @@ class DataType :
                                  'lon_end': float,
                                  'lat_start': float,
                                  'lat_end': float,
-                                 'region_type': int}
+                                 'region_type': str}
 
         self.data_table_content = []
 
@@ -72,8 +71,6 @@ class DataType :
 
 
     def parse_data_table(self) :
-        if self.data_table_content == [] : exit('ERROR:  data_table_content is empty')
-
         iline_count = 0
         for iline in self.data_table_content :
             iline_count += 1
@@ -85,6 +82,10 @@ class DataType :
                         mykey   = self.data_type_keys[i]
                         myfunct = self.data_type_values[mykey]
                         myval   = myfunct( iline_list[i].strip() )
+                        if i == 4 :
+                           #If LIMA format convert to the regular format #FUTURE
+                           if("true"  in myval) : myval = '"bilinear"'
+                           if("false" in myval) : myval = '"none"'
                         tmp_list.append( {mykey:myval} )
                     self.data_type.append( cp.deepcopy(tmp_list) )
                 except :
@@ -101,7 +102,7 @@ class DataType :
     def write_yaml(self) :
         outfile = self.data_table_file + '.yaml'
         init_yaml_file(outfile)
-        write_yaml_sections( outfile, self.data_type, header='data_table' )
+        if self.data_table_content != [] : write_yaml_sections( outfile, self.data_type, header='data_table' )
 
 
     def convert_data_table(self) :
