@@ -54,22 +54,22 @@ class DiagTable :
 
         self.region_section = []
         self.region_section_keys = ['grid_type',
-                                  'xbegin',
-                                  'xend',
-                                  'ybegin',
-                                  'yend',
-                                  'zbegin',
-                                  'zend',
+                                  'dim1_begin',
+                                  'dim1_end',
+                                  'dim2_begin',
+                                  'dim2_end',
+                                  'dim3_begin',
+                                  'dim3_end',
                                   'file_name'
                                   'line']
-        self.region_section_fvalues = {'grid_type'        : str,
-                                    'xbegin'              : float,
-                                    'xend'                : float,
-                                    'ybegin'              : float,
-                                    'yend'                : float,
-                                    'zbegin'              : float,
-                                    'zend'                : float,
-                                    'file_name'           : str,
+        self.region_section_fvalues = {'grid_type'            : str,
+                                    'dim1_begin'              : float,
+                                    'dim1_end'                : float,
+                                    'dim2_begin'              : float,
+                                    'dim2_end'                : float,
+                                    'dim3_begin'              : float,
+                                    'dim3_end'                : float,
+                                    'file_name'               : str,
                                     'line'                : str}
         self.max_file_section = len(self.file_section_keys)
         self.field_section = []
