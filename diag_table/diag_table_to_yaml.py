@@ -223,7 +223,10 @@ class DiagTable :
         yaml_doc['diag_files']=[]
         #: go through each file
         for ifile_dict in self.file_section : #: file_section = [ {}, {}, {} ]
+            if 'ocean' in ifile_dict['file_name'] :
+              ifile_dict['is_ocean'] = True
             ifile_dict['sub_region']=[]
+            found = False
             for iregion_dict in self.region_section :
                 if iregion_dict['file_name'] == ifile_dict['file_name'] :
                    tmp_dict=cp.deepcopy(iregion_dict)
@@ -231,14 +234,19 @@ class DiagTable :
                    del tmp_dict['line']
                    if (tmp_dict['grid_type'] != "none"):
                        ifile_dict['sub_region'].append(tmp_dict)
-                   else :
-                        del ifile_dict['sub_region']
+                       found = True
+                       break
+            if not found : del ifile_dict['sub_region']
             ifile_dict['varlist']=[]
+            found = False
             for ifield_dict in self.field_section : #: field_section = [ {}, {}. {} ]
                 if ifield_dict['file_name'] == ifile_dict['file_name'] :
                     tmp_dict=cp.deepcopy(ifield_dict)
                     del tmp_dict['file_name']
                     ifile_dict['varlist'].append(tmp_dict)
+                    found = True
+                    break
+            if not found : del ifile_dict['varlist']
             yaml_doc['diag_files'].append(ifile_dict)
         myfile = open(self.diag_table_file+'.yaml', 'w')
         yaml.dump(yaml_doc, myfile, sort_keys=False)
