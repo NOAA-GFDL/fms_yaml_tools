@@ -242,6 +242,9 @@ class DiagTable :
             for ifield_dict in self.field_section : #: field_section = [ {}, {}. {} ]
                 if ifield_dict['file_name'] == ifile_dict['file_name'] :
                     tmp_dict=cp.deepcopy(ifield_dict)
+                    # If the output_name and the var_name are the same, there is no need for output_name
+                    if tmp_dict['output_name'] == tmp_dict['var_name'] :
+                      del tmp_dict['output_name']
                     del tmp_dict['file_name']
                     ifile_dict['varlist'].append(tmp_dict)
                     found = True
