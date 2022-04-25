@@ -127,7 +127,7 @@ def check_reduction(diag_field, file_name):
     sys.exit('ERROR: The reduction (' + reduction + ') in variable:' + diag_field['var_name'] + ' and file:' + file_name + ' is not valid')
 
 def check_kind(diag_field, file_name) :
-  valid = ["double", "float"]
+  valid = ["r4", "r8"]
   if diag_field['kind'] not in valid :
     sys.exit('ERROR: The kind (' + diag_field['kind'] + ') in variable:' + diag_field['var_name'] + ' and file:' + file_name + ' is not valid')
 

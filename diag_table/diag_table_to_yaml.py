@@ -196,8 +196,8 @@ class DiagTable :
                                 if ("true" in buf.lower() or "avg" in buf.lower() or "mean" in buf.lower() ) : buf = "average"
                                 elif ("false" in buf.lower()) : buf = "none"
                             if (i == 7) : #Set the kind to either "float" or "double"
-                                if   ("2" in buf) : buf = "float"
-                                elif ("1" in buf) : buf = "double"
+                                if   ("2" in buf) : buf = "r4"
+                                elif ("1" in buf) : buf = "r8"
                                 else : exit("Error: the kind needs to be 1 or 2")
                             mykey   = self.field_section_keys[j]
                             myfunct = self.field_section_fvalues[mykey]
