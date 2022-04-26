@@ -1,91 +1,109 @@
-#!/usr/bin/python3
-
-import copy as cp
-import argparse
-from os import path
 import yaml
+import re
+from collections import OrderedDict
 
+#field_table_suffix = '_norayleigh'
+field_table_suffix = '_esm4'
+# Necessary to dump OrderedDict to yaml format
+yaml.add_representer(OrderedDict, lambda dumper, data: dumper.represent_mapping('tag:yaml.org,2002:map', data.items()))
 
-def read_first_line(in_string) :
-    try :
-        split_string=in_string.split('"')
-        return split_string[1], split_string[3], split_string[5]
-    except :
-        exit("ERROR IN READING FIRST LINE")
-        
-class Field_Table :
+class Field:
+  def __init__(self, in_field_type, entry_tuple):
+    self.field_type = in_field_type
+    self.name = entry_tuple[0]
+    self.dict = OrderedDict()
+    for in_prop in entry_tuple[1]:
+      if 'tracer' == self.field_type:
+        self.process_tracer(in_prop)
+      else:
+        self.process_species(in_prop)
+
+  def process_species(self, prop):
+    comma_split = prop.split(',')
+    print(self.name)
+    print(self.field_type)
+    print(comma_split)
+    if len(comma_split) > 1:
+      eq_splits = [x.split('=') for x in comma_split]
+      print(eq_splits)
+      for idx, sub_param in enumerate(eq_splits):
+        print(len(sub_param))
+        if len(sub_param) < 2:
+          eq_splits[0][1] += f',{sub_param[0]}'
+          print(eq_splits)
+      eq_splits = [eq_splits[0]]
+      for sub_param in eq_splits:
+        if ',' in sub_param[1]:
+          val = [yaml.safe_load(b) for b in sub_param[1].split(',')]
+        else:
+          val = yaml.safe_load(sub_param[1])
+        self.dict[sub_param[0]] = val
+    else:
+      eq_split = comma_split[0].split('=')
+      val = yaml.safe_load(eq_split[1])
+      self.dict[eq_split[0]] = val
     
-    def __init__(self, field_table_file='field_table') :
+  def process_tracer(self, prop):
+    print(len(prop))
+    if len(prop) < 3:
+      self.dict[prop[0]] = prop[1]
+    else:
+      self.dict[prop[0]] = OrderedDict()
+      self.dict[prop[0]]['value'] = prop[1]
+      print(self.name)
+      print(self.field_type)
+      print(prop[2:])
+      for sub_param in prop[2:]:
+        eq_split = sub_param.split('=')
+        val = yaml.safe_load(eq_split[-1])
+        if isinstance(val, list):
+          val = [yaml.safe_load(b) for b in val]
+        self.dict[prop[0]][eq_split[0]] = val
+      
+out_yaml = OrderedDict()
 
-        self.field_table_file = field_table_file
-        self.field_table_content = []
-        self.keys = [ 'tracer', 'mod', 'name']
-        self.fields = []
-        
-test_class = Field_Table(field_table_file='field_table2')
-
-#: read field_table
-with open(test_class.field_table_file, 'r') as myfile :
-    for iline in myfile.readlines() : 
-        #: delete empty line ; get rid of leading spaces ; get rid of new line ; get rid of comments
-        stripped = iline.lstrip(' ').strip()
-        if len(stripped) != 0 and stripped[0] != "#" :
-            test_class.field_table_content.append( stripped )
-
-
-end_line, tmp_dict = False, {}
-for iline in test_class.field_table_content :
-
-    if end_line : tmp_dict, end_line = {}, False
-
-    #: line 1
-    if "tracer" in iline.lower() and "mod" in iline.lower() :
-        tmp_dict[test_class.keys[0]],tmp_dict[test_class.keys[1]],tmp_dict[test_class.keys[2]]=read_first_line(iline.lower())
-        if iline[-1:] == '/' : end_line = True
-    elif "species" in iline.lower() and "mod" in iline.lower() :
-        tmp_dict[test_class.keys[0]],tmp_dict[test_class.keys[1]],tmp_dict[test_class.keys[2]]=read_first_line(iline.lower())
-        if iline[-1:] == '/' : end_line = True
-        
-    #: not line 1
-    else :
-        if iline[-1:].strip() == '/' : iline, end_line = iline.strip()[:-1], True
-
-        if '"' in iline :
-            if iline.count('"') == 2 :
-                #"Profile_type/Fixed/surface_value = 0.0E+00"
-                if '/' in iline :
-                    [ikey, ival, ikeyval2] = iline.replace('"','').split('/')
-                    [ikey2, ival2] = ikeyval2.split('=')
-                    tmp_dict[ikey] = [ival, {ikey2:ival2}]
-                #"horizontal-advection-scheme = mdfl_sweby"
-                else :
-                    ikey, ival = iline.replace('"','').split('=')
-                    tmp_dict[ikey] = ival
-            #"horizontal-advection-scheme", "mdfl_sweby"
-            elif iline.count('"') == 4 :
-                ikey,ival = [iword.strip() for iword in iline.replace(',','').split('"')
-                             if iword.strip()!='' ]
-                tmp_dict[ikey] = ival                
-            #"Profile_type","Fixed","surface_value = 0.0E+00"
-            elif iline.count('"') == 6 :
-                [ikey, ival, ikeyval2] = [iword.strip() for iword in iline.split('"')
-                                          if iword.strip()!='' and iword.strip()!=',']
-                #: this is assuming there is no horribleness such as
-                #: "key1","val1","key2=val2,val3,val4, key3=val5"
-                tmp_dict[ikey]=[ival]
-                ikeyval2_pairs = [ipair.lstrip().strip() for ipair in ikeyval2.split(',')]
-                for ipair in ikeyval2_pairs :
-                    tmp_dict[ikey].append( {ipair.split('=')[0]:ipair.split('=')[1]} )
-        else :          
-            #Profile_type/Fixed/surface_value = 0.0E+00
-            if '/' in iline :
-                [ikey, ival, ikeyval2] = iline.split('/')
-                [ikey2, ival2] = ikeyval2.split('=')
-                tmp_dict[ikey] = {ival, {ikey2:ival2}}
-            #vertical-advection-scheme = mdfl_sweby
-            else :
-                ikeyval2_pairs = [ipair.lstrip().strip() for ipair in ikeyval2.split(',')]
-                for ipair in ikeyval2_pairs :
-                    tmp_dict[ipair.split('=')[0].strip()] = ipair.split('=')[1].strip()                    
-
-    if end_line : print( tmp_dict )
+with open(f'field_table{field_table_suffix}', 'r') as fh:
+  whole_file = fh.read()
+# Eliminate spaces, tabs, and quotes
+whole_file = whole_file.replace(' ', '').replace('"', '').replace('\t', '')
+# Eliminate anything after a comment marker (#)
+whole_file = re.sub("\#"+r'.*'+"\n",'\n',whole_file)
+# Eliminate trailing commas (rude)
+whole_file = whole_file.replace(',\n', '\n')
+# Split entries based upon the "/" ending character
+into_lines = [x for x in re.split("/\s*\n", whole_file) if x]
+# Eliminate blank lines
+into_lines = [re.sub(r'\n+','\n',x) for x in into_lines]
+into_lines = [x[1:] if '\n' in x[:1] else x for x in into_lines]
+into_lines = [x[:-1] if '\n' in x[-1:] else x for x in into_lines]
+# Split already split entries along newlines to form nested list
+nested_lines = [x.split('\n') for x in into_lines]
+# Split nested lines into "heads" (field_type, model, var_name) and "tails" (the rest)
+heads = [x[0] for x in nested_lines]
+tails = [x[1:] for x in nested_lines]
+# Get unique combination of field_type and model... in order provided
+ordered_keys = OrderedDict.fromkeys([tuple([y.lower() for y in x.split(',')[:2]]) for x in heads])
+# Initialize lists
+for k in ordered_keys.keys():
+  ordered_keys[k] = []
+  if k[0] not in out_yaml.keys():
+    out_yaml[k[0]] = OrderedDict()
+  if k[1] not in out_yaml[k[0]].keys():
+    out_yaml[k[0]][k[1]] = OrderedDict()
+# Populate entries as OrderedDicts
+for h, t in zip(heads, tails):
+  head_list = [y.lower() for y in h.split(',')]
+  tail_list = [x.split(',') for x in t]
+  if (head_list[0], head_list[1]) in ordered_keys.keys():
+    if 'tracer' == head_list[0]:
+      ordered_keys[(head_list[0], head_list[1])].append((head_list[2], tail_list))
+    else:
+      ordered_keys[(head_list[0], head_list[1])].append((head_list[2], t))
+# Make Tracer and Species objects and assign to out_yaml
+for k in ordered_keys.keys():
+  for j in ordered_keys[k]:
+    my_entry = Field(k[0], j)
+    out_yaml[k[0]][k[1]][my_entry.name] = my_entry.dict
+# Make out_yaml file
+with open(f'field_table{field_table_suffix}.yaml', 'w') as yaml_file:
+  yaml.dump(out_yaml, yaml_file, default_flow_style=False)
