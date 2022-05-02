@@ -7,13 +7,14 @@ from collections import OrderedDict
 # Necessary to dump OrderedDict to yaml format
 yaml.add_representer(OrderedDict, lambda dumper, data: dumper.represent_mapping('tag:yaml.org,2002:map', data.items()))
 
+verbose = False
+
 if len(sys.argv) > 1:
   field_table_name = sys.argv[1]
 else:
   field_table_name = 'field_table'
-print(field_table_name)
-
-verbose = False
+if verbose:
+  print(field_table_name)
 
 class Field:
   def __init__(self, in_field_type, entry_tuple):
