@@ -3,39 +3,19 @@
 import copy as cp
 from os import path
 import argparse
-
+import yaml
 
 #: parse user input
-parser = argparse.ArgumentParser(prog='data_table_to_yaml', description="converts data_table to yaml format")
-parser.add_argument('-f', type=str, help='data_table file' )
+parser = argparse.ArgumentParser(prog='data_table_to_yaml', description="Converts a legacy ascii data_table to a yaml data_table. More details on the yaml format can be found in https://github.com/NOAA-GFDL/FMS/tree/main/data_override")
+parser.add_argument('-f', type=str, help='Name of the data_table file to convert' )
 in_data_table = parser.parse_args().f
 
-
-#: write '---' at top of the yaml file
-def init_yaml_file(outfile='') :
-    myfile = open(outfile,'w')
-
-#: section = [ list1, list2, list3, ... ]
-#: list1   = [ {key1:val1}, {key2:val2}, ... ]
-def write_yaml_sections(outfile='', section=[], header='') :
-    with open(outfile, 'a+') as myfile :
-        myfile.write( header + ':\n')
-        for ilist in section :
-            mystr = ' {:2s}' + '{:17s} : ' + '{:' + str(len(ilist[0].values())) + 's} \n'
-            myfile.write( mystr.format( '-', str(*ilist[0].keys()) , str(*ilist[0].values()) ))
-            for i in range(1,len(ilist)) :
-                mystr = ' {:2s}' + '{:17s} : ' + '{:' + str(len(ilist[i].values())) + 's} \n'
-                myfile.write( mystr.format( '', str(*ilist[i].keys()) , str(*ilist[i].values()) ))
-            myfile.write('\n')
-
-
 class DataType :
-
     def __init__(self, data_table_file='data_table') :
-
+        """Initialize the DataType"""
         self.data_table_file = data_table_file
 
-        self.data_type  = []
+        self.data_type  = {}
         self.data_type_keys = ['gridname',
                                'fieldname_code',
                                'fieldname_file',
@@ -66,49 +46,52 @@ class DataType :
 
 
     def read_data_table(self) :
+        """Open and read the legacy ascii data_table file"""
         with open( self.data_table_file, 'r' ) as myfile :
             self.data_table_content = myfile.readlines()
 
 
     def parse_data_table(self) :
+        """Loop through each line in the ascii data_Table file and fill in data_type class"""
         iline_count = 0
+        self.data_type['data_table']=[]
         for iline in self.data_table_content :
             iline_count += 1
             if iline.strip() != '' and '#' not in iline.strip()[0] :
                 iline_list = iline.split('#')[0].split(',') #: get rid of comment at the end of line
                 try :
-                    tmp_list = []
+                    tmp_list = {}
                     for i in range(len(iline_list)) :
                         mykey   = self.data_type_keys[i]
                         myfunct = self.data_type_values[mykey]
-                        myval   = myfunct( iline_list[i].strip() )
+                        myval   = myfunct( iline_list[i].strip().strip('"').strip("'") )
                         if i == 4 :
                            #If LIMA format convert to the regular format #FUTURE
                            if("true"  in myval) : myval = '"bilinear"'
                            if("false" in myval) : myval = '"none"'
-                        tmp_list.append( {mykey:myval} )
-                    self.data_type.append( cp.deepcopy(tmp_list) )
+                        tmp_list[mykey]=myval
                 except :
                     exit( '\nERROR in line # ' + str(iline_count) +
                           '\nCHECK           ' + str(iline) )
-
+            # If the fieldname_file is empty (i.e no interpolation just multiplying by a constant),
+            # remove fieldname_file, file_name, and interpol_method
+            if (tmp_list['fieldname_file'] == "") :
+                del tmp_list['fieldname_file']
+                del tmp_list['file_name']
+                del tmp_list['interpol_method']
+            self.data_type['data_table'].append(tmp_list)
 
     def read_and_parse_data_table(self) :
+        """Open, read, and parse the legacy ascii data_table file"""
         if self.data_table_content != [] : self.data_table_content = []
         self.read_data_table()
         self.parse_data_table()
 
-
-    def write_yaml(self) :
-        outfile = self.data_table_file + '.yaml'
-        init_yaml_file(outfile)
-        if self.data_table_content != [] : write_yaml_sections( outfile, self.data_type, header='data_table' )
-
-
     def convert_data_table(self) :
+        """Convert the legacy ascii data_table file to yaml"""
         self.read_and_parse_data_table()
-        self.write_yaml()
-
+        myfile = open(self.data_table_file+'.yaml', 'w')
+        yaml.dump(self.data_type, myfile, sort_keys=False)
 
 test_class = DataType(data_table_file=in_data_table)
 test_class.convert_data_table()
