@@ -42,7 +42,7 @@ class DataType :
         self.data_table_content = []
 
         #: check if data_table file exists
-        if not path.exists( self.data_table_file ) : exit( 'file '+self.data_table_file+' does not exist' )
+        if not path.exists( self.data_table_file ) : raise Exception( 'file '+self.data_table_file+' does not exist' )
 
 
     def read_data_table(self) :
@@ -71,7 +71,7 @@ class DataType :
                            if("false" in myval) : myval = '"none"'
                         tmp_list[mykey]=myval
                 except :
-                    exit( '\nERROR in line # ' + str(iline_count) +
+                    raise Exception( '\nERROR in line # ' + str(iline_count) +
                           '\nCHECK           ' + str(iline) )
             # If the fieldname_file is empty (i.e no interpolation just multiplying by a constant),
             # remove fieldname_file, file_name, and interpol_method
