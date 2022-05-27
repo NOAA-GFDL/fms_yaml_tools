@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+""" Converts a legacy ascii data_table to a yaml data_table.
+    Run `python3 data_table_to_yaml.py -h` for more details
+    Author: Uriel Ramirez 05/27/2022
+"""
 
 import copy as cp
 from os import path
@@ -6,7 +10,11 @@ import argparse
 import yaml
 
 #: parse user input
-parser = argparse.ArgumentParser(prog='data_table_to_yaml', description="Converts a legacy ascii data_table to a yaml data_table. More details on the yaml format can be found in https://github.com/NOAA-GFDL/FMS/tree/main/data_override")
+parser = argparse.ArgumentParser(prog='data_table_to_yaml',\
+                                 description="Converts a legacy ascii data_table to a yaml data_table. \
+                                              Requires pyyaml (https://pyyaml.org/) \
+                                              More details on the data_table yaml format can be found in \
+                                              https://github.com/NOAA-GFDL/FMS/tree/main/data_override")
 parser.add_argument('-f', type=str, help='Name of the data_table file to convert' )
 in_data_table = parser.parse_args().f
 
