@@ -18,7 +18,7 @@ parser.add_argument('-f', type=str, help='Name of the diag_table yaml to check' 
 in_diag_table = parser.parse_args().f
 
 class UniqueKeyLoader(yaml.SafeLoader):
-  """" Special loader to check if duplicate keys are present""""
+  """ Special loader to check if duplicate keys are present"""
   def construct_mapping(self, node, deep=False):
     mapping = []
     for key_node, value_node in node.value:
@@ -28,18 +28,18 @@ class UniqueKeyLoader(yaml.SafeLoader):
     return super().construct_mapping(node, deep)
 
 def check_time_units(file_name, key_name, time_units) :
-  """"Check if the input time_units are valid, crashes if they are not """"
+  """Check if the input time_units are valid, crashes if they are not """
   valid = ["seconds", "minutes", "hours", "days", "months", "years"]
   if (time_units not in valid) :
     sys.exit('ERROR: ' + time_units + ' is not a valid unit. Check your ' + key_name + ' entry for file:' + file_name)
 
 def check_freq(file_name, freq, freq_units) :
-  """"Check if the input freq is valid, crashes if they are not """"
+  """Check if the input freq is valid, crashes if they are not """
   if (freq < -1) : sys.exit('ERROR: freq needs to greater than -1. Check your freq entry for file:' + file_name)
   check_time_units(file_name, 'freq_units', freq_units)
 
 def check_required_diag_files_key(diag_file) :
-  """"Checks if all the required key are present in diag_file block. Crashes if any are missing.""""
+  """Checks if all the required key are present in diag_file block. Crashes if any are missing."""
   if 'file_name' not in diag_file : sys.exit('ERROR: file_name is a required key!')
   if 'freq' not in diag_file : sys.exit('ERROR: freq is a required key! Add it for file:' + diag_file['file_name'])
   if 'freq_units' not in diag_file : sys.exit('ERROR: freq_units is a required key! Add it for file:' + diag_file['file_name'])
@@ -47,7 +47,7 @@ def check_required_diag_files_key(diag_file) :
   if 'unlimdim' not in diag_file : sys.exit('ERROR: unlimdim is a required key! Add it for file:' + diag_file['file_name'])
 
 def check_new_file_freq(diag_file) :
-  """"Check if the input new_file_freq and new_file_freq_units are valid, crashes if they are not """"
+  """Check if the input new_file_freq and new_file_freq_units are valid, crashes if they are not """
   if 'new_file_freq' in diag_file :
     if 'new_file_freq_units' not in diag_file :
       sys.exit('ERROR: new_file_freq is present, but not new_file_freq_units. Check you entry for file:' + diag_file['file_name'])
@@ -59,7 +59,7 @@ def check_new_file_freq(diag_file) :
       sys.exit('ERROR: new_file_freq_units is present, but not new_file_freq. Check your entry for file:' + diag_file['file_name'])
 
 def check_file_duration(diag_file) :
-  """"Check if the input file_duration and file_duration_units are valid, crashes if they are not """"
+  """Check if the input file_duration and file_duration_units are valid, crashes if they are not """
   if 'file_duration' in diag_file :
     if 'file_duration_units' not in diag_file :
       sys.exit('ERROR: file_duration is present, but not file_duration_units. Check you entry for file:' + diag_file['file_name'])
@@ -71,14 +71,14 @@ def check_file_duration(diag_file) :
       sys.exit('ERROR: file_duration_units is present, but not file_duration. Check your entry for file:' + diag_file['file_name'])
 
 def check_start_time(diag_file) :
-  """"Check if the start_time is valid, crashes if it is not """"
+  """Check if the start_time is valid, crashes if it is not """
   if 'start_time' not in diag_file : return
   if 'file_duration' not in diag_file :
     sys.exit('ERROR: file_duration is needed if start_time is present. Check your entry for file:' + diag_file['file_name'])
   check_date(diag_file['start_time'], 'start_time')
 
 def check_sub_region(diag_file) :
-  """"Check if the sub_regeion is defined correctly, crashes if it is not """"
+  """Check if the sub_regeion is defined correctly, crashes if it is not """
   if 'sub_region' not in diag_file : return
 
   sub_regions = diag_file['sub_region']
@@ -108,7 +108,7 @@ def check_sub_region(diag_file) :
       sys.exit('ERROR: dim4_begin in your subregion of file:' + diag_file['file_name']+ ' is greater than dim4_end')
 
 def check_diag_file(diag_file) :
-  """"Check if the diag_file is defined correctly. Crashes if it is not. """"
+  """Check if the diag_file is defined correctly. Crashes if it is not. """
   check_required_diag_files_key(diag_file)
   check_freq(diag_file['file_name'], diag_file['freq'], diag_file['freq_units'])
   check_time_units(diag_file['file_name'], 'time_units', diag_file['time_units'])
@@ -118,7 +118,7 @@ def check_diag_file(diag_file) :
   check_sub_region(diag_file)
 
 def check_required_diag_field_key(diag_field, file_name):
-  """"Check if all the required keys in the diag_field are present, crashes if any are missing """"
+  """Check if all the required keys in the diag_field are present, crashes if any are missing """
   if 'var_name' not in diag_field :
     sys.exit('ERROR: var_name is a required field! Check your var_name in file: ' + file_name)
   if 'module' not in diag_field :
@@ -129,7 +129,7 @@ def check_required_diag_field_key(diag_field, file_name):
     sys.exit('ERROR: kind is a required field! Add it for variable:' + diag_field['var_name'] + ' in file: ' + file_name)
 
 def check_date(date_str, date_name):
-  """"Check if the input date is valid, crashes if it is not """"
+  """Check if the input date is valid, crashes if it is not """
   date_int = date_str.split() # [yr month day hour minute second]
   if (len(date_int) != 6 ) :
     sys.exit('ERROR: The size of ' + date_name + ' (' + date_str + ') should be 6')
@@ -139,7 +139,7 @@ def check_date(date_str, date_name):
     sys.exit('ERROR: The day in the ' + date_name + ' (' + date_str + ') should be greater than 0')
 
 def check_reduction(diag_field, file_name):
-  """"Check if the reduction is valid, crashes if it is not """"
+  """Check if the reduction is valid, crashes if it is not """
   valid = ["none", "average", "min", "max", "rms"]
   reduction = diag_field['reduction']
 
@@ -153,23 +153,23 @@ def check_reduction(diag_field, file_name):
     sys.exit('ERROR: The reduction (' + reduction + ') in variable:' + diag_field['var_name'] + ' and file:' + file_name + ' is not valid')
 
 def check_kind(diag_field, file_name) :
-  """"Check if the variable type is valid. Crashes if it not. """"
+  """Check if the variable type is valid. Crashes if it not. """
   valid = ["r4", "r8"]
   if diag_field['kind'] not in valid :
     sys.exit('ERROR: The kind (' + diag_field['kind'] + ') in variable:' + diag_field['var_name'] + ' and file:' + file_name + ' is not valid')
 
 def check_diag_field(diag_field, file_name) :
-  """"Check if the diag_field is defined correctly, crashes if it is not """"
+  """Check if the diag_field is defined correctly, crashes if it is not """
   check_required_diag_field_key(diag_field, file_name)
   check_reduction(diag_field, file_name)
   check_kind(diag_field, file_name)
 
 def check_for_duplicates(my_list, list_name) :
-  """"Check if there any duplicates in a list. Crashes if they are """"
+  """Check if there any duplicates in a list. Crashes if they are """
   if len(set(my_list)) != len(my_list):
     sys.exit('ERROR: Found duplicate ' + list_name )
 
-"""" Loop thorugh all the files and field and checks if they are defined correctly""""
+""" Loop thorugh all the files and field and checks if they are defined correctly"""
 file_names = []
 with open(in_diag_table) as fl:
   my_table = yaml.load(fl, Loader=UniqueKeyLoader)

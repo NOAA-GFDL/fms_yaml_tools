@@ -159,7 +159,7 @@ class DiagTable :
         self.region_section.append( cp.deepcopy(tmp_dict2) )
 
     def parse_diag_table(self) :
-        """" Loop through each line in the diag_table and parse it""""
+        """ Loop through each line in the diag_table and parse it"""
 
         if self.diag_table_content == [] : raise Exception('ERROR:  The input diag_table is empty!')
 
@@ -241,7 +241,7 @@ class DiagTable :
                              " CHECK:            " + str(iline) + '\n' )
 
     def construct_yaml(self) :
-        """" Combine the global, file, field, sub_region sections into 1 """"
+        """ Combine the global, file, field, sub_region sections into 1 """
         yaml_doc= {}
         #: title
         mykey = self.global_section_keys[0]
@@ -285,7 +285,7 @@ class DiagTable :
         yaml.dump(yaml_doc, myfile, sort_keys=False)
 
     def read_and_parse_diag_table(self) :
-        """" Read and parse the file """"
+        """ Read and parse the file """
         self.read_diag_table()
         self.parse_diag_table()
 
