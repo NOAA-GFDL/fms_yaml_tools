@@ -75,6 +75,25 @@ class Field:
           val = [yaml.safe_load(b) for b in val]
         self.dict[prop[0]][eq_split[0]] = val
       
+def list_items(brief_text, brief_od):
+  return list(OrderedDict([(brief_text, brief_od)]).items())
+
+def listify_ordered_dict(in_list, in_list2, in_od):
+  print(in_list)
+  print(in_list2)
+  if len(in_list) > 1:
+    x = in_list.pop()
+    y = in_list2.pop()
+    print(x)
+    print(y)
+    return [OrderedDict(list_items(x, k) + list_items(y, listify_ordered_dict(in_list, in_list2, v))) for k, v in in_od.items()]
+  else:
+    x = in_list[0]
+    y = in_list2[0]
+    print(x)
+    print(y)
+    return [OrderedDict(list_items(x, k) + list_items(y, v)) for k, v in in_od.items()]
+  
 out_yaml = OrderedDict()
 
 if __name__ == '__main__':
@@ -120,6 +139,9 @@ if __name__ == '__main__':
     for j in ordered_keys[k]:
       my_entry = Field(k[0], j)
       out_yaml[k[0]][k[1]][my_entry.name] = my_entry.dict
-  # Make out_yaml file
+  # Convert to absurd list-style fake yaml
+  lists_yaml = listify_ordered_dict(['variable', 'model_type', 'field_type'], ['attrlist', 'varlist', 'modlist'], out_yaml)
+  lists_wh_yaml = {"field_table": lists_yaml}
+#  # Make out_yaml file
   with open(f'{field_table_name}.yaml', 'w') as yaml_file:
-    yaml.dump(out_yaml, yaml_file, default_flow_style=False)
+    yaml.dump(lists_wh_yaml, yaml_file, default_flow_style=False)
