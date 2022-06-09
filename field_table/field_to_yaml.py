@@ -140,7 +140,15 @@ if __name__ == '__main__':
       my_entry = Field(k[0], j)
       out_yaml[k[0]][k[1]][my_entry.name] = my_entry.dict
   # Convert to absurd list-style fake yaml
-  lists_yaml = listify_ordered_dict(['variable', 'model_type', 'field_type'], ['attrlist', 'varlist', 'modlist'], out_yaml)
+  lists_yaml = listify_ordered_dict(['model_type', 'field_type'], ['varlist', 'modlist'], out_yaml)
+  for i in range(len(lists_yaml)):
+    for j in range(len(lists_yaml[i]['modlist'])):
+      lists_yaml[i]['modlist'][j]['varlist'] = [OrderedDict(list(OrderedDict([('variable', k)]).items()) + list(v.items())) for k, v in lists_yaml[i]['modlist'][j]['varlist'].items()]
+#    print(v.items())
+#    print(k)
+#    print(list(OrderedDict([('variable', k)]).items()))
+#    newlist = OrderedDict(list(OrderedDict([('variable', k)]).items()) + list(v.items()))
+#  print(newlist)
   lists_wh_yaml = {"field_table": lists_yaml}
 #  # Make out_yaml file
   with open(f'{field_table_name}.yaml', 'w') as yaml_file:
