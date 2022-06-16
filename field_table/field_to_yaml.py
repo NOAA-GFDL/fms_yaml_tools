@@ -47,7 +47,7 @@ class Field:
       eq_splits = [eq_splits[0]]
       for sub_param in eq_splits:
         if ',' in sub_param[1]:
-          val = [yaml.safe_load(b) for b in sub_param[1].split(',')]
+          val = yaml.safe_load("'" + sub_param[1]+ "'")
         else:
           val = yaml.safe_load(sub_param[1])
         self.dict[sub_param[0]] = val
@@ -59,11 +59,9 @@ class Field:
   def process_tracer(self, prop):
     if verbose:
       print(len(prop))
-    if len(prop) < 3:
-      self.dict[prop[0]] = prop[1]
-    else:
-      self.dict[prop[0]] = OrderedDict()
-      self.dict[prop[0]]['value'] = prop[1]
+    self.dict[prop[0]] = prop[1]
+    if len(prop) > 2:
+      self.dict['subparams'] = [OrderedDict()] 
       if verbose:
         print(self.name)
         print(self.field_type)
@@ -73,7 +71,7 @@ class Field:
         val = yaml.safe_load(eq_split[-1])
         if isinstance(val, list):
           val = [yaml.safe_load(b) for b in val]
-        self.dict[prop[0]][eq_split[0]] = val
+        self.dict['subparams'][0][eq_split[0]] = val
       
 def list_items(brief_text, brief_od):
   return list(OrderedDict([(brief_text, brief_od)]).items())
@@ -144,11 +142,6 @@ if __name__ == '__main__':
   for i in range(len(lists_yaml)):
     for j in range(len(lists_yaml[i]['modlist'])):
       lists_yaml[i]['modlist'][j]['varlist'] = [OrderedDict(list(OrderedDict([('variable', k)]).items()) + list(v.items())) for k, v in lists_yaml[i]['modlist'][j]['varlist'].items()]
-#    print(v.items())
-#    print(k)
-#    print(list(OrderedDict([('variable', k)]).items()))
-#    newlist = OrderedDict(list(OrderedDict([('variable', k)]).items()) + list(v.items()))
-#  print(newlist)
   lists_wh_yaml = {"field_table": lists_yaml}
 #  # Make out_yaml file
   with open(f'{field_table_name}.yaml', 'w') as yaml_file:
