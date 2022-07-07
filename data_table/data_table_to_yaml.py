@@ -104,11 +104,11 @@ class DataType :
                           '\nCHECK           ' + str(iline) )
             # If the fieldname_file is empty (i.e no interpolation just multiplying by a constant),
             # remove fieldname_file, file_name, and interpol_method
-            if (tmp_list['fieldname_file'] == "") :
-                del tmp_list['fieldname_file']
-                del tmp_list['file_name']
-                del tmp_list['interpol_method']
-            self.data_type['data_table'].append(tmp_list)
+                if (tmp_list['fieldname_file'] == "") :
+                   del tmp_list['fieldname_file']
+                   del tmp_list['file_name']
+                   del tmp_list['interpol_method']
+                self.data_type['data_table'].append(tmp_list)
 
     def read_and_parse_data_table(self) :
         """Open, read, and parse the legacy ascii data_table file"""
