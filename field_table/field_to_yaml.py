@@ -49,6 +49,7 @@ class Field:
     self.field_type = in_field_type
     self.name = entry_tuple[0]
     self.dict = OrderedDict()
+    self.num_subparams = 0
     for in_prop in entry_tuple[1]:
       if 'tracer' == self.field_type:
         self.process_tracer(in_prop)
@@ -91,7 +92,8 @@ class Field:
       print(len(prop))
     self.dict[prop[0]] = prop[1]
     if len(prop) > 2:
-      self.dict['subparams'] = [OrderedDict()] 
+      self.dict[f'subparams{str(self.num_subparams)}'] = [OrderedDict()] 
+      self.num_subparams += 1
       if verbose:
         print(self.name)
         print(self.field_type)
@@ -101,7 +103,7 @@ class Field:
         val = yaml.safe_load(eq_split[-1])
         if isinstance(val, list):
           val = [yaml.safe_load(b) for b in val]
-        self.dict['subparams'][0][eq_split[0]] = val
+        self.dict[f'subparams{str(self.num_subparams-1)}'][0][eq_split[0]] = val
       
 def list_items(brief_text, brief_od):
   """ Given text and an OrderedDict, make an OrderedDict and convert to list """
@@ -122,14 +124,24 @@ def process_field_file(my_file):
   """ Parse ascii field table into nested lists for further processing """
   with open(my_file, 'r') as fh:
     whole_file = fh.read()
-  # Eliminate spaces, tabs, and quotes
-  whole_file = whole_file.replace(' ', '').replace('"', '').replace('\t', '')
+  # Eliminate tabs and quotes
+  whole_file = whole_file.replace('"', '').replace('\t', '')
   # Eliminate anything after a comment marker (#)
   whole_file = re.sub("\#"+r'.*'+"\n",'\n',whole_file)
+  # Eliminate extraneous spaces, but not in value names
+  whole_file = re.sub(" *\n *",'\n',whole_file)
+  whole_file = re.sub(" *, *",',',whole_file)
+  whole_file = re.sub(" */\n",'/\n',whole_file)
   # Eliminate trailing commas (rude)
   whole_file = whole_file.replace(',\n', '\n')
+  # Eliminate newline before end of entry
+  whole_file = re.sub("\n/",'/',whole_file)
+  # Eliminate spaces at very beginning and end
+  whole_file = whole_file.strip()
+  # Eliminate very last slash
+  whole_file = whole_file.strip('/')
   # Split entries based upon the "/" ending character
-  into_lines = [x for x in re.split("/\s*\n", whole_file) if x]
+  into_lines = [x for x in re.split("/\n", whole_file) if x]
   # Eliminate blank lines
   into_lines = [re.sub(r'\n+','\n',x) for x in into_lines]
   into_lines = [x[1:] if '\n' in x[:1] else x for x in into_lines]
@@ -189,8 +201,10 @@ class FieldYaml:
 
   def writeyaml(self):
     """ Write yaml out to file """
+    raw_out = yaml.dump(self.lists_wh_yaml, None, default_flow_style=False)
+    final_out = re.sub('subparams\d*:','subparams:',raw_out)
     with open(f'{self.filename}.yaml', 'w') as yaml_file:
-      yaml.dump(self.lists_wh_yaml, yaml_file, default_flow_style=False)
+      yaml_file.write(final_out)
 
   def main(self):
     self.init_ordered_keys()
