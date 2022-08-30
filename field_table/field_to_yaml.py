@@ -34,6 +34,16 @@ yaml.add_representer(OrderedDict, lambda dumper, data: dumper.represent_mapping(
 
 verbose = False
 
+# Yaml does some auto-conversions to boolean that we don't want, this will help fix it
+dontconvertus = ["yes", "Yes", "no", "No", "on", "On", "off", "Off"]
+def dont_convert_yaml_val(inval, inlist=dontconvertus):
+  if not isinstance(inval, str):
+    return yaml.safe_load(inval)
+  if inval in dontconvertus:
+    return inval 
+  else:
+    return yaml.safe_load(inval)
+
 # Identify Field Table Name
 if len(sys.argv) > 1:
   field_table_name = sys.argv[1]
@@ -81,11 +91,11 @@ class Field:
         if ',' in sub_param[1]:
           val = yaml.safe_load("'" + sub_param[1]+ "'")
         else:
-          val = yaml.safe_load(sub_param[1])
+          val = dont_convert_yaml_val(sub_param[1])
         self.dict[sub_param[0].strip()] = val
     else:
       eq_split = comma_split[0].split('=')
-      val = yaml.safe_load(eq_split[1])
+      val = dont_convert_yaml_val(eq_split[1])
       self.dict[eq_split[0].strip()] = val
     
   def process_tracer(self, prop):
@@ -102,9 +112,9 @@ class Field:
         print(prop[2:])
       for sub_param in prop[2:]:
         eq_split = sub_param.split('=')
-        val = yaml.safe_load(eq_split[-1])
+        val = dont_convert_yaml_val(eq_split[-1])
         if isinstance(val, list):
-          val = [yaml.safe_load(b) for b in val]
+          val = [dont_convert_yaml_val(b) for b in val]
         self.dict[f'subparams{str(self.num_subparams-1)}'][0][eq_split[0].strip()] = val
       
 def list_items(brief_text, brief_od):
