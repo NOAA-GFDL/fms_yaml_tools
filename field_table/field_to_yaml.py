@@ -66,25 +66,27 @@ class Field:
     if len(comma_split) > 1:
       eq_splits = [x.split('=') for x in comma_split]
       if verbose:
+        print('printing eq_splits')
         print(eq_splits)
       for idx, sub_param in enumerate(eq_splits):
         if verbose:
+          print('printing len(sub_param)')
           print(len(sub_param))
         if len(sub_param) < 2:
           eq_splits[0][1] += f',{sub_param[0]}'
           if verbose:
             print(eq_splits)
-      eq_splits = [eq_splits[0]]
+      eq_splits = [x for x in eq_splits if len(x) > 1]
       for sub_param in eq_splits:
         if ',' in sub_param[1]:
           val = yaml.safe_load("'" + sub_param[1]+ "'")
         else:
           val = yaml.safe_load(sub_param[1])
-        self.dict[sub_param[0]] = val
+        self.dict[sub_param[0].strip()] = val
     else:
       eq_split = comma_split[0].split('=')
       val = yaml.safe_load(eq_split[1])
-      self.dict[eq_split[0]] = val
+      self.dict[eq_split[0].strip()] = val
     
   def process_tracer(self, prop):
     """ Process a tracer field """
@@ -103,7 +105,7 @@ class Field:
         val = yaml.safe_load(eq_split[-1])
         if isinstance(val, list):
           val = [yaml.safe_load(b) for b in val]
-        self.dict[f'subparams{str(self.num_subparams-1)}'][0][eq_split[0]] = val
+        self.dict[f'subparams{str(self.num_subparams-1)}'][0][eq_split[0].strip()] = val
       
 def list_items(brief_text, brief_od):
   """ Given text and an OrderedDict, make an OrderedDict and convert to list """
