@@ -29,28 +29,36 @@ import re
 import sys
 from collections import OrderedDict
 
-# Necessary to dump OrderedDict to yaml format
-yaml.add_representer(OrderedDict, lambda dumper, data: dumper.represent_mapping('tag:yaml.org,2002:map', data.items()))
-
 verbose = False
 
-# Yaml does some auto-conversions to boolean that we don't want, this will help fix it
-dontconvertus = ["yes", "Yes", "no", "No", "on", "On", "off", "Off"]
-def dont_convert_yaml_val(inval, inlist=dontconvertus):
+def main():
+    # Necessary to dump OrderedDict to yaml format
+    yaml.add_representer(OrderedDict, lambda dumper, data: dumper.represent_mapping('tag:yaml.org,2002:map', data.items()))
+
+    #verbose = False
+
+    # Identify Field Table Name
+    if len(sys.argv) > 1:
+        field_table_name = sys.argv[1]
+    else:
+        field_table_name = 'field_table'
+    if verbose:
+        print(field_table_name)
+
+    field_yaml = FieldYaml(field_table_name)
+    field_yaml.main()
+    field_yaml.writeyaml()
+
+def dont_convert_yaml_val(inval):
+  # Yaml does some auto-conversions to boolean that we don't want, this will help fix it
+  dontconvertus = ["yes", "Yes", "no", "No", "on", "On", "off", "Off"]
+
   if not isinstance(inval, str):
     return yaml.safe_load(inval)
   if inval in dontconvertus:
     return inval 
   else:
     return yaml.safe_load(inval)
-
-# Identify Field Table Name
-if len(sys.argv) > 1:
-  field_table_name = sys.argv[1]
-else:
-  field_table_name = 'field_table'
-if verbose:
-  print(field_table_name)
 
 class Field:
   """ A Field Object, containing the variable attributes, methods, and subparameters """
@@ -233,6 +241,4 @@ class FieldYaml:
     self.convert_yaml()
 
 if __name__ == '__main__':
-  field_yaml = FieldYaml(field_table_name)
-  field_yaml.main()
-  field_yaml.writeyaml()
+    main()
