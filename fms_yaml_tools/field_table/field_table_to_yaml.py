@@ -24,25 +24,28 @@
         Author: Eric Stofferahn 07/14/2022
 """
 
-import yaml
 import re
 import sys
 from collections import OrderedDict
-
-verbose = False
+import argparse
+import yaml
 
 def main():
     # Necessary to dump OrderedDict to yaml format
     yaml.add_representer(OrderedDict, lambda dumper, data: dumper.represent_mapping('tag:yaml.org,2002:map', data.items()))
 
-    #verbose = False
+    parser = argparse.ArgumentParser(description="Converts a legacy ascii field_table to a yaml field_table. \
+                                                  Requires pyyaml (https://pyyaml.org/) \
+                                                  More details on the field_table yaml format can be found in \
+                                                  https://github.com/NOAA-GFDL/FMS/tree/main/data_override")
+    parser.add_argument('--file', '-f', type=str, help='Name of the field_table file to convert')
+    parser.add_argument('--verbose', '-v', action='store_true', help='Increase verbosity')
+    parser.set_defaults(v=False)
+    global args
+    args = parser.parse_args()
+    field_table_name = args.file
 
-    # Identify Field Table Name
-    if len(sys.argv) > 1:
-        field_table_name = sys.argv[1]
-    else:
-        field_table_name = 'field_table'
-    if verbose:
+    if args.verbose:
         print(field_table_name)
 
     field_yaml = FieldYaml(field_table_name)
@@ -77,22 +80,22 @@ class Field:
   def process_species(self, prop):
     """ Process a species field """
     comma_split = prop.split(',')
-    if verbose:
+    if args.verbose:
       print(self.name)
       print(self.field_type)
       print(comma_split)
     if len(comma_split) > 1:
       eq_splits = [x.split('=') for x in comma_split]
-      if verbose:
+      if args.verbose:
         print('printing eq_splits')
         print(eq_splits)
       for idx, sub_param in enumerate(eq_splits):
-        if verbose:
+        if args.verbose:
           print('printing len(sub_param)')
           print(len(sub_param))
         if len(sub_param) < 2:
           eq_splits[0][1] += f',{sub_param[0]}'
-          if verbose:
+          if args.verbose:
             print(eq_splits)
       eq_splits = [x for x in eq_splits if len(x) > 1]
       for sub_param in eq_splits:
@@ -108,13 +111,13 @@ class Field:
     
   def process_tracer(self, prop):
     """ Process a tracer field """
-    if verbose:
+    if args.verbose:
       print(len(prop))
     self.dict[prop[0]] = prop[1]
     if len(prop) > 2:
       self.dict[f'subparams{str(self.num_subparams)}'] = [OrderedDict()] 
       self.num_subparams += 1
-      if verbose:
+      if args.verbose:
         print(self.name)
         print(self.field_type)
         print(prop[2:])
