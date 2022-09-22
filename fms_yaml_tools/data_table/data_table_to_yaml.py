@@ -30,15 +30,6 @@ from os import path
 import argparse
 import yaml
 
-#: parse user input
-parser = argparse.ArgumentParser(prog='data_table_to_yaml',\
-                                 description="Converts a legacy ascii data_table to a yaml data_table. \
-                                              Requires pyyaml (https://pyyaml.org/) \
-                                              More details on the data_table yaml format can be found in \
-                                              https://github.com/NOAA-GFDL/FMS/tree/main/data_override")
-parser.add_argument('-f', type=str, help='Name of the data_table file to convert' )
-in_data_table = parser.parse_args().f
-
 class DataType :
     def __init__(self, data_table_file='data_table') :
         """Initialize the DataType"""
@@ -122,5 +113,18 @@ class DataType :
         myfile = open(self.data_table_file+'.yaml', 'w')
         yaml.dump(self.data_type, myfile, sort_keys=False)
 
-test_class = DataType(data_table_file=in_data_table)
-test_class.convert_data_table()
+def main():
+    #: parse user input
+    parser = argparse.ArgumentParser(prog='data_table_to_yaml',\
+                                     description="Converts a legacy ascii data_table to a yaml data_table. \
+                                                  Requires pyyaml (https://pyyaml.org/) \
+                                                  More details on the data_table yaml format can be found in \
+                                                  https://github.com/NOAA-GFDL/FMS/tree/main/data_override")
+    parser.add_argument('-f', type=str, help='Name of the data_table file to convert' )
+    in_data_table = parser.parse_args().f
+
+    test_class = DataType(data_table_file=in_data_table)
+    test_class.convert_data_table()
+
+if __name__ == "__main__":
+    main()
