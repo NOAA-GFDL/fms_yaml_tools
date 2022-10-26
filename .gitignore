@@ -1,3 +1,8 @@
+# Setup Tools Build files
 *.egg-info
-build
-__pycache__
+build/
+__pycache__/
+
+# MS Visual Studio Code Ignores
+.vscode/
+.venv/
