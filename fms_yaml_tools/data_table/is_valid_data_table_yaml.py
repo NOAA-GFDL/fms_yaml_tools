@@ -32,7 +32,7 @@ import argparse
 def check_gridname(grid_name):
     """Check if the input grid_name is valid. Crashes if it not."""
     valid = ["OCN", "LND", "ATM", "ICE"]
-    if (gridname not in valid): raise Exception(grid_name+ ' is not a valid gridname. The only values allowed are "OCN", "LND", "ATM", "ICE"')
+    if (grid_name not in valid): raise Exception(grid_name+ ' is not a valid gridname. The only values allowed are "OCN", "LND", "ATM", "ICE"')
 
 def check_fieldname_code(fieldname):
     if (fieldname == ""): raise Exception("Fieldname can't be empty")

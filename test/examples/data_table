@@ -1,0 +1,13 @@
+# No region
+"ICE", "sic_obs", "ice", "INPUT/hadisst_ice.data.nc", "bilinear", 0.01
+"ICE", "sit_obs", "",    "INPUT/hadisst_ice.data.nc", "none",     2.0
+"ICE", "sst_obs", "sst", "INPUT/hadisst_sst.data.nc", "bilinear", 1.0
+"LND", "phot_co2","co2", "INPUT/co2_data.nc",         "bilinear", 1.e-6
+
+# Region specified
+"LND", "some_var", "var", "INPUT/no_file.nc", "default", 1, "10.0, 20.0, 80.0, 100.0", "inside_region"
+"OCN", "ocn_var1", "var1", "INPUT/ocean_var1.nc", "bicubic", 2.1, "10.0, 20.0, 80.0, 100.0", "outside_region"
+
+# Old style (using .true., .false.)
+"ATM", "atm_var", "atm", "INPUT/atm.data.nc", .true., 1.1
+"ATM", "atm_var1", "atm1", "INPUT/atm1.data.nc", .false., 1.2
