@@ -1,3 +1,9 @@
+from os import path, strerror
+import errno
+import argparse
+import yaml
+from .. import __version__, TableParseError
+
 #!/usr/bin/env python3
 # ***********************************************************************
 # *                   GNU Lesser General Public License
@@ -19,18 +25,10 @@
 # * License along with FMS.  If not, see <http://www.gnu.org/licenses/>.
 # ***********************************************************************
 
-from os import path, strerror
-import errno
-import argparse
-import yaml
-from .. import __version__, TableParseError
-
-
 """ Converts a legacy ascii data_table to a yaml data_table.
     Run `python3 data_table_to_yaml.py -h` for more details
     Author: Uriel Ramirez 05/27/2022
 """
-
 
 class DataType:
     def __init__(self, data_table_file='data_table',
