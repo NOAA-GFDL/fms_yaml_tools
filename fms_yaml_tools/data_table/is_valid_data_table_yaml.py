@@ -1,28 +1,27 @@
-import yaml
-import sys
-import argparse
+# !/usr/bin/env python3
 
-#!/usr/bin/env python3
-"""
-***********************************************************************
-*                   GNU Lesser General Public License
-*
-* This file is part of the GFDL Flexible Modeling System (FMS) YAML tools.
-*
-* FMS_yaml_tools is free software: you can redistribute it and/or modify it under
-* the terms of the GNU Lesser General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or (at
-* your option) any later version.
-*
-* FMS_yaml_tools is distributed in the hope that it will be useful, but WITHOUT
-* ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-* FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
-* for more details.
-*
-* You should have received a copy of the GNU Lesser General Public
-* License along with FMS.  If not, see <http://www.gnu.org/licenses/>.
-***********************************************************************
-"""
+
+# ***********************************************************************
+# *                   GNU Lesser General Public License
+# *
+# * This file is part of the GFDL Flexible Modeling System (FMS) YAML tools.
+# *
+# * FMS_yaml_tools is free software: you can redistribute it and/or modify it under
+# * the terms of the GNU Lesser General Public License as published by
+# * the Free Software Foundation, either version 3 of the License, or (at
+# * your option) any later version.
+# *
+# * FMS_yaml_tools is distributed in the hope that it will be useful, but WITHOUT
+# * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+# * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+# * for more details.
+# *
+# * You should have received a copy of the GNU Lesser General Public
+# * License along with FMS.  If not, see <http://www.gnu.org/licenses/>.
+# ***********************************************************************
+
+import yaml
+import argparse
 
 """ Determine if a yaml data_table is valid.
     Run `python3 is_valid_data_table_yaml.py -h` for more details
@@ -122,8 +121,7 @@ def main():
 
                 if "factor" not in entry:
                     raise Exception("factor is a required key")
-
-                factor = entry["factor"]
+                    factor = entry["factor"]
 
                 if "region_type" in entry:
                     region_type = entry["region_type"]

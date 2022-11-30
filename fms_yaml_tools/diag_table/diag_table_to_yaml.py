@@ -1,28 +1,30 @@
+
+# !/usr/bin/env python3
+
+
+# ***********************************************************************
+# *                   GNU Lesser General Public License
+# *
+# * This file is part of the GFDL Flexible Modeling System (FMS) YAML tools.
+# *
+# * FMS_yaml_tools is free software: you can redistribute it and/or modify it under
+# * the terms of the GNU Lesser General Public License as published by
+# * the Free Software Foundation, either version 3 of the License, or (at
+# * your option) any later version.
+# *
+# * FMS_yaml_tools is distributed in the hope that it will be useful, but WITHOUT
+# * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+# * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+# * for more details.
+# *
+# * You should have received a copy of the GNU Lesser General Public
+# * License along with FMS.  If not, see <http://www.gnu.org/licenses/>.
+# ***********************************************************************
+
 import copy as cp
 import argparse
 from os import path
 import yaml
-#!/usr/bin/env python3
-"""
-***********************************************************************
-*                   GNU Lesser General Public License
-*
-* This file is part of the GFDL Flexible Modeling System (FMS) YAML tools.
-*
-* FMS_yaml_tools is free software: you can redistribute it and/or modify it under
-* the terms of the GNU Lesser General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or (at
-* your option) any later version.
-*
-* FMS_yaml_tools is distributed in the hope that it will be useful, but WITHOUT
-* ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-* FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
-* for more details.
-*
-* You should have received a copy of the GNU Lesser General Public
-* License along with FMS.  If not, see <http://www.gnu.org/licenses/>.
-***********************************************************************
-"""
 
 """ Converts a legacy ascii diag_table to a yaml diag_table.
     Run `python3 diag_table_to_yaml.py -h` for more details
@@ -35,8 +37,8 @@ def main():
     parser = argparse.ArgumentParser(prog='diag_table_to_yaml',
                                      description="Converts a legacy ascii diag_table to a yaml diag_table" +
                                                  "Requires pyyaml (https://pyyaml.org/)" +
-                                                 "More details on the diag_table yaml format can be found in " +
-                                                 "https://github.com/NOAA-GFDL/FMS/tree/main/diag_table")
+                                                 "More details on the diag_table yaml format can be found in \
+                                                 https://github.com/NOAA-GFDL/FMS/tree/main/diag_table")
     parser.add_argument('-f', type=str, help='Name of the ascii diag_table to convert')
     in_diag_table = parser.parse_args().f
 
@@ -227,7 +229,7 @@ class DiagTable:
                         mykey = self.global_section_keys[1]
                         self.global_section[mykey] = iline.split('#')[0].strip()
                         global_count += 1
-                    except:
+                    except Exception:
                         exit(" ERROR1 with line # " + str(iline_count) + '\n'
                              " CHECK:            " + str(iline) + '\n')
                 #: Set the title
@@ -238,7 +240,7 @@ class DiagTable:
                         myval = myfunct(iline.strip().strip('"').strip("'"))
                         self.global_section[mykey] = myval
                         global_count += 1
-                    except:
+                    except Exception:
                         exit(" ERROR2 with line # " + str(iline_count) + '\n'
                              " CHECK:            " + str(iline) + '\n')
 
@@ -267,7 +269,7 @@ class DiagTable:
                             continue  #: ignore the file_duration_units if it is an empty string
                         tmp_dict[mykey] = myval
                     self.file_section.append(cp.deepcopy(tmp_dict))
-                except:
+                except Exception:
                     #: see if field section
                     try:
                         tmp_dict = {}
@@ -293,12 +295,12 @@ class DiagTable:
                             mykey = self.field_section_keys[j]
                             myfunct = self.field_section_fvalues[mykey]
                             myval = myfunct(buf.strip().strip('"').strip("'"))
-                        if (i != 6):  # Do not add the region to the field section
-                            tmp_dict[mykey] = myval
-                        else:
-                            self.set_sub_region(myval, tmp_dict)
-                            self.field_section.append(cp.deepcopy(tmp_dict))
-                    except:
+                            if (i != 6):  # Do not add the region to the field section
+                                tmp_dict[mykey] = myval
+                            else:
+                                self.set_sub_region(myval, tmp_dict)
+                                self.field_section.append(cp.deepcopy(tmp_dict))
+                    except Exception:
                         exit(" ERROR3 with line # " + str(iline_count) + '\n'
                              " CHECK:            " + str(iline) + '\n')
 

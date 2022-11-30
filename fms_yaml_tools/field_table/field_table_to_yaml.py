@@ -1,31 +1,28 @@
+#!/usr/bin/env python3
+
+# ***********************************************************************
+# *                   GNU Lesser General Public License
+# *
+# * This file is part of the GFDL Flexible Modeling System (FMS) YAML tools.
+# *
+# * FMS_yaml_tools is free software: you can redistribute it and/or modify it under
+# * the terms of the GNU Lesser General Public License as published by
+# * the Free Software Foundation, either version 3 of the License, or (at
+#         * your option) any later version.
+# *
+# * FMS_yaml_tools is distributed in the hope that it will be useful, but WITHOUT
+# * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+# * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+# * for more details.
+# *
+# * You should have received a copy of the GNU Lesser General Public
+# * License along with FMS.  If not, see <http://www.gnu.org/licenses/>.
+# ***********************************************************************
+
 import re
-import sys
 from collections import OrderedDict
 import argparse
 import yaml
-
-#!/usr/bin/env python3
-"""
-***********************************************************************
-*                   GNU Lesser General Public License
-*
-* This file is part of the GFDL Flexible Modeling System (FMS) YAML tools.
-*
-* FMS_yaml_tools is free software: you can redistribute it and/or modify it under
-* the terms of the GNU Lesser General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or (at
-        * your option) any later version.
-*
-* FMS_yaml_tools is distributed in the hope that it will be useful, but WITHOUT
-* ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-* FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
-* for more details.
-*
-* You should have received a copy of the GNU Lesser General Public
-* License along with FMS.  If not, see <http://www.gnu.org/licenses/>.
-***********************************************************************
-"""
-
 """ Converts a legacy ascii field_table to a yaml field_table.
         Author: Eric Stofferahn 07/14/2022
 """
@@ -65,6 +62,58 @@ def dont_convert_yaml_val(inval):
         return inval
     else:
         return yaml.safe_load(inval)
+
+
+def list_items(brief_text, brief_od):
+    """ Given text and an OrderedDict, make an OrderedDict and convert to list """
+    return list(OrderedDict([(brief_text, brief_od)]).items())
+
+
+def listify_ordered_dict(in_list, in_list2, in_od):
+    """ Given two lists and an OrderedDict, return a list of OrderedDicts. Note this function is recursive. """
+    if len(in_list) > 1:
+        x = in_list.pop()
+        y = in_list2.pop()
+        return [OrderedDict(list_items(x, k) +
+                            list_items(y, listify_ordered_dict(in_list, in_list2, v))) for k, v in in_od.items()]
+    else:
+        x = in_list[0]
+        y = in_list2[0]
+        return [OrderedDict(list_items(x, k) + list_items(y, v)) for k, v in in_od.items()]
+
+
+def process_field_file(my_file):
+    """ Parse ascii field table into nested lists for further processing """
+    with open(my_file, 'r') as fh:
+        whole_file = fh.read()
+        # Eliminate tabs and quotes
+        whole_file = whole_file.replace('"', '').replace('\t', '')
+        # Eliminate anything after a comment marker (#)
+        whole_file = re.sub("\\#" + r'.*' + "\n", '\n', whole_file)
+        # Eliminate extraneous spaces, but not in value names
+        whole_file = re.sub(" *\n *", '\n', whole_file)
+        whole_file = re.sub(" *, *", ',', whole_file)
+        whole_file = re.sub(" */\n", '/\n', whole_file)
+        # Eliminate trailing commas (rude)
+        whole_file = whole_file.replace(',\n', '\n')
+        # Eliminate newline before end of entry
+        whole_file = re.sub("\n/", '/', whole_file)
+        # Eliminate spaces at very beginning and end
+        whole_file = whole_file.strip()
+        # Eliminate very last slash
+        whole_file = whole_file.strip('/')
+        # Split entries based upon the "/" ending character
+        into_lines = [x for x in re.split("/\n", whole_file) if x]
+        # Eliminate blank lines
+        into_lines = [re.sub(r'\n+', '\n', x) for x in into_lines]
+        into_lines = [x[1:] if '\n' in x[:1] else x for x in into_lines]
+        into_lines = [x[:-1] if '\n' in x[-1:] else x for x in into_lines]
+        # Split already split entries along newlines to form nested list
+        nested_lines = [x.split('\n') for x in into_lines]
+        # Split nested lines into "heads" (field_type, model, var_name) and "tails" (the rest)
+        heads = [x[0] for x in nested_lines]
+        tails = [x[1:] for x in nested_lines]
+        return heads, tails
 
 
 class Field:
@@ -139,55 +188,6 @@ class Field:
                 val = [dont_convert_yaml_val(b) for b in val]
                 self.dict[f'subparams{str(self.num_subparams-1)}'][0][eq_split[0].strip()] = val
 
-    def list_items(brief_text, brief_od):
-        """ Given text and an OrderedDict, make an OrderedDict and convert to list """
-        return list(OrderedDict([(brief_text, brief_od)]).items())
-
-    def listify_ordered_dict(in_list, in_list2, in_od):
-        """ Given two lists and an OrderedDict, return a list of OrderedDicts. Note this function is recursive. """
-        if len(in_list) > 1:
-            x = in_list.pop()
-            y = in_list2.pop()
-            return [OrderedDict(list_items(x, k) +
-                    list_items(y, listify_ordered_dict(in_list, in_list2, v))) for k, v in in_od.items()]
-        else:
-            x = in_list[0]
-            y = in_list2[0]
-            return [OrderedDict(list_items(x, k) + list_items(y, v)) for k, v in in_od.items()]
-
-    def process_field_file(my_file):
-        """ Parse ascii field table into nested lists for further processing """
-        with open(my_file, 'r') as fh:
-            whole_file = fh.read()
-        # Eliminate tabs and quotes
-        whole_file = whole_file.replace('"', '').replace('\t', '')
-        # Eliminate anything after a comment marker (#)
-        whole_file = re.sub("\\#" + r'.*' + "\n", '\n', whole_file)
-        # Eliminate extraneous spaces, but not in value names
-        whole_file = re.sub(" *\n *", '\n', whole_file)
-        whole_file = re.sub(" *, *", ',', whole_file)
-        whole_file = re.sub(" */\n", '/\n', whole_file)
-        # Eliminate trailing commas (rude)
-        whole_file = whole_file.replace(',\n', '\n')
-        # Eliminate newline before end of entry
-        whole_file = re.sub("\n/", '/', whole_file)
-        # Eliminate spaces at very beginning and end
-        whole_file = whole_file.strip()
-        # Eliminate very last slash
-        whole_file = whole_file.strip('/')
-        # Split entries based upon the "/" ending character
-        into_lines = [x for x in re.split("/\n", whole_file) if x]
-        # Eliminate blank lines
-        into_lines = [re.sub(r'\n+', '\n', x) for x in into_lines]
-        into_lines = [x[1:] if '\n' in x[:1] else x for x in into_lines]
-        into_lines = [x[:-1] if '\n' in x[-1:] else x for x in into_lines]
-        # Split already split entries along newlines to form nested list
-        nested_lines = [x.split('\n') for x in into_lines]
-        # Split nested lines into "heads" (field_type, model, var_name) and "tails" (the rest)
-        heads = [x[0] for x in nested_lines]
-        tails = [x[1:] for x in nested_lines]
-        return heads, tails
-
 
 class FieldYaml:
     def __init__(self, field_file):
@@ -228,7 +228,7 @@ class FieldYaml:
 
     def convert_yaml(self):
         """ Convert to list-style yaml """
-        lists_yaml = listify_ordered_dict(['model_type', 'field_type'], ['varlist', 'modlist'], self.out_yaml)
+        lists_yaml = self.listify_ordered_dict(['model_type', 'field_type'], ['varlist', 'modlist'], self.out_yaml)
         for i in range(len(lists_yaml)):
             for j in range(len(lists_yaml[i]['modlist'])):
                 lists_yaml[i]['modlist'][j]['varlist'] = [OrderedDict(list(OrderedDict([('variable', k)]).items()) +
