@@ -136,6 +136,35 @@ class DiagTable:
         with open(self.diag_table_file, 'r') as myfile:
             self.diag_table_content = myfile.readlines()
 
+    def test(self, stuff, myval):
+        for j in range(len(stuff)):
+            if (stuff[j] == ""):
+                continue  #: Some lines have extra spaces ("1 10  9 11 -1 -1")
+            k = k + 1
+
+        if float(stuff[j]) == -1:
+            stuff[j] = "-999"
+
+        if k == 0:
+            corner1 = stuff[j]
+            corner2 = stuff[j]
+        elif k == 1:
+            corner3 = stuff[j]
+            corner4 = stuff[j]
+        elif k == 2:
+            corner1 = corner1 + ' ' + stuff[j]
+            corner2 = corner2 + ' ' + stuff[j]
+        elif k == 3:
+            corner3 = corner3 + ' ' + stuff[j]
+            corner4 = corner4 + ' ' + stuff[j]
+        elif k == 4:
+            zbounds = stuff[j]
+        elif k == 5:
+            zbounds = zbounds + ' ' + stuff[j]
+
+        stuff = myval.split(' ')
+        return corner1, corner2, corner3, corner4, zbounds
+
     def set_sub_region(self, myval, field_dict):
         """ Loop through the defined sub_regions, determine if the file already has a sub_region defined
             if it does crash. If the sub_region is not already defined add the region to the list
@@ -163,43 +192,19 @@ class DiagTable:
                 tmp_dict2[self.region_section_keys[0]] = myval
             else:
                 tmp_dict2[self.region_section_keys[0]] = "latlon"
-                stuff = myval.split(' ')
-                k = -1
+                # stuff = myval.split(' ')
+                # k = -1
 
-        for j in range(len(stuff)):
-            if (stuff[j] == ""):
-                continue  #: Some lines have extra spaces ("1 10  9 11 -1 -1")
-            k = k + 1
-
-        if float(stuff[j]) == -1:
-            stuff[j] = "-999"
-
-        if k == 0:
-            corner1 = stuff[j]
-            corner2 = stuff[j]
-        elif k == 1:
-            corner3 = stuff[j]
-            corner4 = stuff[j]
-        elif k == 2:
-            corner1 = corner1 + ' ' + stuff[j]
-            corner2 = corner2 + ' ' + stuff[j]
-        elif k == 3:
-            corner3 = corner3 + ' ' + stuff[j]
-            corner4 = corner4 + ' ' + stuff[j]
-        elif k == 4:
-            zbounds = stuff[j]
-        elif k == 5:
-            zbounds = zbounds + ' ' + stuff[j]
-
-        tmp_dict2["corner1"] = corner1
-        tmp_dict2["corner2"] = corner2
-        tmp_dict2["corner3"] = corner3
-        tmp_dict2["corner4"] = corner4
-        tmp_dict2["zbounds"] = zbounds
+        tmp_dict2["corner1"] = self.corner1
+        tmp_dict2["corner2"] = self.corner2
+        tmp_dict2["corner3"] = self.corner3
+        tmp_dict2["corner4"] = self.corner4
+        tmp_dict2["zbounds"] = self.zbounds
         tmp_dict2["is_only_zbounds"] = False
-        field_dict['zbounds'] = zbounds
+        field_dict['zbounds'] = self.zbounds
 
-        if corner1 == "-999 -999" and corner2 == "-999 -999" and corner3 == "-999 -999" and corner4 == "-999 -999":
+        if (self.corner1 == "-999 -999" and self.corner2 == "-999 -999"
+            and self.corner3 == "-999 -999" and self.corner4 == "-999 -999"):
             tmp_dict2["is_only_zbounds"] = True
         elif not is_same:
             print("The " + file_name + " has multiple sub_regions defined. Be sure that all the variables \
@@ -208,6 +213,70 @@ class DiagTable:
             print("Region2:" + iregion_dict['line'])
             exit()
         self.region_section.append(cp.deepcopy(tmp_dict2))
+
+    def test2(self, iline_count):
+        #: The rest of the lines are either going to be file or field section
+        for iline_in in self.diag_table_content[iline_count:]:
+            iline = iline_in.strip().strip(',')
+            #: get rid of any leading spaces and the comma that some file lines have in the end #classic
+            iline_count += 1
+            if iline.strip() != '' and '#' not in iline.strip()[0]:  #: if not blank line or comment
+                iline_list = iline.split('#')[0].split(',')          #: get rid of comment at the end
+                try:
+                    #: see if file section
+                    tmp_dict = {}
+                    for i in range(len(iline_list)):
+                        j = i
+                        if (i == 3):
+                            continue  #: do not do anything with the "file_format" column
+                        if (i > 3):
+                            j = i-1
+                        mykey = self.file_section_keys[j]
+                        myfunct = self.file_section_fvalues[mykey]
+                        myval = myfunct(iline_list[i].strip().strip('"').strip("'"))
+                        if (i == 9 and myval <= 0):
+                            continue  #: ignore file_duration if it less than 0
+                        if (i == 10 and myval == ""):
+                            continue  #: ignore the file_duration_units if it is an empty string
+                        tmp_dict[mykey] = myval
+                    self.file_section.append(cp.deepcopy(tmp_dict))
+                except Exception:
+                    return (iline_list)
+
+    def test3(self, iline_list):
+        #: see if field section
+        try:
+            tmp_dict = {}
+            for i in range(len(self.field_section_keys)):
+                j = i
+                buf = iline_list[i]
+                if (i == 4):
+                    continue  #: do not do anything with the "time_sampling" section
+                if (i > 4):
+                    j = i-1
+                if (i == 5):  #: Set the reduction to average or none instead of the other options
+                    if ("true" in buf.lower() or "avg" in buf.lower() or "mean" in buf.lower()):
+                        buf = "average"
+                    elif ("false" in buf.lower()):
+                        buf = "none"
+                    if (i == 7):  #: Set the kind to either "float" or "double"
+                        if ("2" in buf):
+                            buf = "r4"
+                        elif ("1" in buf):
+                            buf = "r8"
+                else:
+                    exit("Error: the kind needs to be 1 or 2")
+            mykey = self.field_section_keys[j]
+            myfunct = self.field_section_fvalues[mykey]
+            myval = myfunct(buf.strip().strip('"').strip("'"))
+            if (i != 6):  # Do not add the region to the field section
+                tmp_dict[mykey] = myval
+            else:
+                self.set_sub_region(myval, tmp_dict)
+                self.field_section.append(cp.deepcopy(tmp_dict))
+        except Exception:
+            exit(" ERROR3 with line # " + str(iline_count) + '\n'
+                 " CHECK:            " + str(iline) + '\n')
 
     def parse_diag_table(self):
         """ Loop through each line in the diag_table and parse it"""
@@ -242,66 +311,6 @@ class DiagTable:
                         global_count += 1
                     except Exception:
                         exit(" ERROR2 with line # " + str(iline_count) + '\n'
-                             " CHECK:            " + str(iline) + '\n')
-
-        #: The rest of the lines are either going to be file or field section
-        for iline_in in self.diag_table_content[iline_count:]:
-            iline = iline_in.strip().strip(',')
-            #: get rid of any leading spaces and the comma that some file lines have in the end #classic
-            iline_count += 1
-            if iline.strip() != '' and '#' not in iline.strip()[0]:  #: if not blank line or comment
-                iline_list = iline.split('#')[0].split(',')          #: get rid of comment at the end
-                try:
-                    #: see if file section
-                    tmp_dict = {}
-                    for i in range(len(iline_list)):
-                        j = i
-                        if (i == 3):
-                            continue  #: do not do anything with the "file_format" column
-                        if (i > 3):
-                            j = i-1
-                        mykey = self.file_section_keys[j]
-                        myfunct = self.file_section_fvalues[mykey]
-                        myval = myfunct(iline_list[i].strip().strip('"').strip("'"))
-                        if (i == 9 and myval <= 0):
-                            continue  #: ignore file_duration if it less than 0
-                        if (i == 10 and myval == ""):
-                            continue  #: ignore the file_duration_units if it is an empty string
-                        tmp_dict[mykey] = myval
-                    self.file_section.append(cp.deepcopy(tmp_dict))
-                except Exception:
-                    #: see if field section
-                    try:
-                        tmp_dict = {}
-                        for i in range(len(self.field_section_keys)):
-                            j = i
-                            buf = iline_list[i]
-                            if (i == 4):
-                                continue  #: do not do anything with the "time_sampling" section
-                            if (i > 4):
-                                j = i-1
-                            if (i == 5):  #: Set the reduction to average or none instead of the other options
-                                if ("true" in buf.lower() or "avg" in buf.lower() or "mean" in buf.lower()):
-                                    buf = "average"
-                                elif ("false" in buf.lower()):
-                                    buf = "none"
-                            if (i == 7):  #: Set the kind to either "float" or "double"
-                                if ("2" in buf):
-                                    buf = "r4"
-                                elif ("1" in buf):
-                                    buf = "r8"
-                                else:
-                                    exit("Error: the kind needs to be 1 or 2")
-                            mykey = self.field_section_keys[j]
-                            myfunct = self.field_section_fvalues[mykey]
-                            myval = myfunct(buf.strip().strip('"').strip("'"))
-                            if (i != 6):  # Do not add the region to the field section
-                                tmp_dict[mykey] = myval
-                            else:
-                                self.set_sub_region(myval, tmp_dict)
-                                self.field_section.append(cp.deepcopy(tmp_dict))
-                    except Exception:
-                        exit(" ERROR3 with line # " + str(iline_count) + '\n'
                              " CHECK:            " + str(iline) + '\n')
 
     def construct_yaml(self):
