@@ -6,6 +6,7 @@ from contextlib import contextmanager
 
 from fms_yaml_tools.field_table.field_table_to_yaml import Field
 from fms_yaml_tools.field_table.field_table_to_yaml import FieldYaml
+from collections import OrderedDict
 
 EXAMPLE_DIR = os.path.abspath(
     os.path.join(os.path.dirname(__file__), 'examples'))
@@ -98,12 +99,13 @@ class TestFieldTable(unittest.TestCase):
                     f.write("\t\"units\", \"kg/kg\" /")
                 fy = FieldYaml('field_table')
                 fy.main()
-                #ref_dict = [{'gridname': 'ICE',
-                #              'interpol_method': 'none',
-                #              'factor': 1.2}]
+                ref_dict = {'field_table': [OrderedDict([('field_type', 'tracer'),
+                           ('modlist', [OrderedDict([('model_type', 'atmos_mod'),
+                           ('varlist', [OrderedDict([('variable', 'liq_wat'),
+                           ('longname', 'fm_yaml_null'), ('subparams0',
+                           [OrderedDict([('cloud liquid specific humidityunits', 'kg/kg')])])])])])])])]}
                 # Verify parse done correctly
-                #self.assertListEqual(test_dt.data_type['data_table'],
-                #                     dt_verify)
+                self.assertDictEqual(fy.lists_wh_yaml, ref_dict)
 
 
 if __name__ == '__main__':
