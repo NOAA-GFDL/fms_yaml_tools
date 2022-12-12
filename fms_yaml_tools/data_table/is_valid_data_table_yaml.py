@@ -110,8 +110,8 @@ def main():
                 if "fieldname_file" in entry:
                     fieldname_file = entry["fieldname_file"]
 
-                if "file_name" in entry:
-                    file_name = entry["file_name"]
+            # not used    if "file_name" in entry:
+            # not used       file_name = entry["file_name"]
 
                 if "interpol_method" in entry:
                     interp_method = entry["interpol_method"]
@@ -119,9 +119,9 @@ def main():
                 check_interp_method(interp_method)
                 check_filename_and_field(fieldname_file, interp_method)
 
-                if "factor" not in entry:
-                    raise Exception("factor is a required key")
-                    factor = entry["factor"]
+            # not used    if "factor" not in entry:
+            # not used        raise Exception("factor is a required key")
+            # not used        factor = entry["factor"]
 
                 if "region_type" in entry:
                     region_type = entry["region_type"]
