@@ -203,7 +203,8 @@ class DiagTable:
         tmp_dict2["is_only_zbounds"] = False
         field_dict['zbounds'] = self.zbounds
 
-        if (self.corner1 == "-999 -999" and self.corner2 == "-999 -999" and self.corner3 == "-999 -999" and self.corner4 == "-999 -999"):
+        if (self.corner1 == "-999 -999" and self.corner2 == "-999 -999"
+           and self.corner3 == "-999 -999" and self.corner4 == "-999 -999"):
             tmp_dict2["is_only_zbounds"] = True
         elif not is_same:
             print("The " + file_name + " has multiple sub_regions defined. Be sure that all the variables \
