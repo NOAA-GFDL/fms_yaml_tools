@@ -27,9 +27,11 @@ import yaml
         Author: Eric Stofferahn 07/14/2022
 """
 
+# debug output flag
+verbose = False
+
 
 def main():
-
     # Necessary to dump OrderedDict to yaml format
     yaml.add_representer(OrderedDict, lambda dumper, data: dumper.represent_mapping('tag:yaml.org,2002:map', data.items()))
 
@@ -37,25 +39,43 @@ def main():
                                                   Requires pyyaml (https://pyyaml.org/) \
                                                   More details on the field_table yaml format can be found in \
                                                   https://github.com/NOAA-GFDL/FMS/tree/main/data_override")
-    parser.add_argument('--file', '-f', type=str, help='Name of the field_table file to convert')
-    parser.add_argument('--verbose', '-v', action='store_true', help='Increase verbosity')
-    parser.set_defaults(v=False)
+    parser.add_argument('--file', '-f', type=str,
+                        default='field_table.yml',
+                        help='Name of the field_table file to convert')
+    parser.add_argument('--verbose', '-v', action='store_true', default=False, help='Increase verbosity')
+    parser.add_argument('-o', '--output',
+                        dest='out_file',
+                        type=str,
+                        default='field_table.yaml',
+                        help="Ouput file name of the converted YAML \
+                              (Default: 'field_table.yaml')")
+    parser.add_argument('-F', '--force',
+                        action='store_true',
+                        default=False,
+                        help="Overwrite the output field table yaml file.")
+    parser.add_argument('-V', '--version',
+                        action="version",
+                        version=f"%(prog)s {__version__}")
     global args
+    global verbose
     args = parser.parse_args()
     field_table_name = args.file
 
     if args.verbose:
+        verbose = True
         print(field_table_name)
 
-    field_yaml = FieldYaml(field_table_name)
-    field_yaml.main()
-    field_yaml.writeyaml()
+    try:
+        field_yaml = FieldYaml(field_table_name)
+        field_yaml.main()
+        field_yaml.writeyaml(args.out_file)
+    except Exception as err:
+        raise SystemExit(err)
 
 
 def dont_convert_yaml_val(inval):
     # Yaml does some auto-conversions to boolean that we don't want, this will help fix it
     dontconvertus = ["yes", "Yes", "no", "No", "on", "On", "off", "Off"]
-
     if not isinstance(inval, str):
         return yaml.safe_load(inval)
     if inval in dontconvertus:
@@ -74,8 +94,8 @@ def listify_ordered_dict(in_list, in_list2, in_od):
     if len(in_list) > 1:
         x = in_list.pop()
         y = in_list2.pop()
-        return [OrderedDict(list_items(x, k) +
-                            list_items(y, listify_ordered_dict(in_list, in_list2, v))) for k, v in in_od.items()]
+        return [OrderedDict(list_items(x, k) + list_items(y, listify_ordered_dict(in_list, in_list2, v)))
+                for k, v in in_od.items()]
     else:
         x = in_list[0]
         y = in_list2[0]
@@ -86,34 +106,34 @@ def process_field_file(my_file):
     """ Parse ascii field table into nested lists for further processing """
     with open(my_file, 'r') as fh:
         whole_file = fh.read()
-        # Eliminate tabs and quotes
-        whole_file = whole_file.replace('"', '').replace('\t', '')
-        # Eliminate anything after a comment marker (#)
-        whole_file = re.sub("\\#" + r'.*' + "\n", '\n', whole_file)
-        # Eliminate extraneous spaces, but not in value names
-        whole_file = re.sub(" *\n *", '\n', whole_file)
-        whole_file = re.sub(" *, *", ',', whole_file)
-        whole_file = re.sub(" */\n", '/\n', whole_file)
-        # Eliminate trailing commas (rude)
-        whole_file = whole_file.replace(',\n', '\n')
-        # Eliminate newline before end of entry
-        whole_file = re.sub("\n/", '/', whole_file)
-        # Eliminate spaces at very beginning and end
-        whole_file = whole_file.strip()
-        # Eliminate very last slash
-        whole_file = whole_file.strip('/')
-        # Split entries based upon the "/" ending character
-        into_lines = [x for x in re.split("/\n", whole_file) if x]
-        # Eliminate blank lines
-        into_lines = [re.sub(r'\n+', '\n', x) for x in into_lines]
-        into_lines = [x[1:] if '\n' in x[:1] else x for x in into_lines]
-        into_lines = [x[:-1] if '\n' in x[-1:] else x for x in into_lines]
-        # Split already split entries along newlines to form nested list
-        nested_lines = [x.split('\n') for x in into_lines]
-        # Split nested lines into "heads" (field_type, model, var_name) and "tails" (the rest)
-        heads = [x[0] for x in nested_lines]
-        tails = [x[1:] for x in nested_lines]
-        return heads, tails
+    # Eliminate tabs and quotes
+    whole_file = whole_file.replace('"', '').replace('\t', '')
+    # Eliminate anything after a comment marker (#)
+    whole_file = re.sub("#"+r'.*'+"\n", '\n', whole_file)
+    # Eliminate extraneous spaces, but not in value names
+    whole_file = re.sub(" *\n *", '\n', whole_file)
+    whole_file = re.sub(" *, *", ',', whole_file)
+    whole_file = re.sub(" */\n", '/\n', whole_file)
+    # Eliminate trailing commas (rude)
+    whole_file = whole_file.replace(',\n', '\n')
+    # Eliminate newline before end of entry
+    whole_file = re.sub("\n/", '/', whole_file)
+    # Eliminate spaces at very beginning and end
+    whole_file = whole_file.strip()
+    # Eliminate very last slash
+    whole_file = whole_file.strip('/')
+    # Split entries based upon the "/" ending character
+    into_lines = [x for x in re.split("/\n", whole_file) if x]
+    # Eliminate blank lines
+    into_lines = [re.sub(r'\n+', '\n', x) for x in into_lines]
+    into_lines = [x[1:] if '\n' in x[:1] else x for x in into_lines]
+    into_lines = [x[:-1] if '\n' in x[-1:] else x for x in into_lines]
+    # Split already split entries along newlines to form nested list
+    nested_lines = [x.split('\n') for x in into_lines]
+    # Split nested lines into "heads" (field_type, model, var_name) and "tails" (the rest)
+    heads = [x[0] for x in nested_lines]
+    tails = [x[1:] for x in nested_lines]
+    return heads, tails
 
 
 class Field:
@@ -127,35 +147,35 @@ class Field:
         for in_prop in entry_tuple[1]:
             if 'tracer' == self.field_type:
                 self.process_tracer(in_prop)
-        else:
-            self.process_species(in_prop)
+            else:
+                self.process_species(in_prop)
 
     def process_species(self, prop):
         """ Process a species field """
         comma_split = prop.split(',')
-        if args.verbose:
+        if verbose:
             print(self.name)
             print(self.field_type)
             print(comma_split)
-            if len(comma_split) > 1:
-                eq_splits = [x.split('=') for x in comma_split]
-        if args.verbose:
-            print('printing eq_splits')
-            print(eq_splits)
-        for idx, sub_param in enumerate(eq_splits):
-            if args.verbose:
-                print('printing len(sub_param)')
-                print(len(sub_param))
+        if len(comma_split) > 1:
+            eq_splits = [x.split('=') for x in comma_split]
+            if verbose:
+                print('printing eq_splits')
+                print(eq_splits)
+            for idx, sub_param in enumerate(eq_splits):
+                if verbose:
+                    print('printing len(sub_param)')
+                    print(len(sub_param))
                 if len(sub_param) < 2:
                     eq_splits[0][1] += f',{sub_param[0]}'
-            if args.verbose:
-                print(eq_splits)
-                eq_splits = [x for x in eq_splits if len(x) > 1]
-        for sub_param in eq_splits:
-            if ',' in sub_param[1]:
-                val = yaml.safe_load("'" + sub_param[1] + "'")
-            else:
-                val = dont_convert_yaml_val(sub_param[1])
+                    if verbose:
+                        print(eq_splits)
+            eq_splits = [x for x in eq_splits if len(x) > 1]
+            for sub_param in eq_splits:
+                if ',' in sub_param[1]:
+                    val = yaml.safe_load("'" + sub_param[1] + "'")
+                else:
+                    val = dont_convert_yaml_val(sub_param[1])
                 self.dict[sub_param[0].strip()] = val
         else:
             eq_split = comma_split[0].split('=')
@@ -164,29 +184,29 @@ class Field:
 
     def process_tracer(self, prop):
         """ Process a tracer field """
-        if args.verbose:
+        if verbose:
             print(len(prop))
-            self.dict[prop[0]] = prop[1]
-            if len(prop) > 2:
-                self.dict[f'subparams{str(self.num_subparams)}'] = [OrderedDict()]
-                self.num_subparams += 1
-        if args.verbose:
-            print(self.name)
-            print(self.field_type)
-            print(prop[2:])
-        for sub_param in prop[2:]:
-            eq_split = sub_param.split('=')
-            if len(eq_split) < 2:
-                self.dict[prop[0]] = 'fm_yaml_null'
-                val = dont_convert_yaml_val(eq_split[0])
-                if isinstance(val, list):
-                    val = [dont_convert_yaml_val(b) for b in val]
+        self.dict[prop[0]] = prop[1]
+        if len(prop) > 2:
+            self.dict[f'subparams{str(self.num_subparams)}'] = [OrderedDict()]
+            self.num_subparams += 1
+            if verbose:
+                print(self.name)
+                print(self.field_type)
+                print(prop[2:])
+            for sub_param in prop[2:]:
+                eq_split = sub_param.split('=')
+                if len(eq_split) < 2:
+                    self.dict[prop[0]] = 'fm_yaml_null'
+                    val = dont_convert_yaml_val(eq_split[0])
+                    if isinstance(val, list):
+                        val = [dont_convert_yaml_val(b) for b in val]
                     self.dict[f'subparams{str(self.num_subparams-1)}'][0][prop[1].strip()] = val
                 else:
                     val = dont_convert_yaml_val(eq_split[-1])
-            if isinstance(val, list):
-                val = [dont_convert_yaml_val(b) for b in val]
-                self.dict[f'subparams{str(self.num_subparams-1)}'][0][eq_split[0].strip()] = val
+                    if isinstance(val, list):
+                        val = [dont_convert_yaml_val(b) for b in val]
+                    self.dict[f'subparams{str(self.num_subparams-1)}'][0][eq_split[0].strip()] = val
 
 
 class FieldYaml:
@@ -242,6 +262,17 @@ class FieldYaml:
         final_out = re.sub('subparams\\d*:', 'subparams:', raw_out)
         with open(f'{self.filename}.yaml', 'w') as yaml_file:
             yaml_file.write(final_out)
+
+    # def writeyaml(self, outname="field_table"):
+        # """ Write yaml out to file """
+        # raw_out = yaml.dump(self.lists_wh_yaml, None, default_flow_style=False)
+        # final_out = re.sub('subparams\d*:', 'subparams:', raw_out)
+        # if outname[-5:] != '.yaml' or outname[-4:] != '.yml':
+            # outname_loc = outname + '.yaml'
+        # else:
+            # outname_loc = outname
+        # with open(outname_loc, 'w') as yaml_file:
+            # yaml_file.write(final_out)
 
     def main(self):
         self.init_ordered_keys()
