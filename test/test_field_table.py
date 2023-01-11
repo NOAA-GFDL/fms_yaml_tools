@@ -67,7 +67,7 @@ class TestFieldTable(unittest.TestCase):
                 path = os.path.join(EXAMPLE_DIR, 'field_table')
                 fy = FieldYaml(path)
                 fy.main()
-                fy.writeyaml(outname=os.path.join(testdir, 'output-test.yaml'))
+                fy.writeyaml('output-test.yaml', True)
 
     def test_FieldYaml_file_not_found(self):
         """Check if FileNotFoundError raised if given
@@ -83,10 +83,28 @@ class TestFieldTable(unittest.TestCase):
                 path = os.path.join(EXAMPLE_DIR, 'field_table')
                 fy = FieldYaml(path)
                 fy.main()
-                fy.writeyaml()
+                fy.writeyaml("field_table.yaml", True)
                 with open(path+'.yaml', 'r') as fp:
                     lines = len(fp.readlines())
                     self.assertEqual(lines, 624)
+
+    def test_FieldYaml_overwrite(self):
+        """Test overwrites of output file
+           Checks if overwrites a blank file with --force, and then checks if it errors out without it"""
+        with tempfile.TemporaryDirectory() as testdir:
+            with test_directory(testdir):
+                path = os.path.join(EXAMPLE_DIR, 'field_table')
+                fy = FieldYaml(path)
+                fy.main()
+                with open(path+'.yaml', 'w') as fp:
+                    fp.write('')
+                fy.writeyaml("field_table.yaml", True)
+                with open(path+'.yaml', 'r') as fp:
+                    lines = len(fp.readlines())
+                    self.assertEqual(lines, 624)
+                with self.assertRaises(FileExistsError):
+                    fy.writeyaml("field_table.yaml", False)
+
 
     def test_FieldYaml_parse_table(self):
         """Test the reading of a field table

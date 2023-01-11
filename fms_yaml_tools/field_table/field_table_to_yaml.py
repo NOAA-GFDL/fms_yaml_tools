@@ -23,6 +23,8 @@ import re
 from collections import OrderedDict
 import argparse
 import yaml
+from json import loads, dumps
+from os import path
 """ Converts a legacy ascii field_table to a yaml field_table.
         Author: Eric Stofferahn 07/14/2022
 """
@@ -40,22 +42,22 @@ def main():
                                                   More details on the field_table yaml format can be found in \
                                                   https://github.com/NOAA-GFDL/FMS/tree/main/data_override")
     parser.add_argument('--file', '-f', type=str,
-                        default='field_table.yml',
+                        default='field_table',
                         help='Name of the field_table file to convert')
     parser.add_argument('--verbose', '-v', action='store_true', default=False, help='Increase verbosity')
-    parser.add_argument('-o', '--output',
+    parser.add_argument('--output', '-o',
                         dest='out_file',
                         type=str,
                         default='field_table.yaml',
-                        help="Ouput file name of the converted YAML \
+                        help="Output file name of the converted YAML \
                               (Default: 'field_table.yaml')")
-    parser.add_argument('-F', '--force',
+    parser.add_argument('--force', '-F',
                         action='store_true',
                         default=False,
-                        help="Overwrite the output field table yaml file.")
+                        help="Overwrite the output field table yaml if the file already exists.")
     parser.add_argument('-V', '--version',
                         action="version",
-                        version=f"%(prog)s {__version__}")
+                        version=f'%(prog)s {__version__}')
     global args
     global verbose
     args = parser.parse_args()
@@ -68,7 +70,7 @@ def main():
     try:
         field_yaml = FieldYaml(field_table_name)
         field_yaml.main()
-        field_yaml.writeyaml(args.out_file)
+        field_yaml.writeyaml(args.out_file, args.force)
     except Exception as err:
         raise SystemExit(err)
 
@@ -236,8 +238,8 @@ class FieldYaml:
             if (head_list[0], head_list[1]) in self.ordered_keys.keys():
                 if 'tracer' == head_list[0]:
                     self.ordered_keys[(head_list[0], head_list[1])].append((head_list[2], tail_list))
-        else:
-            self.ordered_keys[(head_list[0], head_list[1])].append((head_list[2], t))
+                else:
+                    self.ordered_keys[(head_list[0], head_list[1])].append((head_list[2], t))
 
     def make_objects(self):
         """ Make Tracer and Species objects and assign to out_yaml """
@@ -248,31 +250,29 @@ class FieldYaml:
 
     def convert_yaml(self):
         """ Convert to list-style yaml """
-        lists_yaml = self.listify_ordered_dict(['model_type', 'field_type'], ['varlist', 'modlist'], self.out_yaml)
+        lists_yaml = listify_ordered_dict(['model_type', 'field_type'], ['varlist', 'modlist'], self.out_yaml)
         for i in range(len(lists_yaml)):
             for j in range(len(lists_yaml[i]['modlist'])):
                 lists_yaml[i]['modlist'][j]['varlist'] = [OrderedDict(list(OrderedDict([('variable', k)]).items()) +
-                                                          list(v.items())) for k,
-                                                          v in lists_yaml[i]['modlist'][j]['varlist'].items()]
-                self.lists_wh_yaml = {"field_table": lists_yaml}
+                                                                      list(v.items())) for k,v in 
+                                                                      lists_yaml[i]['modlist'][j]['varlist'].items()]
+        # dumps and loads json to get rid of any OrderedDict objects showing up in output
+        self.lists_wh_yaml = {"field_table": loads(dumps(lists_yaml))}
 
-    def writeyaml(self):
+    def writeyaml(self, outname, do_overwrite):
         """ Write yaml out to file """
         raw_out = yaml.dump(self.lists_wh_yaml, None, default_flow_style=False)
         final_out = re.sub('subparams\\d*:', 'subparams:', raw_out)
-        with open(f'{self.filename}.yaml', 'w') as yaml_file:
-            yaml_file.write(final_out)
+        if do_overwrite:
+            with open(f'{self.filename}.yaml', '+w') as yaml_file:
+                yaml_file.write(final_out)
+        else:
+            if not path.exists(f'{self.filename}.yaml'):
+                with open(f'{self.filename}.yaml', 'w') as yaml_file:
+                    yaml_file.write(final_out)
+            else:
+                raise FileExistsError('Error: output file present in the output path. Use `-F` to force overwrite.')
 
-    # def writeyaml(self, outname="field_table"):
-        # """ Write yaml out to file """
-        # raw_out = yaml.dump(self.lists_wh_yaml, None, default_flow_style=False)
-        # final_out = re.sub('subparams\d*:', 'subparams:', raw_out)
-        # if outname[-5:] != '.yaml' or outname[-4:] != '.yml':
-            # outname_loc = outname + '.yaml'
-        # else:
-            # outname_loc = outname
-        # with open(outname_loc, 'w') as yaml_file:
-            # yaml_file.write(final_out)
 
     def main(self):
         self.init_ordered_keys()
