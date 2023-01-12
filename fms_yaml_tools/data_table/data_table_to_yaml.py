@@ -1,4 +1,6 @@
-#!/usr/bin/env python3
+# !/usr/bin/env python3
+
+
 # ***********************************************************************
 # *                   GNU Lesser General Public License
 # *
@@ -24,7 +26,6 @@ import errno
 import argparse
 import yaml
 from .. import __version__, TableParseError
-
 
 """ Converts a legacy ascii data_table to a yaml data_table.
     Run `python3 data_table_to_yaml.py -h` for more details
@@ -144,11 +145,10 @@ def main():
     #: parse user input
     parser = argparse.ArgumentParser(
         prog='data_table_to_yaml',
-        description="Converts a legacy ascii data_table to a yaml data_table. \
-                     Requires pyyaml (https://pyyaml.org/) \
-                     More details on the data_table yaml format can be found \
-                     in \
-                     https://github.com/NOAA-GFDL/FMS/tree/main/data_override")
+        description="Converts a legacy ascii data_table to a yaml data_table." +
+                    "Requires pyyaml (https://pyyaml.org/)" +
+                    "More details on the data_table yaml format can be found \
+                    in https://github.com/NOAA-GFDL/FMS/tree/main/data_override")
     parser.add_argument('-f', '--in-file',
                         dest='in_file',
                         type=str,
