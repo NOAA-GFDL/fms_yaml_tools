@@ -45,6 +45,15 @@ def main():
     test_class.read_and_parse_diag_table()
     test_class.construct_yaml()
 
+def is_duplicate(current_files, diag_file) :
+    for curr_diag_file in current_files['diag_files'] :
+       if curr_diag_file['file_name'] != diag_file['file_name'] : continue
+       if curr_diag_file == diag_file:
+           return True
+       else:
+           raise Exception("The diag_table defines " + diag_file['file_name'] + " more than once with different keys")
+    return False
+
 class DiagTable :
 
     def __init__(self, diag_table_file='Diag_Table' ) :
@@ -325,7 +334,7 @@ class DiagTable :
                     found = True
                     continue
             if not found : del ifile_dict['varlist']
-            yaml_doc['diag_files'].append(ifile_dict)
+            if not is_duplicate(yaml_doc, ifile_dict) : yaml_doc['diag_files'].append(ifile_dict)
         myfile = open(self.diag_table_file+'.yaml', 'w')
         yaml.dump(yaml_doc, myfile, sort_keys=False)
 
