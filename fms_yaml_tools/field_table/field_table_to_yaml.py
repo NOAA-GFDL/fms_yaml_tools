@@ -150,14 +150,34 @@ def listify_ordered_dict(in_list, in_list2, in_od):
     y = in_list2[0]
     return [OrderedDict(list_items(x, k) + list_items(y, v)) for k, v in in_od.items()]
   
+def zip_uneven(in_even, in_odd):
+  """ Re-splice two uneven lists that have been split apart by a stride of 2 """
+  result = [None]*(len(in_even)+len(in_odd))
+  result[::2] = in_even
+  result[1::2] = in_odd
+  return result
+
+def pound_signs_within_quotes(in_lines):
+  """ Change pound signs within quotes to the word poundsign so they aren't expunged when eliminating comments. """
+  odds = [x.split('"')[1::2] for x in in_lines]
+  evens = [x.split('"')[::2] for x in in_lines]
+  for idx, line in enumerate(odds):
+    odds[idx] = [re.sub('#','poundsign',x) for x in line]
+  newfilelines = [zip_uneven(e,o) for e, o in zip(evens,odds)]
+  return ''.join(['"'.join(x) for x in newfilelines])
+
 def process_field_file(my_file):
   """ Parse ascii field table into nested lists for further processing """
   with open(my_file, 'r') as fh:
-    whole_file = fh.read()
+    filelines = fh.readlines()
+  # Change literal pound signs to the word poundsign
+  whole_file = pound_signs_within_quotes(filelines)
   # Eliminate tabs and quotes
   whole_file = whole_file.replace('"', '').replace('\t', '')
   # Eliminate anything after a comment marker (#)
   whole_file = re.sub("\#"+r'.*'+"\n",'\n',whole_file)
+  # Replace the word poundsign with a literal pound sign (#)
+  whole_file = re.sub("poundsign","#",whole_file)
   # Eliminate extraneous spaces, but not in value names
   whole_file = re.sub(" *\n *",'\n',whole_file)
   whole_file = re.sub(" *, *",',',whole_file)
