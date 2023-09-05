@@ -45,6 +45,15 @@ def main():
     test_class.read_and_parse_diag_table()
     test_class.construct_yaml()
 
+def is_duplicate(current_files, diag_file) :
+    for curr_diag_file in current_files['diag_files'] :
+       if curr_diag_file['file_name'] != diag_file['file_name'] : continue
+       if curr_diag_file == diag_file:
+           return True
+       else:
+           raise Exception("The diag_table defines " + diag_file['file_name'] + " more than once with different keys")
+    return False
+
 class DiagTable :
 
     def __init__(self, diag_table_file='Diag_Table' ) :
@@ -60,25 +69,25 @@ class DiagTable :
 
         self.file_section = []
         self.file_section_keys = ['file_name',
-                                  'freq',
+                                  'freq_int',
                                   'freq_units',
                                   'time_units',
                                   'unlimdim',
-                                  'new_file_freq',
+                                  'new_file_freq_int',
                                   'new_file_freq_units',
                                   'start_time',
-                                  'file_duration',
+                                  'file_duration_int',
                                   'file_duration_units',
                                   'filename_time_bounds' ]
         self.file_section_fvalues = {'file_name'          : str,
-                                    'freq'                : int,
+                                    'freq_int'                : int,
                                     'freq_units'          : str,
                                     'time_units'          : str,
                                     'unlimdim'            : str,
-                                    'new_file_freq'       : int,
+                                    'new_file_freq_int'       : int,
                                     'new_file_freq_units' : str,
                                     'start_time'          : str,
-                                    'file_duration'       : int,
+                                    'file_duration_int'       : int,
                                     'file_duration_units' : str,
                                     'filename_time_bounds': str }
         self.max_file_section = len(self.file_section_keys)
@@ -299,6 +308,24 @@ class DiagTable :
             if 'ocean' in ifile_dict['file_name'] :
               ifile_dict['is_ocean'] = True
             ifile_dict['sub_region']=[]
+
+            #Combine freq_int and freq_units into 1 key
+            ifile_dict['freq'] = str(ifile_dict['freq_int']) + ' ' + ifile_dict['freq_units']
+            del ifile_dict['freq_int']
+            del ifile_dict['freq_units']
+
+            #Combine new_file_freq_int and new_file_freq_units into 1 key
+            if "new_file_freq_int" in ifile_dict :
+                ifile_dict['new_file_freq'] = str(ifile_dict['new_file_freq_int']) + ' ' + ifile_dict['new_file_freq_units']
+                del ifile_dict['new_file_freq_int']
+                del ifile_dict['new_file_freq_units']
+
+            #Combine file_duration_int and file_duration_units into 1 key
+            if "file_duration_int" in ifile_dict :
+                ifile_dict['file_duration'] = str(ifile_dict['file_duration_int']) + ' ' + ifile_dict['file_duration_units']
+                del ifile_dict['file_duration_int']
+                del ifile_dict['file_duration_units']
+
             found = False
             for iregion_dict in self.region_section :
                 if iregion_dict['file_name'] == ifile_dict['file_name'] :
@@ -325,7 +352,7 @@ class DiagTable :
                     found = True
                     continue
             if not found : del ifile_dict['varlist']
-            yaml_doc['diag_files'].append(ifile_dict)
+            if not is_duplicate(yaml_doc, ifile_dict) : yaml_doc['diag_files'].append(ifile_dict)
         myfile = open(self.diag_table_file+'.yaml', 'w')
         yaml.dump(yaml_doc, myfile, sort_keys=False)
 

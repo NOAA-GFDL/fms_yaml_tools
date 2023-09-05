@@ -204,6 +204,7 @@ with open(in_diag_table) as fl:
     diag_file = diag_files[i]
     check_diag_file(diag_file)
 
+    if 'varlist' not in diag_file: continue
     diag_fields = diag_file['varlist']
     var_names = []
     for j in range(0, len(diag_fields)) :
