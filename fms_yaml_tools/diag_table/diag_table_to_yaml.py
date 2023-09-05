@@ -390,6 +390,14 @@ class DiagTable :
                 if ifield_dict['file_name'] == ifile_dict['file_name'] :
                     tmp_dict=cp.deepcopy(ifield_dict)
 
+                    # Ensure that the output_name contains "min" if the reduction method is "min"
+                    if tmp_dict['reduction'] == "min" and "min" not in tmp_dict['output_name']:
+                        tmp_dict['output_name'] = tmp_dict['output_name'] + "_min"
+
+                    # Ensure that the output_name contains "max" if the reduction method is "max"
+                    if tmp_dict['reduction'] == "max" and "max" not in tmp_dict['output_name']:
+                        tmp_dict['output_name'] = tmp_dict['output_name'] + "_max"
+
                     # If the output_name and the var_name are the same, there is no need for output_name
                     if tmp_dict['output_name'] == tmp_dict['var_name'] :
                       del tmp_dict['output_name']
