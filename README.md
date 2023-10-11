@@ -12,7 +12,10 @@ python3 -m venv /path/to/your/install
 2. Activate the environment
 
 ```
+# If you use bash:
 source /path/to/your/install/bin/activate
+# If you use csh:
+source /path/to/your/install/bin/activate.csh
 ```
 
 3. Upgrade pip and setuptools
