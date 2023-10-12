@@ -108,10 +108,19 @@ def combine_yaml(files):
 
         with open(f) as fl:
             my_table = yaml.safe_load(fl)
-            diag_files = my_table['diag_files']
-            for entry in diag_files:
-                if not is_file_duplicate(diag_table['diag_files'], entry):
-                    diag_table['diag_files'].append(entry)
+
+        if 'base_date' in my_table:
+            diag_table['base_date'] = my_table['base_date']
+        if 'title' in my_table:
+            diag_table['title'] = my_table['title']
+
+        if 'diag_files' not in my_table:
+            return
+
+        diag_files = my_table['diag_files']
+        for entry in diag_files:
+            if not is_file_duplicate(diag_table['diag_files'], entry):
+                diag_table['diag_files'].append(entry)
     return diag_table
 
 
