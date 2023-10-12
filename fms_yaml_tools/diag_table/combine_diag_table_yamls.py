@@ -98,6 +98,8 @@ def is_file_duplicate(diag_table, new_entry):
 
 def combine_yaml(files):
     diag_table = {}
+    diag_table['title'] = ""
+    diag_table['base_date'] = ""
     diag_table['diag_files'] = []
     for f in files:
         # Check if the file exists
@@ -157,7 +159,7 @@ def main():
         if args.force:
             out_file_op = "w"
         with open(args.out_file, out_file_op) as myfile:
-            yaml.dump(diag_table, myfile, default_flow_style=False)
+            yaml.dump(diag_table, myfile, default_flow_style=False, sort_keys=False)
 
     except Exception as err:
         raise SystemExit(err)
