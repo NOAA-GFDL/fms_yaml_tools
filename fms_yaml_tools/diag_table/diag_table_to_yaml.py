@@ -387,11 +387,14 @@ class DiagTable:
 
         yaml_doc = {}
         #: title
-        mykey = self.global_section_keys[0]
-        yaml_doc[mykey] = self.global_section[mykey]
-        #: basedate
-        mykey = self.global_section_keys[1]
-        yaml_doc[mykey] = self.global_section[mykey]
+
+        if not self.is_segment:
+            mykey = self.global_section_keys[0]
+            yaml_doc[mykey] = self.global_section[mykey]
+            #: basedate
+            mykey = self.global_section_keys[1]
+            yaml_doc[mykey] = self.global_section[mykey]
+
         #: diag_files
         yaml_doc['diag_files'] = []
         #: go through each file
