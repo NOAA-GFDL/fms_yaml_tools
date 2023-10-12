@@ -115,7 +115,7 @@ def combine_yaml(files):
             diag_table['title'] = my_table['title']
 
         if 'diag_files' not in my_table:
-            return
+            continue
 
         diag_files = my_table['diag_files']
         for entry in diag_files:
