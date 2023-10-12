@@ -40,6 +40,11 @@ def main():
                         dest='in_file',
                         type=str,
                         help='Name of the diag_table to convert')
+    parser.add_argument('-s', '--is-segment',
+                        dest='is_segment',
+                        action='store_true',
+                        help='The diag_table is a segment and a not a full table, \
+                              so the tile and the base_date are not expected')
     parser.add_argument('-o', '--output',
                         dest='out_file',
                         type=str,
@@ -55,7 +60,7 @@ def main():
     args = parser.parse_args()
 
     #: start
-    test_class = DiagTable(diag_table_file=args.in_file)
+    test_class = DiagTable(diag_table_file=args.in_file, is_segment=args.is_segment)
     test_class.read_and_parse_diag_table()
     test_class.construct_yaml(yaml_table_file=args.out_file,
                               force_write=args.force)
@@ -86,11 +91,11 @@ def is_duplicate(current_files, diag_file):
 
 
 class DiagTable:
-    def __init__(self, diag_table_file='Diag_Table'):
+    def __init__(self, diag_table_file='Diag_Table', is_segment=False):
         '''Initialize the diag_table type'''
 
         self.diag_table_file = diag_table_file
-
+        self.is_segment = is_segment
         self.global_section = {}
         self.global_section_keys = ['title', 'base_date']
         self.global_section_fvalues = {'title': str,
@@ -257,6 +262,9 @@ class DiagTable:
             raise Exception('ERROR:  The input diag_table is empty!')
 
         iline_count, global_count = 0, 0
+
+        if self.is_segment:
+            global_count = 2
 
         #: The first two lines should be the title and base_time
         while global_count < 2:
