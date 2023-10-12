@@ -27,7 +27,7 @@ import copy as cp
 import argparse
 from os import path
 import yaml
-
+from .. import __version__, TableParseError
 
 def main():
     #: parse user input
