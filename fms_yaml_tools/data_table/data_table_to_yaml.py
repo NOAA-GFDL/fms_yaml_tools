@@ -159,7 +159,7 @@ def main():
                         type=str,
                         default='data_table.yaml',
                         help="Ouput file name of the converted YAML \
-                              (Default: 'diag_table.yaml')")
+                              (Default: 'data_table.yaml')")
     parser.add_argument('-F', '--force',
                         action='store_true',
                         help="Overwrite the output data table yaml file.")
