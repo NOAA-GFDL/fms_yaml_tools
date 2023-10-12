@@ -36,13 +36,29 @@ def main():
                                                   Requires pyyaml (https://pyyaml.org) \
                                                   More details on the diag_table yaml format can be found in \
                                                   https://github.com/NOAA-GFDL/FMS/tree/main/diag_table")
-    parser.add_argument('-f', type=str, help='Name of the ascii diag_table to convert')
-    in_diag_table = parser.parse_args().f
+    parser.add_argument('-f', '--in-file',
+                        dest='in_file',
+                        type=str,
+                        help='Name of the diag_table to convert')
+    parser.add_argument('-o', '--output',
+                        dest='out_file',
+                        type=str,
+                        default='diag_table.yaml',
+                        help="Ouput file name of the converted YAML \
+                              (Default: 'diag_table.yaml')")
+    parser.add_argument('-F', '--force',
+                        action='store_true',
+                        help="Overwrite the output data table yaml file.")
+    parser.add_argument('-V', '--version',
+                        action="version",
+                        version=f"%(prog)s {__version__}")
+    args = parser.parse_args()
 
     #: start
-    test_class = DiagTable(diag_table_file=in_diag_table)
+    test_class = DiagTable(diag_table_file=args.in_file)
     test_class.read_and_parse_diag_table()
-    test_class.construct_yaml()
+    test_class.construct_yaml(yaml_table_file=args.out_file,
+                              force_write=args.force)
 
 
 def is_duplicate(current_files, diag_file):
@@ -352,8 +368,15 @@ class DiagTable:
                                         " 'time_axis_units', 'time_axis_name' "
                                         " 'new_file_freq', 'new_file_freq_units', 'start_time', 'file_duration', 'file_duration_units'")
 
-    def construct_yaml(self):
+    def construct_yaml(self,
+                       yaml_table_file='diag_table.yaml',
+                       force_write=False):
         """ Combine the global, file, field, sub_region sections into 1 """
+
+        out_file_op = "x" # Exclusive write
+        if force_write:
+            out_file_op = "w"
+
         yaml_doc = {}
         #: title
         mykey = self.global_section_keys[0]
@@ -431,7 +454,7 @@ class DiagTable:
                 del ifile_dict['varlist']
             if not is_duplicate(yaml_doc, ifile_dict):
                 yaml_doc['diag_files'].append(ifile_dict)
-        myfile = open(self.diag_table_file + '.yaml', 'w')
+        myfile = open(yaml_table_file, out_file_op)
         yaml.dump(yaml_doc, myfile, sort_keys=False)
 
     def read_and_parse_diag_table(self):
