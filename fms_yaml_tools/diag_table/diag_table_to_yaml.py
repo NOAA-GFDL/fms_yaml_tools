@@ -27,7 +27,7 @@ import copy as cp
 import argparse
 from os import path
 import yaml
-
+from .. import __version__, TableParseError
 
 def main():
     #: parse user input
@@ -36,13 +36,34 @@ def main():
                                                   Requires pyyaml (https://pyyaml.org) \
                                                   More details on the diag_table yaml format can be found in \
                                                   https://github.com/NOAA-GFDL/FMS/tree/main/diag_table")
-    parser.add_argument('-f', type=str, help='Name of the ascii diag_table to convert')
-    in_diag_table = parser.parse_args().f
+    parser.add_argument('-f', '--in-file',
+                        dest='in_file',
+                        type=str,
+                        help='Name of the diag_table to convert')
+    parser.add_argument('-s', '--is-segment',
+                        dest='is_segment',
+                        action='store_true',
+                        help='The diag_table is a segment and a not a full table, \
+                              so the tile and the base_date are not expected')
+    parser.add_argument('-o', '--output',
+                        dest='out_file',
+                        type=str,
+                        default='diag_table.yaml',
+                        help="Ouput file name of the converted YAML \
+                              (Default: 'diag_table.yaml')")
+    parser.add_argument('-F', '--force',
+                        action='store_true',
+                        help="Overwrite the output data table yaml file.")
+    parser.add_argument('-V', '--version',
+                        action="version",
+                        version=f"%(prog)s {__version__}")
+    args = parser.parse_args()
 
     #: start
-    test_class = DiagTable(diag_table_file=in_diag_table)
+    test_class = DiagTable(diag_table_file=args.in_file, is_segment=args.is_segment)
     test_class.read_and_parse_diag_table()
-    test_class.construct_yaml()
+    test_class.construct_yaml(yaml_table_file=args.out_file,
+                              force_write=args.force)
 
 
 def is_duplicate(current_files, diag_file):
@@ -70,11 +91,11 @@ def is_duplicate(current_files, diag_file):
 
 
 class DiagTable:
-    def __init__(self, diag_table_file='Diag_Table'):
+    def __init__(self, diag_table_file='Diag_Table', is_segment=False):
         '''Initialize the diag_table type'''
 
         self.diag_table_file = diag_table_file
-
+        self.is_segment = is_segment
         self.global_section = {}
         self.global_section_keys = ['title', 'base_date']
         self.global_section_fvalues = {'title': str,
@@ -242,6 +263,9 @@ class DiagTable:
 
         iline_count, global_count = 0, 0
 
+        if self.is_segment:
+            global_count = 2
+
         #: The first two lines should be the title and base_time
         while global_count < 2:
             iline = self.diag_table_content[iline_count]
@@ -352,15 +376,25 @@ class DiagTable:
                                         " 'time_axis_units', 'time_axis_name' "
                                         " 'new_file_freq', 'new_file_freq_units', 'start_time', 'file_duration', 'file_duration_units'")
 
-    def construct_yaml(self):
+    def construct_yaml(self,
+                       yaml_table_file='diag_table.yaml',
+                       force_write=False):
         """ Combine the global, file, field, sub_region sections into 1 """
+
+        out_file_op = "x" # Exclusive write
+        if force_write:
+            out_file_op = "w"
+
         yaml_doc = {}
         #: title
-        mykey = self.global_section_keys[0]
-        yaml_doc[mykey] = self.global_section[mykey]
-        #: basedate
-        mykey = self.global_section_keys[1]
-        yaml_doc[mykey] = self.global_section[mykey]
+
+        if not self.is_segment:
+            mykey = self.global_section_keys[0]
+            yaml_doc[mykey] = self.global_section[mykey]
+            #: basedate
+            mykey = self.global_section_keys[1]
+            yaml_doc[mykey] = self.global_section[mykey]
+
         #: diag_files
         yaml_doc['diag_files'] = []
         #: go through each file
@@ -431,7 +465,7 @@ class DiagTable:
                 del ifile_dict['varlist']
             if not is_duplicate(yaml_doc, ifile_dict):
                 yaml_doc['diag_files'].append(ifile_dict)
-        myfile = open(self.diag_table_file + '.yaml', 'w')
+        myfile = open(yaml_table_file, out_file_op)
         yaml.dump(yaml_doc, myfile, sort_keys=False)
 
     def read_and_parse_diag_table(self):
