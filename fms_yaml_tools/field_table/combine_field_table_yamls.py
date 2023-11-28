@@ -54,8 +54,8 @@ def add_new_field(new_entry, curr_entries):
   for entry in curr_entries:
     if new_field_type == entry['field_type']:
       if entry == new_entry:
-        # If the field_type already exists but it is exactly the same, just return
-        return
+        # If the field_type already exists but it is exactly the same, move on
+        continue
       new_modlist = new_entry['modlist']
       for mod in new_modlist:
         if model_type_exists(mod['model_type'], entry):
@@ -69,14 +69,14 @@ def add_new_mod(new_mod, curr_entries):
   for entry in curr_entries['modlist']:
     if model_type == entry['model_type']:
       if new_mod == entry:
-        # If the model_type already exists but it is exactly the same, just return
-        return
+        # If the model_type already exists but it is exactly the same, move on
+        continue
       new_varlist = new_mod['varlist']
       curr_varlist = entry['varlist']
       for new_var in new_varlist:
         for curr_var in curr_varlist:
           if new_var == curr_var:
-            return
+            continue
         curr_varlist.append(new_var)
 
 
