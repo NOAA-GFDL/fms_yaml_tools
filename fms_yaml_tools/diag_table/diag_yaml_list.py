@@ -34,9 +34,11 @@ import copy
 @click.option('--fileinfo/--no-fileinfo', type=click.BOOL, show_default=True, default=False,
   help="Print all of the file information. Default only prints history file names")
 @click.option('--varlist/--no-varlist', type=click.BOOL, show_default=True, default=False,
-  help="Prints the list of variables and the module they are from below each history file")
+  help="Prints the list of variables and table information below each history file")
 @click.option('--comma/--no-comma', type=click.BOOL, show_default=True, default=False,
-  help="With --print_vars gives a comma separated list of the variables instead of a vertical listing")
+  help="With --varlist gives a comma separated list of the variables instead of a vertical listing. "\
+       +"Only shows variable names (no other information). "\
+       +"Does nothing if --varlist isn't used.")
 @click.argument("table")
 def dyl(table, fileinfo, varlist, comma):
   """ Lists the history file names in a diag table YAML
