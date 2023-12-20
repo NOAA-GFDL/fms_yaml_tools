@@ -118,6 +118,9 @@ def combine_yaml(files):
             diag_table['title'] = my_table['title']
 
         if 'diag_files' not in my_table:
+            if 'base_date' not in my_table or 'title' not in my_table:
+                raise Exception("The yaml file: " + f + " does not contain the " +
+                                "diag_files header")
             continue
 
         diag_files = my_table['diag_files']
