@@ -39,8 +39,10 @@ import copy
   help="With --varlist gives a comma separated list of the variables instead of a vertical listing. "\
        +"Only shows variable names (no other information). "\
        +"Does nothing if --varlist isn't used.")
+@click.option('--varfiles/--no-varfiles', type=click.BOOL, show_default=True, default=False,
+  help="Prints variable names and a list of the files they appear in")
 @click.argument("table")
-def dyl(table, fileinfo, varlist, comma):
+def dyl(table, fileinfo, varlist, comma, varfiles):
   """ Lists the history file names in a diag table YAML
 
       TABLE is the path of the diag table YAML file
@@ -48,7 +50,8 @@ def dyl(table, fileinfo, varlist, comma):
   with open(table) as fl:
     my_table = yaml.safe_load(fl)
     print_diag_file(my_table, fileinfo, print_vars=varlist, comma=comma)
-
+    if varfiles:
+      print_varstats(my_table)
 """ Prints the varlist for the given diag_file """
 def print_diag_file_vars(my_table, diag_file, comma=False):
   if "varlist" in my_table["diag_files"][diag_file]:
@@ -62,6 +65,37 @@ def print_diag_file_vars(my_table, diag_file, comma=False):
       print(" - ",varlist)
   else:
       print(" ("+my_table['diag_files'][diag_file]["file_name"]+" has no varlist)")
+
+""" Prints information for each variable """
+def print_varstats(my_table):
+  nvars = 0
+  allvars = []
+  filenames = []
+  for f in my_table["diag_files"]: #loop through files
+    if "varlist" in f:
+      for v in f["varlist"]:
+        nvars = nvars + 1
+        allvars.append(v["var_name"])
+        filenames.append(f["file_name"])
+#        print(v["var_name"],f["file_name"])
+  for var in set(allvars):
+    filelist = []
+    for f in my_table["diag_files"]: #loop through files
+      if "varlist" in f:
+        for v in f["varlist"]:
+          if v["var_name"] == var:
+            filelist.append(f["file_name"])
+    print (var+' in ',filelist)
+#  allvarscopy = copy.deepcopy(allvars)
+#  for (v,f) in zip(allvarscopy,filenames):
+#    filelist = []
+#    for vdup in allvars:
+#      if vdup == v:
+#        print (vdup,v,f)
+#        filelist.append(f)
+#    print(v+" in files ",filelist)
+
+
 
 """ Prints the diag_files in a diag_table.yaml """
 def print_diag_file(my_table, file_info, print_vars=False, comma=False):
