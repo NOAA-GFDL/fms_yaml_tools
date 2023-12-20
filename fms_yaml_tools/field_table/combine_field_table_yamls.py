@@ -96,7 +96,6 @@ def combine_yaml(files):
     field_table = {}
     field_table['field_table'] = []
     for f in files:
-        print("File:" + f)
         # Check if the file exists
         if not path.exists(f):
             raise FileNotFoundError(errno.ENOENT,
