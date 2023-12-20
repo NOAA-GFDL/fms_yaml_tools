@@ -56,15 +56,15 @@ def is_field_duplicate(diag_table, new_entry, file_name):
             return True
         else:
             if entry['var_name'] != new_entry['var_name']:
-                # If the variable name is not the same, then it is a brand new variable
-                return False
+                # If the variable name is not the same, then move on to the next variable
+                continue
             elif entry['var_name'] == new_entry['var_name'] and entry['module'] != new_entry['module']:
                 # If the variable name is the same but it a different module, then it is a brand new variable
-                return False
+                continue
             else:
                 raise Exception("The variable " + entry['var_name'] + " from module " + entry['module'] +
                                 " in file " + file_name + " is defined twice with different keys")
-
+    return False
 
 def is_file_duplicate(diag_table, new_entry):
     # Check if a diag_table entry was already defined
@@ -72,9 +72,9 @@ def is_file_duplicate(diag_table, new_entry):
         if entry == new_entry:
             return True
         else:
-            # If the file_name is not the same, then it is a brand new file
+            # If the file_name is not the same, then move on to the next file
             if entry['file_name'] != new_entry['file_name']:
-                return False
+                continue
 
             # Since there are duplicate files, check fhat all the keys are the same:
             compare_key_value_pairs(entry, new_entry, 'freq')
@@ -94,6 +94,7 @@ def is_file_duplicate(diag_table, new_entry):
                 if not is_field_duplicate(entry['varlist'], field_entry, entry['file_name']):
                     entry['varlist'].append(field_entry)
             return True
+    return False
 
 
 def combine_yaml(files):
