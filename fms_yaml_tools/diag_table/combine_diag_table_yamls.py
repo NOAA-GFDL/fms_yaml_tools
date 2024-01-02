@@ -58,12 +58,20 @@ def is_field_duplicate(diag_table, new_entry, file_name):
             if entry['var_name'] != new_entry['var_name']:
                 # If the variable name is not the same, then move on to the next variable
                 continue
-            elif entry['var_name'] == new_entry['var_name'] and entry['module'] != new_entry['module']:
+            elif entry['module'] != new_entry['module']:
                 # If the variable name is the same but it a different module, then it is a brand new variable
                 continue
             else:
-                raise Exception("The variable " + entry['var_name'] + " from module " + entry['module'] +
-                                " in file " + file_name + " is defined twice with different keys")
+                curr_output_name = entry['var_name']
+                new_output_name = new_entry['var_name']
+                if 'output_name' in entry:
+                    curr_output_name = entry['output_name']
+                if 'output_name' in new_entry:
+                    new_output_name = new_entry['output_name']
+                # If the variable name is the same but it has a different output_name, then it is a brand new variable
+                if curr_output_name == new_output_name:
+                  raise Exception("The variable " + entry['var_name'] + " from module " + entry['module'] +
+                                  " in file " + file_name + " is defined twice with different keys")
     return False
 
 def is_file_duplicate(diag_table, new_entry):
