@@ -1,0 +1,144 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "required": ["title", "base_date"],
+  "properties": {
+    "title": {
+      "type": "string"
+    },
+    "base_date": {
+      "type": "string"
+    },
+    "diag_files": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["file_name", "freq", "time_units", "unlimdim"],
+        "properties": {
+          "file_name": {
+            "type": "string"
+          },
+          "freq": {
+            "anyOf": [ 
+              {"type": "string"},
+              {"type": "number"}
+            ],
+            "pattern": "^-[1]{1,1} *[ seconds| minutes| hours| days| months| years]*|^0&|^[1-9]+ [seconds|minutes|hours|days|months|years]{1,1}"
+          },
+          "time_units": {
+            "type": "string",
+            "enum": ["seconds", "minutes", "hours", "days", "months", "years"]
+          },
+          "unlimdim": {
+            "type": "string"
+          },
+          "write_file": {
+            "type": "boolean"
+          },
+          "global_meta": {
+            "type": "object",
+            "required": ["key", "value"],
+            "properties": {
+              "key": {
+                "type": "string"
+              },
+              "value": {
+                "type": "string"
+              }
+            }
+          },
+          "sub_region": {
+            "type": "object",
+            "required": ["grid", "corner"],
+            "properties": {
+              "grid_type": {
+                "type": "string",
+                "enum": ["index", "latlon"]
+              },
+              "corner": {
+                "type": "array",
+                "items": {
+                  "type": "number"
+                }
+              },
+              "zbegin": {
+                "type": "number"
+              },
+              "zend": {
+                "type": "number"
+              },
+              "tile": {
+                "type": "number"
+              }
+            }
+          },
+          "new_file_freq": {
+            "type": "string",
+            "pattern": "[0-9]{1,} [a-z]{1,}"
+          },
+          "start_time": {
+            "type": "array",
+            "minItems": 6,
+            "maxItems": 6,
+            "items": {
+              "type": "number"
+            }
+          },
+          "file_duration": {
+            "type": "number"
+          },
+          "file_duration_units": {
+            "type": "string"
+          },
+          "varlist": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["var_name", "reduction", "module", "kind"],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "enum": ["r4", "r8", "i4", "i8"]
+                },
+                "module": {
+                  "type": "string"
+                },
+                "reduction": {
+                  "type": "string",
+                  "pattern": "^average$|^min$|^max$|^none$|^rms$|^sum$|^diurnal[1-9]+|^pow[1-9]+"
+                },
+                "var_name": {
+                  "type": "string"
+                },
+                "write_var": {
+                  "type": "boolean"
+                },
+                "out_name": {
+                  "type": "string"
+                },
+                "long_name": {
+                  "type": "string"
+                },
+                "attributes": {
+                  "type": "object",
+                  "required": ["key","type"],
+                  "properties": {
+                    "key": {
+                      "type": "string"
+                    },
+                    "value": {
+                      "type": "string"
+                    }
+                  }
+                },
+               "zbounds": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+} 
