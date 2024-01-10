@@ -2,6 +2,7 @@
   "$schema": "http://json-schema.org/draft-04/schema#",
   "type": "object",
   "required": ["title", "base_date"],
+  "additionalProperties": false,
   "properties": {
     "title": {
       "type": "string"
@@ -14,6 +15,7 @@
       "items": {
         "type": "object",
         "required": ["file_name", "freq", "time_units", "unlimdim"],
+        "additionalProperties": false,
         "properties": {
           "file_name": {
             "type": "string"
@@ -95,6 +97,7 @@
             "items": {
               "type": "object",
               "required": ["var_name", "reduction", "module", "kind"],
+              "additionalProperties": false,
               "properties": {
                 "kind": {
                   "type": "string",
@@ -113,7 +116,7 @@
                 "write_var": {
                   "type": "boolean"
                 },
-                "out_name": {
+                "output_name": {
                   "type": "string"
                 },
                 "long_name": {
