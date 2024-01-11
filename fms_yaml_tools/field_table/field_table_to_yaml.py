@@ -249,9 +249,8 @@ class FieldYaml:
   def writeyaml(self):
     """ Write yaml out to file """
     raw_out = yaml.dump(self.lists_wh_yaml, None, default_flow_style=False)
-    final_out = re.sub('subparams\d*:','subparams:',raw_out)
     with open(f'{self.filename}.yaml', 'w') as yaml_file:
-      yaml_file.write(final_out)
+      yaml_file.write(raw_out)
 
   def main(self):
     self.init_ordered_keys()
