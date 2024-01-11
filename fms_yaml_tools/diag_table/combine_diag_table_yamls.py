@@ -21,7 +21,7 @@
 
 from os import path, strerror
 import errno
-import argparse
+import click
 import yaml
 from .. import __version__
 
@@ -56,15 +56,15 @@ def is_field_duplicate(diag_table, new_entry, file_name):
             return True
         else:
             if entry['var_name'] != new_entry['var_name']:
-                # If the variable name is not the same, then move on to the next variable
-                continue
+                # If the variable name is not the same, then it is a brand new variable
+                return False
             elif entry['var_name'] == new_entry['var_name'] and entry['module'] != new_entry['module']:
                 # If the variable name is the same but it a different module, then it is a brand new variable
-                continue
+                return False
             else:
                 raise Exception("The variable " + entry['var_name'] + " from module " + entry['module'] +
                                 " in file " + file_name + " is defined twice with different keys")
-    return False
+
 
 def is_file_duplicate(diag_table, new_entry):
     # Check if a diag_table entry was already defined
@@ -72,9 +72,9 @@ def is_file_duplicate(diag_table, new_entry):
         if entry == new_entry:
             return True
         else:
-            # If the file_name is not the same, then move on to the next file
+            # If the file_name is not the same, then it is a brand new file
             if entry['file_name'] != new_entry['file_name']:
-                continue
+                return False
 
             # Since there are duplicate files, check fhat all the keys are the same:
             compare_key_value_pairs(entry, new_entry, 'freq')
@@ -94,7 +94,6 @@ def is_file_duplicate(diag_table, new_entry):
                 if not is_field_duplicate(entry['varlist'], field_entry, entry['file_name']):
                     entry['varlist'].append(field_entry)
             return True
-    return False
 
 
 def combine_yaml(files):
@@ -118,9 +117,6 @@ def combine_yaml(files):
             diag_table['title'] = my_table['title']
 
         if 'diag_files' not in my_table:
-            if 'base_date' not in my_table or 'title' not in my_table:
-                raise Exception("The yaml file: " + f + " does not contain the " +
-                                "diag_files header")
             continue
 
         diag_files = my_table['diag_files']
@@ -132,41 +128,41 @@ def combine_yaml(files):
 
 def main():
     #: parse user input
-    parser = argparse.ArgumentParser(
-        prog='combine_diag_table_yaml',
-        description="Combines a series of diag_table.yaml files into one file" +
-                    "Requires pyyaml (https://pyyaml.org/)")
-    parser.add_argument('-f', '--in-files',
-                        dest='in_files',
-                        type=str,
-                        nargs='+',
-                        default=["diag_table"],
-                        help='Space seperated list with the '
-                             'Names of the data_table.yaml files to combine')
-    parser.add_argument('-o', '--output',
-                        dest='out_file',
-                        type=str,
-                        default='diag_table.yaml',
-                        help="Ouput file name of the converted YAML \
-                              (Default: 'diag_table.yaml')")
-    parser.add_argument('-F', '--force',
-                        action='store_true',
-                        help="Overwrite the output diag table yaml file.")
-    parser.add_argument('-V', '--version',
-                        action="version",
-                        version=f"%(prog)s {__version__}")
-    args = parser.parse_args()
+    @click.command()
+    @click.option('-f',
+                    '--in_files',
+                    type=str,
+                    multiple=True,
+                    default=["diag_table"],
+                    help='Space seperated list with the '
+                        'Names of the diag_table.yaml files to combine')
+    @click.option('-o',
+                    '--out_file',
+                    type=str,
+                    default='diag_table.yaml',
+                    help="Ouput file name of the converted YAML \
+                          (Default: 'diag_table.yaml')")
+    @click.option('-F',
+                    '--force',
+                    is_flag=True,
+                    help="Overwrite the output diag table yaml file.")
+    @click.version_option(version=__version__,
+                          prog_name='combine_diag_table_yaml')
+    def combine_diag_table_yaml(in_files, out_file, force):
+        """
+        Combines a series of diag_table.yaml files into one file
+        Requires pyyaml (https://pyyaml.org/)
+        """
+        try:
+            diag_table = combine_yaml(in_files)
+            out_file_op = "x"  # Exclusive write
+            if force:
+                out_file_op = "w"
+            with open(out_file, out_file_op) as myfile:
+                yaml.dump(diag_table, myfile, default_flow_style=False, sort_keys=False)
 
-    try:
-        diag_table = combine_yaml(args.in_files)
-        out_file_op = "x"  # Exclusive write
-        if args.force:
-            out_file_op = "w"
-        with open(args.out_file, out_file_op) as myfile:
-            yaml.dump(diag_table, myfile, default_flow_style=False, sort_keys=False)
-
-    except Exception as err:
-        raise SystemExit(err)
+        except Exception as err:
+            raise SystemExit(err)
 
 
 if __name__ == "__main__":

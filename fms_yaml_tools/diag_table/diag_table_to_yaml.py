@@ -24,46 +24,46 @@
 """
 
 import copy as cp
-import argparse
+import click
 from os import path
 import yaml
 from .. import __version__, TableParseError
 
 def main():
     #: parse user input
-    parser = argparse.ArgumentParser(prog='diag_table_to_yaml',
-                                     description="converts a legacy ascii diag_table to a yaml diag_table \
-                                                  Requires pyyaml (https://pyyaml.org) \
-                                                  More details on the diag_table yaml format can be found in \
-                                                  https://github.com/NOAA-GFDL/FMS/tree/main/diag_table")
-    parser.add_argument('-f', '--in-file',
-                        dest='in_file',
-                        type=str,
-                        help='Name of the diag_table to convert')
-    parser.add_argument('-s', '--is-segment',
-                        dest='is_segment',
-                        action='store_true',
-                        help='The diag_table is a segment and a not a full table, \
-                              so the tile and the base_date are not expected')
-    parser.add_argument('-o', '--output',
-                        dest='out_file',
-                        type=str,
-                        default='diag_table.yaml',
-                        help="Ouput file name of the converted YAML \
-                              (Default: 'diag_table.yaml')")
-    parser.add_argument('-F', '--force',
-                        action='store_true',
-                        help="Overwrite the output data table yaml file.")
-    parser.add_argument('-V', '--version',
-                        action="version",
-                        version=f"%(prog)s {__version__}")
-    args = parser.parse_args()
-
-    #: start
-    test_class = DiagTable(diag_table_file=args.in_file, is_segment=args.is_segment)
-    test_class.read_and_parse_diag_table()
-    test_class.construct_yaml(yaml_table_file=args.out_file,
-                              force_write=args.force)
+    @click.command()
+    @click.option('-f'
+                  '--in_file',
+                  type=str,
+                  help='Name of the diag_table to convert')
+    @click.option('-s',
+                  '--is_segment',
+                  is_flag=True,
+                  help='The diag_table is a segment and a not a full table, \
+                        so the tile and the base_date are not expected')
+    @click.option('-o',
+                  '--out_file',
+                  type=str,
+                  default='diag_table.yaml',
+                  help="Ouput file name of the converted YAML \
+                        (Default: 'diag_table.yaml')")
+    @click.option('-F',
+                  '--force',
+                  is_flag=True,
+                  help="Overwrite the output data table yaml file.")
+    @click.version_option(__version__,
+                          prog_name='diag_table_to_yaml')
+    def diag_table_to_yaml(in_file, is_segment, out_file, force):
+        """
+        Converts a legacy ascii diag_table to a yaml diag_table
+        Requires pyyaml (https://pyyaml.org)
+        More details on the diag_table yaml format can be found in
+        https://github.com/NOAA-GFDL/FMS/tree/main/diag_table
+        """
+        #: start
+        test_class = DiagTable(diag_table_file=in_file, is_segment=is_segment)
+        test_class.read_and_parse_diag_table()
+        test_class.construct_yaml(yaml_table_file=out_file, force_write=force)
 
 
 def is_duplicate(current_files, diag_file):

@@ -21,7 +21,7 @@
 
 from os import path, strerror
 import errno
-import argparse
+import click
 import yaml
 from .. import __version__
 
@@ -42,43 +42,41 @@ def is_duplicate(field_table, new_entry):
     is_duplicate = False
     return is_duplicate
 
-
 def field_type_exists(field_type, curr_entries):
-  for entry in curr_entries:
-    if field_type == entry['field_type']:
-      return True
-  return False
+    for entry in curr_entries:
+        if field_type == entry['field_type']:
+            return True
+    return False
 
 def add_new_field(new_entry, curr_entries):
-  new_field_type = new_entry['field_type']
-  for entry in curr_entries:
-    if new_field_type == entry['field_type']:
-      if entry == new_entry:
-        # If the field_type already exists but it is exactly the same, move on
-        continue
-      new_modlist = new_entry['modlist']
-      for mod in new_modlist:
-        if model_type_exists(mod['model_type'], entry):
-          add_new_mod(mod, entry)
-        else:
-          #If the model type does not exist, just append it
-          entry['modlist'].append(mod)
+    new_field_type = new_entry['field_type']
+    for entry in curr_entries:
+        if new_field_type == entry['field_type']:
+            if entry == new_entry:
+                # If the field_type already exists but it is exactly the same, move on
+                continue
+            new_modlist = new_entry['modlist']
+            for mod in new_modlist:
+                if model_type_exists(mod['model_type'], entry):
+                    add_new_mod(mod, entry)
+                else:
+                    #If the model type does not exist, just append it
+                    entry['modlist'].append(mod)
 
 def add_new_mod(new_mod, curr_entries):
-  model_type = new_mod['model_type']
-  for entry in curr_entries['modlist']:
-    if model_type == entry['model_type']:
-      if new_mod == entry:
-        # If the model_type already exists but it is exactly the same, move on
-        continue
-      new_varlist = new_mod['varlist']
-      curr_varlist = entry['varlist']
-      for new_var in new_varlist:
-        for curr_var in curr_varlist:
-          if new_var == curr_var:
-            continue
-        curr_varlist.append(new_var)
-
+    model_type = new_mod['model_type']
+    for entry in curr_entries['modlist']:
+        if model_type == entry['model_type']:
+            if new_mod == entry:
+                # If the model_type already exists but it is exactly the same, move on
+                continue
+            new_varlist = new_mod['varlist']
+            curr_varlist = entry['varlist']
+            for new_var in new_varlist:
+                for curr_var in curr_varlist:
+                    if new_var == curr_var:
+                        continue
+                curr_varlist.append(new_var)    
 
 def model_type_exists(model_type, curr_entries):
     for entry in curr_entries['modlist']:
@@ -96,6 +94,7 @@ def combine_yaml(files):
     field_table = {}
     field_table['field_table'] = []
     for f in files:
+        print("File:" + f)
         # Check if the file exists
         if not path.exists(f):
             raise FileNotFoundError(errno.ENOENT,
@@ -112,45 +111,44 @@ def combine_yaml(files):
                     add_new_field(entry, field_table['field_table'])
     return field_table
 
-
 def main():
     #: parse user input
-    parser = argparse.ArgumentParser(
-        prog='combine_field_table_yaml',
-        description="Combines a list of field_table.yaml files into one file" +
-                    "Requires pyyaml (https://pyyaml.org/)")
-    parser.add_argument('-f', '--in-files',
-                        dest='in_files',
-                        type=str,
-                        nargs='+',
-                        default=["field_table"],
-                        help='Space seperated list with the '
-                             'Names of the field_table.yaml files to combine')
-    parser.add_argument('-o', '--output',
-                        dest='out_file',
-                        type=str,
-                        default='field_table.yaml',
-                        help="Ouput file name of the converted YAML \
-                              (Default: 'field_table.yaml')")
-    parser.add_argument('-F', '--force',
-                        action='store_true',
-                        help="Overwrite the output field table yaml file.")
-    parser.add_argument('-V', '--version',
-                        action="version",
-                        version=f"%(prog)s {__version__}")
-    args = parser.parse_args()
+    @click.command()
+    @click.option('-f',
+                    '--in_files',
+                    type=str,
+                    multiple=True,
+                    default=["field_table"],
+                    help='Space seperated list with the '
+                         'Names of the field_table.yaml files to combine')
+    @click.option('-o',
+                    '--out_file',
+                    type=str,
+                    default='field_table.yaml',
+                    help="Ouput file name of the converted YAML \
+                          (Default: 'field_table.yaml')")
+    @click.option('-F',
+                    '--force',
+                    is_flag=True,
+                    help="Overwrite the output field table yaml file.")
+    @click.version_option(version=__version__,
+                          prog_name="combine_field_table_yaml")
+    def combine_field_table_yaml(in_files, out_file, force):
+        """
+        Combines a list of field_table.yaml files into one file
+        Requires pyyaml (https://pyyaml.org/)
+        """
+        try:
+            field_table = combine_yaml(in_files)
+            out_file_op = "x"  # Exclusive write
+            if force:
+                out_file_op = "w"
+            with open(out_file, out_file_op) as myfile:
+                yaml.dump(field_table, myfile, default_flow_style=False)
 
-    try:
-        field_table = combine_yaml(args.in_files)
-        out_file_op = "x"  # Exclusive write
-        if args.force:
-            out_file_op = "w"
-        with open(args.out_file, out_file_op) as myfile:
-            yaml.dump(field_table, myfile, default_flow_style=False)
-
-    except Exception as err:
-        raise SystemExit(err)
-
+        except Exception as err:
+            raise SystemExit(err)
+  
 
 if __name__ == "__main__":
     main()

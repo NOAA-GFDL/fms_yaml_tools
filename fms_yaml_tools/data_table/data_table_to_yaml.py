@@ -21,7 +21,7 @@
 
 from os import path, strerror
 import errno
-import argparse
+import click
 import yaml
 from .. import __version__, TableParseError
 
@@ -142,39 +142,41 @@ class DataType:
 
 def main():
     #: parse user input
-    parser = argparse.ArgumentParser(
-        prog='data_table_to_yaml',
-        description="Converts a legacy ascii data_table to a yaml data_table. \
-                     Requires pyyaml (https://pyyaml.org/) \
-                     More details on the data_table yaml format can be found \
-                     in \
-                     https://github.com/NOAA-GFDL/FMS/tree/main/data_override")
-    parser.add_argument('-f', '--in-file',
-                        dest='in_file',
-                        type=str,
-                        default="data_table",
-                        help='Name of the data_table file to convert')
-    parser.add_argument('-o', '--output',
-                        dest='out_file',
-                        type=str,
-                        default='data_table.yaml',
-                        help="Ouput file name of the converted YAML \
-                              (Default: 'data_table.yaml')")
-    parser.add_argument('-F', '--force',
-                        action='store_true',
-                        help="Overwrite the output data table yaml file.")
-    parser.add_argument('-V', '--version',
-                        action="version",
-                        version=f"%(prog)s {__version__}")
-    args = parser.parse_args()
-
-    try:
-        test_class = DataType(data_table_file=args.in_file,
-                              yaml_table_file=args.out_file,
-                              force_write=args.force)
-        test_class.convert_data_table()
-    except Exception as err:
-        raise SystemExit(err)
+    @click.command()
+    @click.option('-f',
+                    '--in_file',
+                    type=str,
+                    default="data_table",
+                    help="Name of the data_table file to convert",
+                    required=True)
+    @click.option('-o',
+                    '--output',
+                    type=str,
+                    default='data_table.yaml',
+                    help="Ouput file name of the converted YAML \
+                          (Default: 'diag_table.yaml')",
+                    required=True)
+    @click.option('-F'
+                    '--force',
+                    is_flag=True,
+                    help="Overwrite the output data table yaml file.")
+    @click.version_option(version='1.0',
+                          prog_name='combine_data_table_yaml')
+    def data_table_to_yaml(in_file, output, force):
+        """
+        Converts a legacy ascii data_table to a yaml data_table. \
+        Requires pyyaml (https://pyyaml.org/) \
+        More details on the data_table yaml format can be found \
+        in \
+        https://github.com/NOAA-GFDL/FMS/tree/main/data_override")
+        """
+        try:
+            test_class = DataType(data_table_file=in_file,
+                                  yaml_table_file=output,
+                                  force_write=force)
+            test_class.convert_data_table()
+        except Exception as err:
+            raise SystemError(err)
 
 
 if __name__ == "__main__":
