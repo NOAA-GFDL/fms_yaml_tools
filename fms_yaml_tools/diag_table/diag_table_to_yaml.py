@@ -298,13 +298,19 @@ class DiagTable:
                     try:
                         iline_list, tmp_list = iline.split('#')[0].split(), []  #: not comma separated integers
                         mykey = self.global_section_keys[1]
+                        if len(iline_list) != 6:
+                            raise Exception()
+                        for member in iline_list:
+                            if member < 0:
+                                raise Exception()
                         self.global_section[mykey] = iline.split('#')[0].strip()
                         global_count += 1
                     except:
                         raise Exception(" ERROR with line # " + str(iline_count) + '\n'
                                         " CHECK:            " + str(iline) + '\n'
                                         " Ensure that the second uncommented line of the diag table defines \n"
-                                        " the base date in the format [year month day hour min sec]")
+                                        " the base date in the format [year month day hour min sec] \n"
+                                        " if this is a segment and not a full diag table use the -s option. ")
                 #: The first uncommented line is the title
                 if global_count == 0:
                     try:
@@ -465,12 +471,13 @@ class DiagTable:
 
                     # Ensure that the output_name contains "min"
                     # if the reduction method is "min"
-                    if tmp_dict['reduction'] == "min" and "min" not in tmp_dict['output_name']:
+                    output_name = tmp_dict['output_name'].lower()
+                    if tmp_dict['reduction'] == "min" and "min" not in output_name:
                         tmp_dict['output_name'] = tmp_dict['output_name'] + "_min"
 
                     # Ensure that the output_name contains "max"
                     # if the reduction method is "max"
-                    if tmp_dict['reduction'] == "max" and "max" not in tmp_dict['output_name']:
+                    if tmp_dict['reduction'] == "max" and "max" not in output_name:
                         tmp_dict['output_name'] = tmp_dict['output_name'] + "_max"
 
                     # If the output_name and the var_name are the same
