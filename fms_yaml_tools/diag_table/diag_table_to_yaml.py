@@ -301,7 +301,7 @@ class DiagTable:
                         if len(iline_list) != 6:
                             raise Exception()
                         for member in iline_list:
-                            if member < 0:
+                            if int(member) < 0:
                                 raise Exception()
                         self.global_section[mykey] = iline.split('#')[0].strip()
                         global_count += 1
