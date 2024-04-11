@@ -90,6 +90,27 @@ def is_duplicate(current_files, diag_file):
     return False
 
 
+def check_for_file_for_all_var(files, fields):
+    """
+    Determine if all fields have a file defined.
+
+    Args:
+        files (list): List of dictionary containing all the diag files that have been defined
+        fields (list): List of dictionary containing all the diag fields that have been defined
+    """
+
+    for field in fields:
+        found = False
+        for file in files:
+            if file['file_name'] == field['file_name']:
+                found = True
+        if not found:
+            raise Exception("The variable " + field['var_name'] + " is expected to be in the file " +
+                            field['file_name'] + " but the file is not defined in the diag table! " +
+                            "Ensure that there is a file entry for " + field['file_name'] +
+                            " or delete the the line for the field.")
+
+
 class DiagTable:
     def __init__(self, diag_table_file='Diag_Table', is_segment=False):
         '''Initialize the diag_table type'''
@@ -277,13 +298,19 @@ class DiagTable:
                     try:
                         iline_list, tmp_list = iline.split('#')[0].split(), []  #: not comma separated integers
                         mykey = self.global_section_keys[1]
+                        if len(iline_list) != 6:
+                            raise Exception()
+                        for member in iline_list:
+                            if int(member) < 0:
+                                raise Exception()
                         self.global_section[mykey] = iline.split('#')[0].strip()
                         global_count += 1
                     except:
                         raise Exception(" ERROR with line # " + str(iline_count) + '\n'
                                         " CHECK:            " + str(iline) + '\n'
                                         " Ensure that the second uncommented line of the diag table defines \n"
-                                        " the base date in the format [year month day hour min sec]")
+                                        " the base date in the format [year month day hour min sec] \n"
+                                        " if this is a segment and not a full diag table use the -s option. ")
                 #: The first uncommented line is the title
                 if global_count == 0:
                     try:
@@ -444,12 +471,13 @@ class DiagTable:
 
                     # Ensure that the output_name contains "min"
                     # if the reduction method is "min"
-                    if tmp_dict['reduction'] == "min" and "min" not in tmp_dict['output_name']:
+                    output_name = tmp_dict['output_name'].lower()
+                    if tmp_dict['reduction'] == "min" and "min" not in output_name:
                         tmp_dict['output_name'] = tmp_dict['output_name'] + "_min"
 
                     # Ensure that the output_name contains "max"
                     # if the reduction method is "max"
-                    if tmp_dict['reduction'] == "max" and "max" not in tmp_dict['output_name']:
+                    if tmp_dict['reduction'] == "max" and "max" not in output_name:
                         tmp_dict['output_name'] = tmp_dict['output_name'] + "_max"
 
                     # If the output_name and the var_name are the same
@@ -465,6 +493,7 @@ class DiagTable:
                 del ifile_dict['varlist']
             if not is_duplicate(yaml_doc, ifile_dict):
                 yaml_doc['diag_files'].append(ifile_dict)
+        check_for_file_for_all_var(self.file_section, self.field_section)
         myfile = open(yaml_table_file, out_file_op)
         yaml.dump(yaml_doc, myfile, sort_keys=False)
 
