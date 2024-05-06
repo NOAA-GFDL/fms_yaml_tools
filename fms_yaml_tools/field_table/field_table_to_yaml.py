@@ -112,8 +112,8 @@ class Field:
     """ Process a tracer field """
     if args.verbose:
       print(len(prop))
-    self.dict[prop[0]] = [OrderedDict([('value', prop[1])])]
     if len(prop) > 2:
+      self.dict[prop[0]] = [OrderedDict([('value', prop[1])])]
       if args.verbose:
         print(self.name)
         print(self.field_type)
@@ -131,6 +131,11 @@ class Field:
           if isinstance(val, list):
             val = [dont_convert_yaml_val(b) for b in val]
           self.dict[prop[0]][0][eq_split[0].strip()] = val
+    else:
+      val = dont_convert_yaml_val(prop[1])
+      if isinstance(val, list):
+        val = [dont_convert_yaml_val(b) for b in val]
+      self.dict[prop[0]] = val
       
 def list_items(brief_text, brief_od):
   """ Given text and an OrderedDict, make an OrderedDict and convert to list """
