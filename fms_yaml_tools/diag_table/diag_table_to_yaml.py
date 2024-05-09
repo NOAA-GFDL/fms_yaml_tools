@@ -472,12 +472,12 @@ class DiagTable:
                     # Ensure that the output_name contains "min"
                     # if the reduction method is "min"
                     output_name = tmp_dict['output_name'].lower()
-                    if tmp_dict['reduction'] == "min" and "min" not in output_name:
+                    if tmp_dict['reduction'] == "min" and "min" not in output_name[-3:]:
                         tmp_dict['output_name'] = tmp_dict['output_name'] + "_min"
 
                     # Ensure that the output_name contains "max"
                     # if the reduction method is "max"
-                    if tmp_dict['reduction'] == "max" and "max" not in output_name:
+                    if tmp_dict['reduction'] == "max" and "max" not in output_name[-3:]:
                         tmp_dict['output_name'] = tmp_dict['output_name'] + "_max"
 
                     # If the output_name and the var_name are the same
