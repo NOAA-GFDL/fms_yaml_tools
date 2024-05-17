@@ -473,7 +473,7 @@ class DiagTable:
                         raise Exception ("file " + ifile_dict['file_name'] +
                           " is a static file, but the variable: " + tmp_dict['output_name'] +
                           " is using " + tmp_dict['reduction'] + " as its reduction method." +
-                          " The reduction method should be none for a variables in a static file!")
+                          " The reduction method (6th column) should be none for a variables in a static file!")
 
                     # Ensure that the output_name contains "min"
                     # if the reduction method is "min"
