@@ -469,7 +469,7 @@ class DiagTable:
             for ifield_dict in self.field_section:  #: field_section = [ {}, {}. {} ]
                 if ifield_dict['file_name'] == ifile_dict['file_name']:
                     tmp_dict = cp.deepcopy(ifield_dict)
-                    if tmp_dict['reduction'] != "none" :
+                    if is_static and tmp_dict['reduction'] != "none" :
                         raise Exception ("file " + ifile_dict['file_name'] +
                           " is a static file, but the variable: " + tmp_dict['output_name'] +
                           " is using " + tmp_dict['reduction'] + " as its reduction method." +
