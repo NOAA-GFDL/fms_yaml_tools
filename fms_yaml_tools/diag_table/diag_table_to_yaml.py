@@ -430,6 +430,7 @@ class DiagTable:
                 ifile_dict['is_ocean'] = True
             ifile_dict['sub_region'] = []
 
+            is_static = ifile_dict['freq_int'] == -1
             # Combine freq_int and freq_units into 1 key
             ifile_dict['freq'] = str(ifile_dict['freq_int']) + ' ' + ifile_dict['freq_units']
             del ifile_dict['freq_int']
@@ -468,6 +469,11 @@ class DiagTable:
             for ifield_dict in self.field_section:  #: field_section = [ {}, {}. {} ]
                 if ifield_dict['file_name'] == ifile_dict['file_name']:
                     tmp_dict = cp.deepcopy(ifield_dict)
+                    if tmp_dict['reduction'] != "none" :
+                        raise Exception ("file " + ifile_dict['file_name'] +
+                          " is a static file, but the variable: " + tmp_dict['output_name'] +
+                          " is using " + tmp_dict['reduction'] + " as its reduction method." +
+                          " The reduction method (6th column) should be none for a variables in a static file!")
 
                     # Ensure that the output_name contains "min"
                     # if the reduction method is "min"
