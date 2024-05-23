@@ -2,7 +2,8 @@
 import click
 import yaml
 import json
-from jsonschema import validate, ValidationError, SchemaError
+#import jsonschema
+from jsonschema import validate, ValidationError, SchemaError, Draft7Validator
 """ This program is used for validating a file against a schema.  The
 schema is written in JSON format, so the file it is validating must be
 in a JSON-like format.  That means that this can be used to validate JSON
@@ -46,7 +47,17 @@ def valyaml (ypath,spath,debug,success): #main program
   schema = json.loads(s)
   if debug:
     print ("Validate "+ypath+" against "+spath)
-  validate(instance=y, schema=schema)
+  try:
+    v = validate(instance=y, schema=schema)
+  except ValidationError as e:
+    print("The following errors have occurred:\n")
+    vr = Draft7Validator(schema)
+    errors = vr.iter_errors(y)
+    i = 1
+    for err in errors:
+      print("("+str(i)+") "+err.message+"---"+str(err.path))
+      i=i+1
+    return -1
   if success or debug:
     print (ypath+" was successfully validated against the schema "+spath)
 
