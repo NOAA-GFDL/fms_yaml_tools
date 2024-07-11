@@ -33,14 +33,13 @@ from fms_yaml_tools.schema.validate_schema import validate_yaml
               help="Print success message")
 # This is the path to the file to be validated
 @click.argument("ypath")
-def validate_diag_yaml(ypath, debug, success):
-    """ Validates a diag_table.yaml based on a schema to check for any errors. \n
-        YPATH - Path to the diag_table.yaml file to be validated against the schema \n
+def validate_field_yaml(ypath, debug, success):
+    """ Validates a field_table.yaml based on a schema to check for any errors. \n
+        YPATH - Path to the field_table.yaml file to be validated against the schema \n
     """
     data_path = pkg_resources.resource_filename('fms_yaml_tools', '')
-    validate_yaml(ypath, data_path + "/schema/gfdl_msd_schemas/FMS/diag_table.json", debug, success)
+    validate_yaml(ypath, data_path + "/schema/gfdl_msd_schemas/FMS/field_table.json", debug, success)
 
 
 if __name__ == "__main__":
-    validate_diag_yaml(prog_name="validate_diag_yaml")
-
+    validate_field_yaml(prog_name="validate_field_yaml")
