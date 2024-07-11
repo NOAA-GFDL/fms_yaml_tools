@@ -35,7 +35,7 @@ from fms_yaml_tools.schema.validate_schema import validate_yaml
 @click.argument("ypath")
 def validate_data_yaml(ypath, debug, success):
     """ Validates a data_table.yaml based on a schema to check for any errors. \n
-        YPATH - Path to the YAML file to be validated against the schema \n
+        YPATH - Path to the data_table.yaml file to be validated against the schema \n
     """
     data_path = pkg_resources.resource_filename('fms_yaml_tools', '')
     validate_yaml(ypath, data_path + "/schema/gfdl_msd_schemas/FMS/data_table.json", debug, success)
