@@ -29,6 +29,9 @@ def valyaml (ypath,spath,debug,success): #main program
       SPATH - Path to the schema file to use for validation \n
 
   """
+  validate_yaml(ypath, spath, debug, success)
+
+def validate_yaml(ypath, spath, debug, success):
 # The debug messages are basically comments showing what the code is doing
   if debug:
     print ("Open "+ypath)
