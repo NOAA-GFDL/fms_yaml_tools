@@ -43,4 +43,3 @@ def validate_diag_yaml(ypath, debug, success):
 
 if __name__ == "__main__":
     validate_diag_yaml(prog_name="validate_diag_yaml")
-
