@@ -135,7 +135,7 @@ class TestDataTable(unittest.TestCase):
                            'lon_end': 20.0,
                            'lat_start': 80.0,
                            'lat_end': 100.0,
-                           'type': 'inside_region'}, 
+                           'type': 'inside_region'},
                       'override_file':
                           {'file_name': 'INPUT/no_file.nc',
                            'fieldname_in_file': 'var',
