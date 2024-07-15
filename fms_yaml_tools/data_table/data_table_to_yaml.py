@@ -135,41 +135,41 @@ class DataType:
 
 
 def reformat_yaml(tmp_list):
-  """Convert the dictionary as it was read in to the output yaml"""
-  data_table_entry = {}
-  data_table_entry['grid_name'] = tmp_list['grid_name']
-  data_table_entry['fieldname_in_model'] = tmp_list['fieldname_in_model']
-  data_table_entry['factor'] = tmp_list['factor']
-  if tmp_list['fieldname_in_file'] != "" :
-    override_file = {}
-    override_file['file_name'] = tmp_list['file_name']
-    override_file['fieldname_in_file'] = tmp_list['fieldname_in_file']
-    override_file['interp_method'] = tmp_list['interp_method']
-    if ":" in tmp_list['file_name']:
-      multi_file = {}
-      file_name_str = tmp_list['file_name']
-      if file_name_str.count(':') != 2 :
-        raise Exception("If using the multi-file capability. Three filename must be set, seperated by a comma.")
+    """Convert the dictionary as it was read in to the output yaml"""
+    data_table_entry = {}
+    data_table_entry['grid_name'] = tmp_list['grid_name']
+    data_table_entry['fieldname_in_model'] = tmp_list['fieldname_in_model']
+    data_table_entry['factor'] = tmp_list['factor']
+    if tmp_list['fieldname_in_file'] != "":
+        override_file = {}
+        override_file['file_name'] = tmp_list['file_name']
+        override_file['fieldname_in_file'] = tmp_list['fieldname_in_file']
+        override_file['interp_method'] = tmp_list['interp_method']
+        if ":" in tmp_list['file_name']:
+            multi_file = {}
+            file_name_str = tmp_list['file_name']
+            if file_name_str.count(':') != 2:
+                raise Exception("If using the multi-file capability. Three filename must be set, seperated by a comma.")
 
-      file_names = file_name_str.split(":")
-      multi_file['prev_file_name'] = file_names[0]
-      multi_file['next_file_name'] = file_names[2]
-      override_file['file_name'] = file_names[1]
-      override_file['multi_file'] = multi_file
-    else:
-      override_file['file_name'] = tmp_list['file_name']
+            file_names = file_name_str.split(":")
+            multi_file['prev_file_name'] = file_names[0]
+            multi_file['next_file_name'] = file_names[2]
+            override_file['file_name'] = file_names[1]
+            override_file['multi_file'] = multi_file
+        else:
+            override_file['file_name'] = tmp_list['file_name']
 
-    if 'type' in tmp_list:
-      subregion = {}
-      subregion['lon_start'] = tmp_list['lon_start']
-      subregion['lon_end']   = tmp_list['lon_end']
-      subregion['lat_start'] = tmp_list['lat_start']
-      subregion['lat_end']   = tmp_list['lat_end']
-      subregion['type']      = tmp_list['type']
+        if 'type' in tmp_list:
+            subregion = {}
+            subregion['lon_start'] = tmp_list['lon_start']
+            subregion['lon_end'] = tmp_list['lon_end']
+            subregion['lat_start'] = tmp_list['lat_start']
+            subregion['lat_end'] = tmp_list['lat_end']
+            subregion['type'] = tmp_list['type']
+            data_table_entry['subregion'] = subregion
+        data_table_entry['override_file'] = override_file
 
-    data_table_entry['override_file'] = override_file
-
-  return data_table_entry
+    return data_table_entry
 
 
 def main():
