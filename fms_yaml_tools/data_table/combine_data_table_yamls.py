@@ -45,9 +45,9 @@ def is_duplicate(data_table, new_entry):
             is_duplicate = True
             return is_duplicate
         else:
-            if entry['fieldname_code'] == new_entry['fieldname_code']:
+            if entry['fieldname_in_model'] == new_entry['fieldname_in_model']:
                 raise Exception("A data_table entry is defined twice for the "
-                                "field_name_code:" + entry['fieldname_code'] +
+                                "fieldname_in_model:" + entry['fieldname_in_model'] +
                                 " with different keys/values!")
     is_duplicate = False
     return is_duplicate
