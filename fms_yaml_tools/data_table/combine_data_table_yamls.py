@@ -40,11 +40,13 @@ def combine_data_table_yaml(in_files, debug, output_yaml, force_write):
         in-files - Space seperated list with the names of the data_table.yaml files to combine \n
     """
 
+    verboseprint = print if debug else lambda *a, **k: None
     try:
-        data_table = combine_yaml(in_files)
+        data_table = combine_yaml(in_files, verboseprint)
         out_file_op = "x"  # Exclusive write
         if force_write:
             out_file_op = "w"
+        verboseprint("Writing the output yaml: " + output_yaml)
         with open(output_yaml, out_file_op) as myfile:
             yaml.dump(data_table, myfile, default_flow_style=False)
 
@@ -75,7 +77,7 @@ def is_duplicate(data_table, new_entry):
     return is_duplicate
 
 
-def combine_yaml(files):
+def combine_yaml(files, verboseprint):
     """
     Combines a list of yaml files into one
 
@@ -86,16 +88,25 @@ def combine_yaml(files):
     data_table['data_table'] = []
     for f in files:
         # Check if the file exists
+        verboseprint("Opening on the data_table yaml:" + f)
         if not path.exists(f):
             raise FileNotFoundError(errno.ENOENT,
                                     strerror(errno.ENOENT),
                                     f)
 
         with open(f) as fl:
-            my_table = yaml.safe_load(fl)
+            verboseprint("Parsing the data_table yaml:" + f)
+            try:
+              my_table = yaml.safe_load(fl)
+            except yaml.YAMLError as err:
+                print("---> Error when parsing the file " + f)
+                raise err
             entries = my_table['data_table']
             for entry in entries:
+                verboseprint("---> Working on the entry: \n" + yaml.dump(entry))
+                verboseprint("Checking if it is a duplicate:")
                 if not is_duplicate(data_table['data_table'], entry):
+                    verboseprint("It is not a duplicate so adding it")
                     data_table['data_table'].append(entry)
     return data_table
 
