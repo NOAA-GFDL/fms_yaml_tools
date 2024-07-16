@@ -21,13 +21,35 @@
 
 from os import path, strerror
 import errno
-import argparse
+import click
 import yaml
 from .. import __version__
 
-""" Combines a series of data_table.yaml files into one file
-    Author: Uriel Ramirez 04/11/2023
-"""
+
+@click.command()
+@click.argument('in-files', nargs=-1)
+@click.option('--debug/--no-debug', type=click.BOOL, show_default=True, default=False,
+              help="Print steps in the conversion")
+@click.option('--output-yaml',  type=click.STRING, show_default=True, default="data_table.yaml",
+              help="Path to the output data table yaml")
+@click.option('--force-write/--no-force-write', type=click.BOOL, show_default=True, default=False,
+              help="Overwrite the output yaml file if it already exists")
+@click.version_option(__version__, "--version")
+def combine_data_table_yaml(in_files, debug, output_yaml, force_write):
+    """ Combines a series of data_table.yaml files into one file \n
+        in-files - Space seperated list with the names of the data_table.yaml files to combine \n
+    """
+
+    try:
+        data_table = combine_yaml(in_files)
+        out_file_op = "x"  # Exclusive write
+        if force_write:
+            out_file_op = "w"
+        with open(output_yaml, out_file_op) as myfile:
+            yaml.dump(data_table, myfile, default_flow_style=False)
+
+    except Exception as err:
+        raise SystemExit(err)
 
 
 def is_duplicate(data_table, new_entry):
@@ -78,44 +100,5 @@ def combine_yaml(files):
     return data_table
 
 
-def main():
-    #: parse user input
-    parser = argparse.ArgumentParser(
-        prog='combine_data_table_yaml',
-        description="Combines a list of data_table.yaml files into one file" +
-                    "Requires pyyaml (https://pyyaml.org/)")
-    parser.add_argument('-f', '--in-files',
-                        dest='in_files',
-                        type=str,
-                        nargs='+',
-                        default=["data_table"],
-                        help='Space seperated list with the '
-                             'Names of the data_table.yaml files to combine')
-    parser.add_argument('-o', '--output',
-                        dest='out_file',
-                        type=str,
-                        default='data_table.yaml',
-                        help="Ouput file name of the converted YAML \
-                              (Default: 'diag_table.yaml')")
-    parser.add_argument('-F', '--force',
-                        action='store_true',
-                        help="Overwrite the output data table yaml file.")
-    parser.add_argument('-V', '--version',
-                        action="version",
-                        version=f"%(prog)s {__version__}")
-    args = parser.parse_args()
-
-    try:
-        data_table = combine_yaml(args.in_files)
-        out_file_op = "x"  # Exclusive write
-        if args.force:
-            out_file_op = "w"
-        with open(args.out_file, out_file_op) as myfile:
-            yaml.dump(data_table, myfile, default_flow_style=False)
-
-    except Exception as err:
-        raise SystemExit(err)
-
-
 if __name__ == "__main__":
-    main()
+    combine_data_table_yaml(prog_name="combine_data_table_yaml")
