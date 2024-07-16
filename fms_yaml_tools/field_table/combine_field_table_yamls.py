@@ -44,40 +44,42 @@ def is_duplicate(field_table, new_entry):
 
 
 def field_type_exists(field_type, curr_entries):
-  for entry in curr_entries:
-    if field_type == entry['field_type']:
-      return True
-  return False
+    for entry in curr_entries:
+        if field_type == entry['field_type']:
+            return True
+    return False
+
 
 def add_new_field(new_entry, curr_entries):
-  new_field_type = new_entry['field_type']
-  for entry in curr_entries:
-    if new_field_type == entry['field_type']:
-      if entry == new_entry:
-        # If the field_type already exists but it is exactly the same, move on
-        continue
-      new_modlist = new_entry['modlist']
-      for mod in new_modlist:
-        if model_type_exists(mod['model_type'], entry):
-          add_new_mod(mod, entry)
-        else:
-          #If the model type does not exist, just append it
-          entry['modlist'].append(mod)
+    new_field_type = new_entry['field_type']
+    for entry in curr_entries:
+        if new_field_type == entry['field_type']:
+            if entry == new_entry:
+                # If the field_type already exists but it is exactly the same, move on
+                continue
+            new_modlist = new_entry['modlist']
+            for mod in new_modlist:
+                if model_type_exists(mod['model_type'], entry):
+                    add_new_mod(mod, entry)
+                else:
+                    # If the model type does not exist, just append it
+                    entry['modlist'].append(mod)
+
 
 def add_new_mod(new_mod, curr_entries):
-  model_type = new_mod['model_type']
-  for entry in curr_entries['modlist']:
-    if model_type == entry['model_type']:
-      if new_mod == entry:
-        # If the model_type already exists but it is exactly the same, move on
-        continue
-      new_varlist = new_mod['varlist']
-      curr_varlist = entry['varlist']
-      for new_var in new_varlist:
-        for curr_var in curr_varlist:
-          if new_var == curr_var:
-            continue
-        curr_varlist.append(new_var)
+    model_type = new_mod['model_type']
+    for entry in curr_entries['modlist']:
+        if model_type == entry['model_type']:
+            if new_mod == entry:
+                # If the model_type already exists but it is exactly the same, move on
+                continue
+            new_varlist = new_mod['varlist']
+            curr_varlist = entry['varlist']
+            for new_var in new_varlist:
+                for curr_var in curr_varlist:
+                    if new_var == curr_var:
+                        continue
+                curr_varlist.append(new_var)
 
 
 def model_type_exists(model_type, curr_entries):
@@ -85,6 +87,7 @@ def model_type_exists(model_type, curr_entries):
         if model_type == entry['model_type']:
             return True
     return False
+
 
 def combine_yaml(files):
     """
