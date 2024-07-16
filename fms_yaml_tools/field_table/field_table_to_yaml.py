@@ -19,33 +19,36 @@
 # * License along with FMS.  If not, see <http://www.gnu.org/licenses/>.
 # ***********************************************************************
 
+import click
 import re
 from collections import OrderedDict
-import argparse
+from .. import __version__
 import yaml
 
 
-def main():
+@click.command()
+# Debug is used to print more information to the screen.
+@click.option('--debug/--no-debug', type=click.BOOL, show_default=True, default=False,
+              help="Print steps in the conversion")
+@click.option('--output-yaml',  type=click.STRING, show_default=True, default="field_table.yaml",
+              help="Path to the output field yable yaml")
+@click.option('--force-write/--no-force-write', type=click.BOOL, show_default=True, default=False,
+              help="Overwrite the output yaml file if it already exists")
+@click.version_option(__version__, "--version")
+@click.argument("field-table-name")  # This is the path to the field_table to convert
+def field_to_yaml(field_table_name, debug, output_yaml, force_write):
+    """ Converts a legacy ascii field_table to a yaml. \n
+        field-table-name - Path to the field table to convert \n
+    """
     # Necessary to dump OrderedDict to yaml format
     yaml.add_representer(OrderedDict, lambda dumper, data: dumper.represent_mapping('tag:yaml.org,2002:map', data.items()))
 
-    parser = argparse.ArgumentParser(description="Converts a legacy ascii field_table to a yaml field_table. \
-                                                  Requires pyyaml (https://pyyaml.org/) \
-                                                  More details on the field_table yaml format can be found in \
-                                                  https://github.com/NOAA-GFDL/FMS/tree/main/data_override")
-    parser.add_argument('--file', '-f', type=str, help='Name of the field_table file to convert')
-    parser.add_argument('--verbose', '-v', action='store_true', help='Increase verbosity')
-    parser.set_defaults(v=False)
-    global args
-    args = parser.parse_args()
-    field_table_name = args.file
-
-    if args.verbose:
+    if debug:
         print(field_table_name)
 
     field_yaml = FieldYaml(field_table_name)
-    field_yaml.main()
-    field_yaml.writeyaml()
+    field_yaml.main(debug)
+    field_yaml.writeyaml(output_yaml=output_yaml, force_write=force_write)
 
 
 def dont_convert_yaml_val(inval):
@@ -62,36 +65,36 @@ def dont_convert_yaml_val(inval):
 
 class Field:
     """ A Field Object, containing the variable attributes, methods, and subparameters """
-    def __init__(self, in_field_type, entry_tuple):
+    def __init__(self, in_field_type, entry_tuple, debug):
         """ Initialize the Field Object with the provided entries, then process as a species or tracer """
         self.field_type = in_field_type
         self.name = entry_tuple[0]
         self.dict = OrderedDict()
         for in_prop in entry_tuple[1]:
             if 'tracer' == self.field_type:
-                self.process_tracer(in_prop)
+                self.process_tracer(in_prop, debug)
             else:
-                self.process_species(in_prop)
+                self.process_species(in_prop, debug)
 
-    def process_species(self, prop):
+    def process_species(self, prop, debug):
         """ Process a species field """
         comma_split = prop.split(',')
-        if args.verbose:
+        if debug:
             print(self.name)
             print(self.field_type)
             print(comma_split)
         if len(comma_split) > 1:
             eq_splits = [x.split('=') for x in comma_split]
-            if args.verbose:
+            if debug:
                 print('printing eq_splits')
                 print(eq_splits)
             for idx, sub_param in enumerate(eq_splits):
-                if args.verbose:
+                if debug:
                     print('printing len(sub_param)')
                     print(len(sub_param))
                 if len(sub_param) < 2:
                     eq_splits[0][1] += f',{sub_param[0]}'
-                    if args.verbose:
+                    if debug:
                         print(eq_splits)
             eq_splits = [x for x in eq_splits if len(x) > 1]
             for sub_param in eq_splits:
@@ -105,13 +108,13 @@ class Field:
             val = dont_convert_yaml_val(eq_split[1])
             self.dict[eq_split[0].strip()] = val
 
-    def process_tracer(self, prop):
+    def process_tracer(self, prop, debug):
         """ Process a tracer field """
-        if args.verbose:
+        if debug:
             print(len(prop))
         if len(prop) > 2:
             self.dict[prop[0]] = [OrderedDict([('value', prop[1])])]
-            if args.verbose:
+            if debug:
                 print(self.name)
                 print(self.field_type)
                 print(prop[2:])
@@ -239,11 +242,11 @@ class FieldYaml:
                 else:
                     self.ordered_keys[(head_list[0], head_list[1])].append((head_list[2], t))
 
-    def make_objects(self):
+    def make_objects(self, debug):
         """ Make Tracer and Species objects and assign to out_yaml """
         for k in self.ordered_keys.keys():
             for j in self.ordered_keys[k]:
-                my_entry = Field(k[0], j)
+                my_entry = Field(k[0], j, debug)
                 self.out_yaml[k[0]][k[1]][my_entry.name] = my_entry.dict
 
     def convert_yaml(self):
@@ -256,19 +259,23 @@ class FieldYaml:
                                                           for k, v in lists_yaml[i]['modlist'][j]['varlist'].items()]
         self.lists_wh_yaml = {"field_table": lists_yaml}
 
-    def writeyaml(self):
+    def writeyaml(self, output_yaml="field_table.yaml", force_write=False):
         """ Write yaml out to file """
         raw_out = yaml.dump(self.lists_wh_yaml, None, default_flow_style=False)
-        with open(f'{self.filename}.yaml', 'w') as yaml_file:
+        out_file_op = "x"  # Exclusive write
+        if force_write:
+            out_file_op = "w"
+
+        with open(output_yaml, out_file_op) as yaml_file:
             yaml_file.write(raw_out)
 
-    def main(self):
+    def main(self, debug):
         self.init_ordered_keys()
         self.initialize_lists()
         self.populate_entries()
-        self.make_objects()
+        self.make_objects(debug)
         self.convert_yaml()
 
 
 if __name__ == '__main__':
-    main()
+    field_to_yaml(prog_name="field_to_yaml")
