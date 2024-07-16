@@ -97,7 +97,7 @@ def combine_yaml(files, verboseprint):
         with open(f) as fl:
             verboseprint("Parsing the data_table yaml:" + f)
             try:
-              my_table = yaml.safe_load(fl)
+                my_table = yaml.safe_load(fl)
             except yaml.YAMLError as err:
                 print("---> Error when parsing the file " + f)
                 raise err
