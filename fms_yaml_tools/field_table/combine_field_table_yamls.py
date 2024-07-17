@@ -45,6 +45,7 @@ def combine_field_table_yaml(in_files, debug, output_yaml, force_write):
         out_file_op = "x"  # Exclusive write
         if force_write:
             out_file_op = "w"
+        verboseprint("Writing the output yaml: " + output_yaml)
         with open(output_yaml, out_file_op) as myfile:
             yaml.dump(field_table, myfile, default_flow_style=False)
 
