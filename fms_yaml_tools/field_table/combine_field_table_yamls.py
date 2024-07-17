@@ -39,9 +39,9 @@ def combine_field_table_yaml(in_files, debug, output_yaml, force_write):
     """ Combines a series of field_table.yaml files into one file \n
         in-files - Space seperated list with the names of the field_table.yaml files to combine \n
     """
-
+    verboseprint = print if debug else lambda *a, **k: None
     try:
-        field_table = combine_yaml(in_files)
+        field_table = combine_yaml(in_files, verboseprint)
         out_file_op = "x"  # Exclusive write
         if force_write:
             out_file_op = "w"
@@ -72,36 +72,47 @@ def field_type_exists(field_type, curr_entries):
     return False
 
 
-def add_new_field(new_entry, curr_entries):
+def add_new_field(new_entry, curr_entries, verboseprint):
     new_field_type = new_entry['field_type']
     for entry in curr_entries:
         if new_field_type == entry['field_type']:
             if entry == new_entry:
                 # If the field_type already exists but it is exactly the same, move on
-                continue
+                verboseprint("---> The field_type:" + entry['field_type'] + " already exists. Moving on")
+                return
+            verboseprint("---> Checking for a new entry for the field_type:" + entry['field_type'])
             new_modlist = new_entry['modlist']
             for mod in new_modlist:
                 if model_type_exists(mod['model_type'], entry):
-                    add_new_mod(mod, entry)
+                    add_new_mod(mod, entry, verboseprint)
                 else:
                     # If the model type does not exist, just append it
+                    verboseprint("----> Adding the model_type: " + mod['model_type'] + " to field_type:"
+                                 + new_entry['field_type'])
                     entry['modlist'].append(mod)
 
 
-def add_new_mod(new_mod, curr_entries):
+def add_new_mod(new_mod, curr_entries, verboseprint):
     model_type = new_mod['model_type']
     for entry in curr_entries['modlist']:
         if model_type == entry['model_type']:
             if new_mod == entry:
                 # If the model_type already exists but it is exactly the same, move on
-                continue
+                verboseprint("----> The model_type:" + entry['model_type'] + " already exists. Moving on")
+                return
+            verboseprint("----> Checking for a new entry for the model_type:" + entry['model_type'])
             new_varlist = new_mod['varlist']
             curr_varlist = entry['varlist']
             for new_var in new_varlist:
+                found = False
                 for curr_var in curr_varlist:
                     if new_var == curr_var:
-                        continue
-                curr_varlist.append(new_var)
+                        found = True
+                        verboseprint("-----> variable:" + new_var['variable'] + " already exists. Moving on")
+                        break
+                if not found:
+                    verboseprint("-----> new variable:" + new_var['variable'] + " found. Adding it.")
+                    curr_varlist.append(new_var)
 
 
 def model_type_exists(model_type, curr_entries):
@@ -111,7 +122,7 @@ def model_type_exists(model_type, curr_entries):
     return False
 
 
-def combine_yaml(files):
+def combine_yaml(files, verboseprint):
     """
     Combines a list of yaml files into one
 
@@ -121,20 +132,27 @@ def combine_yaml(files):
     field_table = {}
     field_table['field_table'] = []
     for f in files:
+        verboseprint("Opening on the field_table yaml:" + f)
         # Check if the file exists
         if not path.exists(f):
             raise FileNotFoundError(errno.ENOENT,
                                     strerror(errno.ENOENT),
                                     f)
         with open(f) as fl:
-            my_table = yaml.safe_load(fl)
+            verboseprint("Parsing the data_table yaml:" + f)
+            try:
+                my_table = yaml.safe_load(fl)
+            except yaml.YAMLError as err:
+                print("---> Error when parsing the file " + f)
+                raise err
             entries = my_table['field_table']
             for entry in entries:
                 if not field_type_exists(entry['field_type'], field_table['field_table']):
+                    verboseprint("---> Adding the field_type: " + entry['field_type'])
                     #  If the field table does not exist, just add it to the current field table
                     field_table['field_table'].append(entry)
                 else:
-                    add_new_field(entry, field_table['field_table'])
+                    add_new_field(entry, field_table['field_table'], verboseprint)
     return field_table
 
 
