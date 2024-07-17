@@ -53,19 +53,6 @@ def combine_field_table_yaml(in_files, debug, output_yaml, force_write):
         raise SystemExit(err)
 
 
-def is_duplicate(field_table, new_entry):
-    """
-    Check if a field_table entry was already defined in a different file
-
-    Args:
-        field_table: List of dictionaries containing all of the field_table
-                    entries that have been combined
-        new_entry: Dictionary of the field_table entry to check
-    """
-    is_duplicate = False
-    return is_duplicate
-
-
 def field_type_exists(field_type, curr_entries):
     for entry in curr_entries:
         if field_type == entry['field_type']:
