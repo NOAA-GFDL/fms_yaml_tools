@@ -24,46 +24,34 @@
 """
 
 import copy as cp
-import argparse
+import click
 from os import path
 import yaml
 from .. import __version__, TableParseError
 
-def main():
-    #: parse user input
-    parser = argparse.ArgumentParser(prog='diag_table_to_yaml',
-                                     description="converts a legacy ascii diag_table to a yaml diag_table \
-                                                  Requires pyyaml (https://pyyaml.org) \
-                                                  More details on the diag_table yaml format can be found in \
-                                                  https://github.com/NOAA-GFDL/FMS/tree/main/diag_table")
-    parser.add_argument('-f', '--in-file',
-                        dest='in_file',
-                        type=str,
-                        help='Name of the diag_table to convert')
-    parser.add_argument('-s', '--is-segment',
-                        dest='is_segment',
-                        action='store_true',
-                        help='The diag_table is a segment and a not a full table, \
-                              so the tile and the base_date are not expected')
-    parser.add_argument('-o', '--output',
-                        dest='out_file',
-                        type=str,
-                        default='diag_table.yaml',
-                        help="Ouput file name of the converted YAML \
-                              (Default: 'diag_table.yaml')")
-    parser.add_argument('-F', '--force',
-                        action='store_true',
-                        help="Overwrite the output data table yaml file.")
-    parser.add_argument('-V', '--version',
-                        action="version",
-                        version=f"%(prog)s {__version__}")
-    args = parser.parse_args()
+@click.command()
+# Debug is used to print more information to the screen.
+@click.option('--debug/--no-debug', type=click.BOOL, show_default=True, default=False,
+              help="Print steps in the conversion")
+@click.option('--output-yaml',  type=click.STRING, show_default=True, default="diag_table.yaml",
+              help="Path to the output diag yable yaml")
+@click.option('--force-write/--no-force-write', type=click.BOOL, show_default=True, default=False,
+              help="Overwrite the output yaml file if it already exists")
+@click.option('--is-segment/--full-table', type=click.BOOL, show_default=True, default=False,
+              help="The diag_table is a segment and a not a full table, \
+                    so the tile and the base_date are not expected")
+@click.version_option(__version__, "--version")
+@click.argument("diag-table-name")  # This is the path to the diag_table to convert
+def diag_to_yaml(diag_table_name, debug, output_yaml, force_write, is_segment):
+    """ Converts a legacy ascii diag_table to a yaml. \n
+        data-table-name - data to the field table to convert \n
+    """
 
     #: start
-    test_class = DiagTable(diag_table_file=args.in_file, is_segment=args.is_segment)
+    test_class = DiagTable(diag_table_file=diag_table_name, is_segment=is_segment)
     test_class.read_and_parse_diag_table()
-    test_class.construct_yaml(yaml_table_file=args.out_file,
-                              force_write=args.force)
+    test_class.construct_yaml(yaml_table_file=output_yaml,
+                              force_write=force_write)
 
 
 def is_duplicate(current_files, diag_file):
@@ -310,7 +298,7 @@ class DiagTable:
                                         " CHECK:            " + str(iline) + '\n'
                                         " Ensure that the second uncommented line of the diag table defines \n"
                                         " the base date in the format [year month day hour min sec] \n"
-                                        " if this is a segment and not a full diag table use the -s option. ")
+                                        " if this is a segment and not a full diag table use the --is-segment option. ")
                 #: The first uncommented line is the title
                 if global_count == 0:
                     try:
@@ -510,4 +498,4 @@ class DiagTable:
 
 
 if __name__ == "__main__":
-    main()
+    diag_to_yaml(prog_name="diag_to_yaml")
