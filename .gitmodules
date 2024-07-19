@@ -1,0 +1,3 @@
+[submodule "fms_yaml_tools/schema/gfdl_msd_schemas"]
+	path = fms_yaml_tools/schema/gfdl_msd_schemas
+	url = https://github.com/NOAA-GFDL/gfdl_msd_schemas.git
