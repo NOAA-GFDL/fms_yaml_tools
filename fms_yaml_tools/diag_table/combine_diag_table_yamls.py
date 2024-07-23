@@ -116,9 +116,19 @@ def combine_yaml(files):
             raise FileNotFoundError(errno.ENOENT,
                                     strerror(errno.ENOENT),
                                     f)
-
-        with open(f) as fl:
-            my_table = yaml.safe_load(fl)
+	
+        # Verify that yaml is read correctly
+        try:
+            with open(f) as fl:
+                my_table = yaml.safe_load(fl)
+        except yaml.scanner.ScannerError as scanerr:
+            print("ERROR:",scanerr)
+            raise Exception("ERROR: Please verify that the previous entry in the yaml file is entered as "
+			"\"key: value\" and not as \"key:value\" ")
+	
+        if isinstance(my_table,str):
+            raise Exception("ERROR: diagYaml contains incorrectly formatted key value pairs." 
+			" Make sure that entries are formatted as \"key: value\" and not \"key:value\" ")
 
         if 'base_date' in my_table:
             diag_table['base_date'] = my_table['base_date']
