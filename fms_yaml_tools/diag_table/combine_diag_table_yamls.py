@@ -157,13 +157,13 @@ def combine_yaml(files, verboseprint):
                 verboseprint("Parsing the diag_table yaml:" + f)
                 my_table = yaml.safe_load(fl)
         except yaml.scanner.ScannerError as scanerr:
-            print("ERROR:",scanerr)
+            print("ERROR:", scanerr)
             raise Exception("ERROR: Please verify that the previous entry in the yaml file is entered as "
-			      "\"key: value\" and not as \"key:value\" ")
-	
-        if isinstance(my_table,str):
-            raise Exception("ERROR: diagYaml contains incorrectly formatted key value pairs." 
-			" Make sure that entries are formatted as \"key: value\" and not \"key:value\" ")
+                            "\"key: value\" and not as \"key:value\" ")
+
+        if isinstance(my_table, str):
+            raise Exception("ERROR: diagYaml contains incorrectly formatted key value pairs."
+                            " Make sure that entries are formatted as \"key: value\" and not \"key:value\" ")
 
         get_base_date(my_table, diag_table)
 
