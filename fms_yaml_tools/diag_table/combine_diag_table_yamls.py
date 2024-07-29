@@ -21,13 +21,38 @@
 
 from os import path, strerror
 import errno
-import argparse
+import click
 import yaml
 from .. import __version__
 
-""" Combines a series of diag_table.yaml files into one file
-    Author: Uriel Ramirez 04/11/2023
-"""
+
+@click.command()
+@click.argument('in-files', nargs=-1)
+@click.option('--debug/--no-debug', type=click.BOOL, show_default=True, default=False,
+              help="Print steps in the conversion")
+@click.option('--output-yaml',  type=click.STRING, show_default=True, default="diag_table.yaml",
+              help="Path to the output diag table yaml")
+@click.option('--force-write/--no-force-write', type=click.BOOL, show_default=True, default=False,
+              help="Overwrite the output yaml file if it already exists")
+@click.version_option(__version__, "--version")
+def combine_diag_table_yaml(in_files, debug, output_yaml, force_write):
+    """ Combines a series of diag_table.yaml files into one file \n
+        in-files - Space seperated list with the names of the diag_table.yaml files to combine \n
+    """
+
+    verboseprint = print if debug else lambda *a, **k: None
+
+    try:
+        diag_table = combine_yaml(in_files, verboseprint)
+        out_file_op = "x"  # Exclusive write
+        if force_write:
+            out_file_op = "w"
+        verboseprint("Writing the output yaml: " + output_yaml)
+        with open(output_yaml, out_file_op) as myfile:
+            yaml.dump(diag_table, myfile, default_flow_style=False, sort_keys=False)
+
+    except Exception as err:
+        raise SystemExit(err)
 
 
 def compare_key_value_pairs(entry1, entry2, key, is_optional=False):
@@ -50,9 +75,10 @@ def compare_key_value_pairs(entry1, entry2, key, is_optional=False):
                             " with different " + key)
 
 
-def is_field_duplicate(diag_table, new_entry, file_name):
+def is_field_duplicate(diag_table, new_entry, file_name, verboseprint):
     for entry in diag_table:
         if entry == new_entry:
+            verboseprint("---> " + new_entry["var_name"] + " is a duplicate variable. Moving on!")
             return True
         else:
             if entry['var_name'] != new_entry['var_name']:
@@ -62,27 +88,26 @@ def is_field_duplicate(diag_table, new_entry, file_name):
                 # If the variable name is the same but it a different module, then it is a brand new variable
                 continue
             else:
-                curr_output_name = entry['var_name']
-                new_output_name = new_entry['var_name']
-                if 'output_name' in entry:
-                    curr_output_name = entry['output_name']
-                if 'output_name' in new_entry:
-                    new_output_name = new_entry['output_name']
-                # If the variable name is the same but it has a different output_name, then it is a brand new variable
-                if curr_output_name == new_output_name:
-                  raise Exception("The variable " + entry['var_name'] + " from module " + entry['module'] +
-                                  " in file " + file_name + " is defined twice with different keys")
+                if entry != new_entry:
+                    raise Exception("The variable " + entry['var_name'] + " from module " + entry['module'] +
+                                    " in file " + file_name + " is defined twice with different keys")
+    verboseprint("----> " + new_entry["var_name"] + " is a new variable. Adding it")
     return False
 
-def is_file_duplicate(diag_table, new_entry):
+
+def is_file_duplicate(diag_table, new_entry, verboseprint):
     # Check if a diag_table entry was already defined
     for entry in diag_table:
         if entry == new_entry:
+            verboseprint("---> " + new_entry["file_name"] + " is a duplicate file. Moving on!")
             return True
         else:
             # If the file_name is not the same, then move on to the next file
             if entry['file_name'] != new_entry['file_name']:
                 continue
+
+            verboseprint("---> " + entry["file_name"] + " has already been added. Checking that all "
+                         + "the keys are the same")
 
             # Since there are duplicate files, check fhat all the keys are the same:
             compare_key_value_pairs(entry, new_entry, 'freq')
@@ -98,14 +123,23 @@ def is_file_duplicate(diag_table, new_entry):
             compare_key_value_pairs(entry, new_entry, 'is_ocean', is_optional=True)
 
             # Since the file is the same, check if there are any new variables to add to the file:
+            verboseprint("---> Looking for new variables for the file " + new_entry["file_name"])
             for field_entry in new_entry['varlist']:
-                if not is_field_duplicate(entry['varlist'], field_entry, entry['file_name']):
+                if not is_field_duplicate(entry['varlist'], field_entry, entry['file_name'], verboseprint):
                     entry['varlist'].append(field_entry)
             return True
+    verboseprint("---> " + new_entry["file_name"] + " is a new file. Adding it!")
     return False
 
 
-def combine_yaml(files):
+def get_base_date(my_table, diag_table):
+    if 'base_date' in my_table:
+        diag_table['base_date'] = my_table['base_date']
+    if 'title' in my_table:
+        diag_table['title'] = my_table['title']
+
+
+def combine_yaml(files, verboseprint):
     diag_table = {}
     diag_table['title'] = ""
     diag_table['base_date'] = ""
@@ -116,24 +150,22 @@ def combine_yaml(files):
             raise FileNotFoundError(errno.ENOENT,
                                     strerror(errno.ENOENT),
                                     f)
-	
         # Verify that yaml is read correctly
         try:
+            verboseprint("Opening on the diag_table yaml:" + f)
             with open(f) as fl:
+                verboseprint("Parsing the diag_table yaml:" + f)
                 my_table = yaml.safe_load(fl)
         except yaml.scanner.ScannerError as scanerr:
-            print("ERROR:",scanerr)
+            print("ERROR:", scanerr)
             raise Exception("ERROR: Please verify that the previous entry in the yaml file is entered as "
-			"\"key: value\" and not as \"key:value\" ")
-	
-        if isinstance(my_table,str):
-            raise Exception("ERROR: diagYaml contains incorrectly formatted key value pairs." 
-			" Make sure that entries are formatted as \"key: value\" and not \"key:value\" ")
+                            "\"key: value\" and not as \"key:value\" ")
 
-        if 'base_date' in my_table:
-            diag_table['base_date'] = my_table['base_date']
-        if 'title' in my_table:
-            diag_table['title'] = my_table['title']
+        if isinstance(my_table, str):
+            raise Exception("ERROR: diagYaml contains incorrectly formatted key value pairs."
+                            " Make sure that entries are formatted as \"key: value\" and not \"key:value\" ")
+
+        get_base_date(my_table, diag_table)
 
         if 'diag_files' not in my_table:
             if 'base_date' not in my_table or 'title' not in my_table:
@@ -144,49 +176,10 @@ def combine_yaml(files):
 
         diag_files = my_table['diag_files']
         for entry in diag_files:
-            if not is_file_duplicate(diag_table['diag_files'], entry):
+            if not is_file_duplicate(diag_table['diag_files'], entry, verboseprint):
                 diag_table['diag_files'].append(entry)
     return diag_table
 
 
-def main():
-    #: parse user input
-    parser = argparse.ArgumentParser(
-        prog='combine_diag_table_yaml',
-        description="Combines a series of diag_table.yaml files into one file" +
-                    "Requires pyyaml (https://pyyaml.org/)")
-    parser.add_argument('-f', '--in-files',
-                        dest='in_files',
-                        type=str,
-                        nargs='+',
-                        default=["diag_table"],
-                        help='Space seperated list with the '
-                             'Names of the data_table.yaml files to combine')
-    parser.add_argument('-o', '--output',
-                        dest='out_file',
-                        type=str,
-                        default='diag_table.yaml',
-                        help="Ouput file name of the converted YAML \
-                              (Default: 'diag_table.yaml')")
-    parser.add_argument('-F', '--force',
-                        action='store_true',
-                        help="Overwrite the output diag table yaml file.")
-    parser.add_argument('-V', '--version',
-                        action="version",
-                        version=f"%(prog)s {__version__}")
-    args = parser.parse_args()
-
-    try:
-        diag_table = combine_yaml(args.in_files)
-        out_file_op = "x"  # Exclusive write
-        if args.force:
-            out_file_op = "w"
-        with open(args.out_file, out_file_op) as myfile:
-            yaml.dump(diag_table, myfile, default_flow_style=False, sort_keys=False)
-
-    except Exception as err:
-        raise SystemExit(err)
-
-
 if __name__ == "__main__":
-    main()
+    combine_diag_table_yaml(prog_name="combine_diag_table_yaml")

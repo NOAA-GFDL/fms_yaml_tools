@@ -21,13 +21,37 @@
 
 from os import path, strerror
 import errno
-import argparse
+import click
 import yaml
 from .. import __version__
 
-""" Combines a series of data_table.yaml files into one file
-    Author: Uriel Ramirez 04/11/2023
-"""
+
+@click.command()
+@click.argument('in-files', nargs=-1)
+@click.option('--debug/--no-debug', type=click.BOOL, show_default=True, default=False,
+              help="Print steps in the conversion")
+@click.option('--output-yaml',  type=click.STRING, show_default=True, default="data_table.yaml",
+              help="Path to the output data table yaml")
+@click.option('--force-write/--no-force-write', type=click.BOOL, show_default=True, default=False,
+              help="Overwrite the output yaml file if it already exists")
+@click.version_option(__version__, "--version")
+def combine_data_table_yaml(in_files, debug, output_yaml, force_write):
+    """ Combines a series of data_table.yaml files into one file \n
+        in-files - Space seperated list with the names of the data_table.yaml files to combine \n
+    """
+
+    verboseprint = print if debug else lambda *a, **k: None
+    try:
+        data_table = combine_yaml(in_files, verboseprint)
+        out_file_op = "x"  # Exclusive write
+        if force_write:
+            out_file_op = "w"
+        verboseprint("Writing the output yaml: " + output_yaml)
+        with open(output_yaml, out_file_op) as myfile:
+            yaml.dump(data_table, myfile, default_flow_style=False)
+
+    except Exception as err:
+        raise SystemExit(err)
 
 
 def is_duplicate(data_table, new_entry):
@@ -45,15 +69,15 @@ def is_duplicate(data_table, new_entry):
             is_duplicate = True
             return is_duplicate
         else:
-            if entry['fieldname_code'] == new_entry['fieldname_code']:
+            if entry['fieldname_in_model'] == new_entry['fieldname_in_model']:
                 raise Exception("A data_table entry is defined twice for the "
-                                "field_name_code:" + entry['fieldname_code'] +
+                                "fieldname_in_model:" + entry['fieldname_in_model'] +
                                 " with different keys/values!")
     is_duplicate = False
     return is_duplicate
 
 
-def combine_yaml(files):
+def combine_yaml(files, verboseprint):
     """
     Combines a list of yaml files into one
 
@@ -64,58 +88,28 @@ def combine_yaml(files):
     data_table['data_table'] = []
     for f in files:
         # Check if the file exists
+        verboseprint("Opening on the data_table yaml:" + f)
         if not path.exists(f):
             raise FileNotFoundError(errno.ENOENT,
                                     strerror(errno.ENOENT),
                                     f)
 
         with open(f) as fl:
-            my_table = yaml.safe_load(fl)
+            verboseprint("Parsing the data_table yaml:" + f)
+            try:
+                my_table = yaml.safe_load(fl)
+            except yaml.YAMLError as err:
+                print("---> Error when parsing the file " + f)
+                raise err
             entries = my_table['data_table']
             for entry in entries:
+                verboseprint("---> Working on the entry: \n" + yaml.dump(entry))
+                verboseprint("Checking if it is a duplicate:")
                 if not is_duplicate(data_table['data_table'], entry):
+                    verboseprint("It is not a duplicate so adding it")
                     data_table['data_table'].append(entry)
     return data_table
 
 
-def main():
-    #: parse user input
-    parser = argparse.ArgumentParser(
-        prog='combine_data_table_yaml',
-        description="Combines a list of data_table.yaml files into one file" +
-                    "Requires pyyaml (https://pyyaml.org/)")
-    parser.add_argument('-f', '--in-files',
-                        dest='in_files',
-                        type=str,
-                        nargs='+',
-                        default=["data_table"],
-                        help='Space seperated list with the '
-                             'Names of the data_table.yaml files to combine')
-    parser.add_argument('-o', '--output',
-                        dest='out_file',
-                        type=str,
-                        default='data_table.yaml',
-                        help="Ouput file name of the converted YAML \
-                              (Default: 'diag_table.yaml')")
-    parser.add_argument('-F', '--force',
-                        action='store_true',
-                        help="Overwrite the output data table yaml file.")
-    parser.add_argument('-V', '--version',
-                        action="version",
-                        version=f"%(prog)s {__version__}")
-    args = parser.parse_args()
-
-    try:
-        data_table = combine_yaml(args.in_files)
-        out_file_op = "x"  # Exclusive write
-        if args.force:
-            out_file_op = "w"
-        with open(args.out_file, out_file_op) as myfile:
-            yaml.dump(data_table, myfile, default_flow_style=False)
-
-    except Exception as err:
-        raise SystemExit(err)
-
-
 if __name__ == "__main__":
-    main()
+    combine_data_table_yaml(prog_name="combine_data_table_yaml")
