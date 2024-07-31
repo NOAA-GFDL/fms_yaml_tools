@@ -130,6 +130,8 @@ class DataType:
                                 myval = 'bilinear'
                             if ("false" in myval):
                                 myval = 'none'
+                            if ("default" in myval):
+                                myval = 'bilinear'
                         tmp_list[mykey] = myval
                 except Exception:
                     raise TableParseError(self.data_table_file,
@@ -181,7 +183,8 @@ def reformat_yaml(tmp_list):
             multi_file['prev_file_name'] = file_names[0]
             multi_file['next_file_name'] = file_names[2]
             override_file['file_name'] = file_names[1]
-            override_file['multi_file'] = multi_file
+            override_file['multi_file'] = []
+            override_file['multi_file'].append(multi_file)
         else:
             override_file['file_name'] = tmp_list['file_name']
 
@@ -192,8 +195,10 @@ def reformat_yaml(tmp_list):
             subregion['lat_start'] = tmp_list['lat_start']
             subregion['lat_end'] = tmp_list['lat_end']
             subregion['type'] = tmp_list['type']
-            data_table_entry['subregion'] = subregion
-        data_table_entry['override_file'] = override_file
+            data_table_entry['subregion'] = []
+            data_table_entry['subregion'].append(subregion)
+        data_table_entry['override_file'] = []
+        data_table_entry['override_file'].append(override_file)
 
     return data_table_entry
 
