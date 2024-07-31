@@ -183,6 +183,7 @@ def reformat_yaml(tmp_list):
             multi_file['prev_file_name'] = file_names[0]
             multi_file['next_file_name'] = file_names[2]
             override_file['file_name'] = file_names[1]
+            override_file['multi_file'] = []
             override_file['multi_file'].append(multi_file)
         else:
             override_file['file_name'] = tmp_list['file_name']
