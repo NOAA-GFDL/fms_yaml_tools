@@ -544,13 +544,21 @@ class DiagTable:
 
         self.verboseprint("Constructing the yaml")
         if not self.is_segment:
+            myfile = open(yaml_table_file, out_file_op)
             mykey = self.global_section_keys[0]
             yaml_doc[mykey] = self.global_section[mykey]
+            yaml.dump(yaml_doc, myfile, sort_keys=False)
+
+            yaml_doc = {}
             #: basedate
             mykey = self.global_section_keys[1]
-            yaml_doc[mykey] = self.global_section[mykey]
+            yaml_doc[mykey] = [int(i) for i in self.global_section[mykey].split()]
+            # Hack so that the base_date is in the file as base_date = [year, month, day, hour, min, sec]
+            base_date = "base_date: " + yaml.dump(yaml_doc[mykey], default_flow_style=True)
+            myfile.write(base_date)
 
         #: diag_files
+        yaml_doc = {}
         yaml_doc['diag_files'] = []
         #: go through each file
         for ifile_dict in self.file_section:  #: file_section = [ {}, {}, {} ]
@@ -560,7 +568,8 @@ class DiagTable:
                 yaml_doc['diag_files'].append(out_file_dict)
         check_for_file_for_all_var(self.file_section, self.field_section)
         self.verboseprint("Writing the output yaml: " + yaml_table_file)
-        myfile = open(yaml_table_file, out_file_op)
+        if self.is_segment:
+            myfile = open(yaml_table_file, out_file_op)
         yaml.dump(yaml_doc, myfile, sort_keys=False)
 
     def read_and_parse_diag_table(self):
