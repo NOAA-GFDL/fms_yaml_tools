@@ -22,6 +22,7 @@
 import click
 import yaml
 import json
+import sys
 from jsonschema import validate, ValidationError, Draft7Validator
 
 """ This program is used for validating a file against a schema.  The
@@ -84,7 +85,7 @@ def validate_yaml(ypath, spath, debug, success):
         for err in errors:
             print("(" + str(i) + ") " + err.message + "---" + str(err.path))
             i = i + 1
-        return -1
+        sys.exit("ERROR: "+ ypath + " is not a valid yaml")
     if success or debug:
         print(ypath+" was successfully validated against the schema "+spath)
 
