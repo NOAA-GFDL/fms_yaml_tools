@@ -291,14 +291,17 @@ class DiagTable:
     def get_base_date(self, iline, iline_count):
         self.verboseprint("Getting the base_date from the line:" + iline)
         try:
-            iline_list = iline.split('#')[0].split()  #: not comma separated integers
             mykey = self.global_section_keys[1]
-            if len(iline_list) != 6:
-                raise Exception()
-            for member in iline_list:
-                if int(member) < 0:
+            if '$baseDate' in str(iline):
+                self.global_section[mykey] = "$baseDate"
+            else:
+                iline_list = iline.split('#')[0].split()  #: not comma separated integers
+                if len(iline_list) != 6:
                     raise Exception()
-            self.global_section[mykey] = iline.split('#')[0].strip()
+                for member in iline_list:
+                    if int(member) < 0:
+                        raise Exception()
+                self.global_section[mykey] = iline.split('#')[0].strip()
             self.global_count += 1
             self.verboseprint("--->The base_date is " + self.global_section[mykey])
         except Exception:
@@ -544,32 +547,26 @@ class DiagTable:
 
         self.verboseprint("Constructing the yaml")
         if not self.is_segment:
-            myfile = open(yaml_table_file, out_file_op)
             mykey = self.global_section_keys[0]
             yaml_doc[mykey] = self.global_section[mykey]
-            yaml.dump(yaml_doc, myfile, sort_keys=False)
 
-            yaml_doc = {}
-            #: basedate
             mykey = self.global_section_keys[1]
-            yaml_doc[mykey] = [int(i) for i in self.global_section[mykey].split()]
-            # Hack so that the base_date is in the file as base_date = [year, month, day, hour, min, sec]
-            base_date = "base_date: " + yaml.dump(yaml_doc[mykey], default_flow_style=True)
-            myfile.write(base_date)
+            yaml_doc[mykey] = self.global_section[mykey]
 
-        #: diag_files
-        yaml_doc = {}
         yaml_doc['diag_files'] = []
+        nfiles = 0
         #: go through each file
         for ifile_dict in self.file_section:  #: file_section = [ {}, {}, {} ]
+            nfiles += 1
             out_file_dict = self.get_all_files(ifile_dict)
 
             if not is_duplicate(yaml_doc, out_file_dict):
                 yaml_doc['diag_files'].append(out_file_dict)
         check_for_file_for_all_var(self.file_section, self.field_section)
+        if nfiles == 0:
+            del yaml_doc['diag_files']
         self.verboseprint("Writing the output yaml: " + yaml_table_file)
-        if self.is_segment:
-            myfile = open(yaml_table_file, out_file_op)
+        myfile = open(yaml_table_file, out_file_op)
         yaml.dump(yaml_doc, myfile, sort_keys=False)
 
     def read_and_parse_diag_table(self):

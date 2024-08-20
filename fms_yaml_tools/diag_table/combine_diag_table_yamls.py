@@ -49,16 +49,6 @@ def combine_diag_table_yaml(in_files, debug, output_yaml, force_write):
             out_file_op = "w"
         verboseprint("Writing the output yaml: " + output_yaml)
         with open(output_yaml, out_file_op) as myfile:
-            title = {}
-            title['title'] = diag_table['title']
-            yaml.dump(title, myfile, default_flow_style=False, sort_keys=False)
-            del diag_table['title']
-
-            # Hack so that the base_date is in the file as base_date = [year, month, day, hour, min, sec]
-            base_date = "base_date: " + yaml.dump(diag_table['base_date'], default_flow_style=True)
-            myfile.write(base_date)
-            del diag_table['base_date']
-
             yaml.dump(diag_table, myfile, default_flow_style=False, sort_keys=False)
     except Exception as err:
         raise SystemExit(err)
