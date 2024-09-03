@@ -54,6 +54,36 @@ def combine_diag_table_yaml(in_files, debug, output_yaml, force_write):
         raise SystemExit(err)
 
 
+def is_different_field(entry, new_entry, verboseprint):
+    has_outname_in = "output_name" in entry
+    has_outname_new = "output_name" in new_entry
+
+    if not has_outname_in and not has_outname_new:
+        # Both entries don't have output_name, so the field is expected to be the same
+        verboseprint("---> Both entries don't have output_name")
+        return False
+
+    if has_outname_in:
+        if not has_outname_new:
+            if entry['output_name'] == entry['var_name']:
+                verboseprint("---> The output_name in entry is the same as the var_name, so the field is expected to " +
+                             "be the same")
+                return False
+
+            verboseprint("---> Entry has output_name, but new_entry does not, so the field is not expected to be the same")
+            return True
+
+    if has_outname_new:
+        if not has_outname_in:
+            if new_entry['output_name'] == new_entry['var_name']:
+                verboseprint("---> The output_name in new_entry is the same as the var_name, so the field is expected to " +
+                             "be the same")
+                return False
+
+            verboseprint("---> New entry has output_name, but entry does not, so the field is not expected to be the same")
+            return True
+
+
 def compare_key_value_pairs(entry1, entry2, key, is_optional=False):
     if not is_optional:
         if entry1[key] != entry2[key]:
@@ -80,6 +110,7 @@ def is_field_duplicate(diag_table, new_entry, file_name, verboseprint):
             verboseprint("---> " + new_entry["var_name"] + " is a duplicate variable. Moving on!")
             return True
         else:
+            verboseprint("---> Checking if " + new_entry['var_name'] + " is duplicated")
             if entry['var_name'] != new_entry['var_name']:
                 # If the variable name is not the same, then move on to the next variable
                 continue
@@ -87,6 +118,8 @@ def is_field_duplicate(diag_table, new_entry, file_name, verboseprint):
                 # If the variable name is the same but it a different module, then it is a brand new variable
                 continue
             else:
+                if is_different_field(entry, new_entry, verboseprint):
+                    continue
                 if entry != new_entry:
                     raise Exception("The variable " + entry['var_name'] + " from module " + entry['module'] +
                                     " in file " + file_name + " is defined twice with different keys")
@@ -120,6 +153,9 @@ def is_file_duplicate(diag_table, new_entry, verboseprint):
             compare_key_value_pairs(entry, new_entry, 'global_meta', is_optional=True)
             compare_key_value_pairs(entry, new_entry, 'sub_region', is_optional=True)
             compare_key_value_pairs(entry, new_entry, 'is_ocean', is_optional=True)
+            compare_key_value_pairs(entry, new_entry, 'reduction', is_optional=True)
+            compare_key_value_pairs(entry, new_entry, 'kind', is_optional=True)
+            compare_key_value_pairs(entry, new_entry, 'module', is_optional=True)
 
             # Since the file is the same, check if there are any new variables to add to the file:
             verboseprint("---> Looking for new variables for the file " + new_entry["file_name"])
