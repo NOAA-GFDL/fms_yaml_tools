@@ -63,6 +63,11 @@ def is_different_field(entry, new_entry, verboseprint):
         verboseprint("---> Both entries don't have output_name")
         return False
 
+    if has_outname_in and has_outname_new:
+        # Both entries have output_name, so the field is not expected to be the same
+        verboseprint("---> Both entries have output_name")
+        return True
+
     if has_outname_in:
         if not has_outname_new:
             if entry['output_name'] == entry['var_name']:
@@ -105,12 +110,12 @@ def compare_key_value_pairs(entry1, entry2, key, is_optional=False):
 
 
 def is_field_duplicate(diag_table, new_entry, file_name, verboseprint):
+    verboseprint("---> Checking if " + new_entry['var_name'] + " is duplicated")
     for entry in diag_table:
         if entry == new_entry:
             verboseprint("---> " + new_entry["var_name"] + " is a duplicate variable. Moving on!")
             return True
         else:
-            verboseprint("---> Checking if " + new_entry['var_name'] + " is duplicated")
             if entry['var_name'] != new_entry['var_name']:
                 # If the variable name is not the same, then move on to the next variable
                 continue
@@ -121,6 +126,8 @@ def is_field_duplicate(diag_table, new_entry, file_name, verboseprint):
                 if is_different_field(entry, new_entry, verboseprint):
                     continue
                 if entry != new_entry:
+                    verboseprint(entry)
+                    verboseprint(new_entry)
                     raise Exception("The variable " + entry['var_name'] + " from module " + entry['module'] +
                                     " in file " + file_name + " is defined twice with different keys")
     verboseprint("----> " + new_entry["var_name"] + " is a new variable. Adding it")
