@@ -1,12 +1,14 @@
 package:
   name: fms_yaml_tools
+  version: 'alpha'
+#  version: '{{ environ.get("GIT_DESCRIBE_TAG", data.get("version")) }}'
 
 source:
   path: .
 
 build:
   script: 
-    - {{ PYTHON }} -m pip install . -vv
+    - python3 -m pip install . -vv
   number: 1
   noarch: python
 
@@ -31,7 +33,7 @@ test:
   source_files:
     - fms_yaml_tools/
   commands:
-	- python -m unittest discover -s test
+    - python -m unittest discover -s test
 
 about:
   home: https://github.com/NOAA-GFDL/fms_yaml_tools

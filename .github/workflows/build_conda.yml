@@ -1,9 +1,10 @@
 name: build_conda
 on:
-  pull_request:
-    branches:
-      - FOOmainBAR
-#  [push]
+  [push]
+#  pull_request:
+#    branches:
+#      - FOOmainBAR
+
 
 jobs:
   build:
