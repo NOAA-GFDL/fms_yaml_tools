@@ -35,7 +35,7 @@ jobs:
         run: |
           # try to make sure the right things are in GITHUB_PATH
           echo $CONDA/envs/fms_yaml_tools/bin >> $GITHUB_PATH
-		  python -m unittest discover -s test
+          python -m unittest discover -s test
 
 #      - name: Run pytest in fms_yaml_tools environment
 #        run: |

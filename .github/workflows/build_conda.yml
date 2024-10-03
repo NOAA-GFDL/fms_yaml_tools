@@ -19,4 +19,4 @@ jobs:
           conda config --append channels noaa-gfdl
           conda install conda-build conda-verify
           conda build .
-		  ls .
+          ls .
