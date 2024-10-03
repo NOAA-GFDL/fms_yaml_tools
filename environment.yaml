@@ -8,3 +8,6 @@ dependencies:
   - pip
   - click
   - pyyaml
+  - pylint
+  - pytest
+  - jsonschema
