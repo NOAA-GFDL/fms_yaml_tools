@@ -25,6 +25,9 @@ jobs:
 
           # add conda env's executables to github's PATH equiv.
           echo $CONDA/envs/fms_yaml_tools/bin >> $GITHUB_PATH
+
+          # get fms_yaml_tools/schema/gfdl_msd_schemas/FMS for unittest
+          git submodule update --init --recursive --remote
           
           # use *conda environment's pip* to install fms_yaml_tools
           # called w/ full path to conda's python for explicitness
