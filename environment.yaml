@@ -9,5 +9,4 @@ dependencies:
   - click
   - pyyaml
   - pylint
-  - pytest
   - jsonschema
