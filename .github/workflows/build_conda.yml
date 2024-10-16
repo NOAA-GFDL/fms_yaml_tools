@@ -20,5 +20,6 @@ jobs:
         conda install conda-build conda-verify
         git submodule update --init --recursive --remote
         git config --global --add safe.directory fms_yaml_tools/schema/gfdl_msd_schemas
+        rm -rf fms_yaml_tools/schema/gfdl_msd_schemas/.git
         conda build .
         ls .
