@@ -5,7 +5,6 @@ on:
 #    branches:
 #      - FOOmainBAR
 
-
 jobs:
   build:
     runs-on: ubuntu-latest
