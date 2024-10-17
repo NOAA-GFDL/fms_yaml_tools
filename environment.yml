@@ -1,0 +1,12 @@
+name: fms_yaml_tools
+channels:
+  - defaults
+  - conda-forge
+  - noaa-gfdl
+dependencies:
+  - python
+  - pip
+  - click
+  - pyyaml
+  - pylint
+  - jsonschema
