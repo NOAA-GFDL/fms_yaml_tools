@@ -6,35 +6,35 @@ jobs:
   build-linux:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-	    with:
-		  submodules: 'recursive'
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '>=3.9'
-      
-      - name: Add conda to system path
-        run: |
-          # $CONDA is an env var pointing to root of miniconda dir
-          echo $CONDA/bin >> $GITHUB_PATH
-      
-      - name: Create fms_yaml_tools environment
-        run: |
-          # create environment containing all dependencies
-          # the env cannot be explicitly activated in github CI/CD
-          conda env create -f environment.yml --name fms_yaml_tools
+    - uses: actions/checkout@v4
+      with:
+        submodules: 'recursive'
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '>=3.9'
 
-          # add conda env's executables to github's PATH equiv.
-          echo $CONDA/envs/fms_yaml_tools/bin >> $GITHUB_PATH
+    - name: Add conda to system path
+      run: |
+        # $CONDA is an env var pointing to root of miniconda dir
+        echo $CONDA/bin >> $GITHUB_PATH
 
-          # use *conda environment's pip* to install fms_yaml_tools
-          # called w/ full path to conda's python for explicitness
-          # called as a module (-m pip) for explicitness
-          $CONDA/envs/fms_yaml_tools/bin/python -m pip install --prefix $CONDA/envs/fms_yaml_tools .      
+    - name: Create fms_yaml_tools environment
+      run: |
+        # create environment containing all dependencies
+        # the env cannot be explicitly activated in github CI/CD
+        conda env create -f environment.yml --name fms_yaml_tools
 
-      - name: Run unittest in fms_yaml_tools environment
-        run: |
-          # try to make sure the right things are in GITHUB_PATH
-          echo $CONDA/envs/fms_yaml_tools/bin >> $GITHUB_PATH
-          python -m unittest discover -s test
+        # add conda env's executables to github's PATH equiv.
+        echo $CONDA/envs/fms_yaml_tools/bin >> $GITHUB_PATH
+
+        # use *conda environment's pip* to install fms_yaml_tools
+        # called w/ full path to conda's python for explicitness
+        # called as a module (-m pip) for explicitness
+        $CONDA/envs/fms_yaml_tools/bin/python -m pip install --prefix $CONDA/envs/fms_yaml_tools .
+
+    - name: Run unittest in fms_yaml_tools environment
+      run: |
+        # try to make sure the right things are in GITHUB_PATH
+        echo $CONDA/envs/fms_yaml_tools/bin >> $GITHUB_PATH
+        python -m unittest discover -s test
