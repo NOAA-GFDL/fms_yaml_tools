@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3.11
 # ***********************************************************************
 # *                   GNU Lesser General Public License
 # *
@@ -42,6 +42,7 @@ def echo(msg):
               help="Exclude table, file, or variable attributes from the output")
 
 def diag_tool(ctx, in_place, force, file, var, prune, abstract):
+    ctx.ensure_object(dict)
     options = ctx.obj
 
     options["in_place"] = in_place

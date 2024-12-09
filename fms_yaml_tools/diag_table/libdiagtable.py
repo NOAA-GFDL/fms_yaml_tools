@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # ***********************************************************************
 # *                   GNU Lesser General Public License
 # *
