@@ -74,15 +74,14 @@ class DiagTableFilter:
                 var, negate = DiagTableFilter.parse_negate_flag(var)
                 fmv = [p.split(",") or ("*",) for p in var.split(":")]
 
-                match len(fmv):
-                    case 1:
-                        iter = itertools.product(("*",), ("*",), fmv[0], (negate,))
-                    case 2:
-                        iter = itertools.product(fmv[0], ("*",), fmv[1], (negate,))
-                    case 3:
-                        iter = itertools.product(fmv[0], fmv[1], fmv[2], (negate,))
-                    case _:
-                        raise Exception("Invalid variable filter specification")
+		if len(fmv) == 1:
+		    iter = itertools.product(("*",), ("*",), fmv[0], (negate,))
+		elif len(fmv) == 2:
+		    iter = itertools.product(fmv[0], ("*",), fmv[1], (negate,))
+		elif len(fmv) == 3:
+		    iter = itertools.product(fmv[0], fmv[1], fmv[2], (negate,))
+		else:
+		    raise Exception("Invalid variable filter specification")
 
                 for case in iter:
                     yield case
@@ -117,7 +116,7 @@ class DiagTableBase:
             if value is not None:
                 self.__class__.validate_field(key, value)
 
-    def set(key, value):
+    def set(self, key, value):
         self.__class__.validate_field(key, value)
         self.__dict__[key] = value
 
@@ -150,17 +149,16 @@ class DiagTable(DiagTableBase):
 
     @staticmethod
     def validate_field(key, value):
-        match key:
-            case "title":
-                assert type(value) is str
-            case "base_date":
-                assert type(value) is str
-            case "diag_files":
-                assert type(value) is list
-                for f in value:
-                    assert type(f) is DiagTableFile
-            case _:
-                raise AttributeError("DiagTable: Invalid key name: {:s}".format(key))
+	if key == "title":
+	    assert type(value) is str
+	elif key == "base_date":
+	    assert type(value) is str
+	elif key == "diag_files":
+	    assert type(value) is list
+	    for f in value:
+		assert type(f) is DiagTableFile
+	else:
+	    raise AttributeError("DiagTable: Invalid key name: {:s}".format(key))
 
     @staticmethod
     def from_file(filename, open_func=open):
@@ -300,43 +298,42 @@ class DiagTableFile(DiagTableBase):
 
     @staticmethod
     def validate_field(key, value):
-        match key:
-            case "file_name":
-                assert type(value) is str
-            case "freq":
-                assert (type(value) is float) or (type(value) is str)
-            case "time_units":
-                assert value in ["seconds", "minutes", "hours", "days", "months", "years"]
-            case "unlimdim":
-                assert type(value) is str
-            case "write_file":
-                assert type(value) is bool
-            case "global_meta":
-                type(value) is dict
-            case "sub_region":
-                assert type(value) is DiagTableSubRegion
-            case "new_file_freq":
-                assert type(value) is str
-            case "start_time":
-                assert type(value) is list and len(value) == 6
-            case "file_duration":
-                assert type(value) is str
-            case "is_ocean":
-                assert type(value) is bool
-            case "kind":
-                assert value in ["r4", "r8", "i4", "i8"]
-            case "module":
-                assert type(value) is str
-            case "reduction":
-                assert (value in ["average", "min", "max", "none", "rms", "sum"] or
-                        re.search(r"^pow\d+$", value) or
-                        re.search(r"^diurnal\d+$", value))
-            case "varlist":
-                assert type(value) is list
-                for v in value:
-                      assert type(v) is DiagTableVar
-            case _:
-                raise AttributeError("DiagTableFile: Invalid key name: {:s}".format(key))
+	if key == "file_name":
+	    assert type(value) is str
+	elif key == "freq":
+	    assert (type(value) is float) or (type(value) is str)
+	elif key == "time_units":
+	    assert value in ["seconds", "minutes", "hours", "days", "months", "years"]
+	elif key == "unlimdim":
+	    assert type(value) is str
+	elif key == "write_file":
+	    assert type(value) is bool
+	elif key == "global_meta":
+	    type(value) is dict
+	elif key == "sub_region":
+	    assert type(value) is DiagTableSubRegion
+	elif key == "new_file_freq":
+	    assert type(value) is str
+	elif key == "start_time":
+	    assert type(value) is list and len(value) == 6
+	elif key == "file_duration":
+	    assert type(value) is str
+	elif key == "is_ocean":
+	    assert type(value) is bool
+	elif key == "kind":
+	    assert value in ["r4", "r8", "i4", "i8"]
+	elif key == "module":
+	    assert type(value) is str
+	elif key == "reduction":
+	    assert (value in ["average", "min", "max", "none", "rms", "sum"] or
+		    re.search(r"^pow\d+$", value) or
+		    re.search(r"^diurnal\d+$", value))
+	elif key == "varlist":
+	    assert type(value) is list
+	    for v in value:
+		  assert type(v) is DiagTableVar
+	else:
+	    raise AttributeError("DiagTableFile: Invalid key name: {:s}".format(key))
 
     def __init__(self, file={}):
         """Initialize a DiagTableFile object from a Python dictionary"""
@@ -493,29 +490,28 @@ class DiagTableVar(DiagTableBase):
 
     @staticmethod
     def validate_field(key, value):
-        match key:
-            case "var_name":
-                assert type(value) is str
-            case "kind":
-                assert value in ["r4", "r8", "i4", "i8"]
-            case "module":
-                assert type(value) is str
-            case "reduction":
-                assert (value in ["average", "min", "max", "none", "rms", "sum"] or
-                        re.search(r"^pow\d+$", value) or
-                        re.search(r"^diurnal\d+$", value))
-            case "write_var":
-                assert type(value) is bool
-            case "output_name":
-                assert type(value) is str
-            case "long_name":
-                assert type(value) is str
-            case "attributes":
-                assert type(value) is dict
-            case "zbounds":
-                assert type(value) is str
-            case _:
-                raise AttributeError("DiagTableVar: Invalid key name: {:s}".format(key))
+	if key == "var_name":
+	    assert type(value) is str
+	elif key == "kind":
+	    assert value in ["r4", "r8", "i4", "i8"]
+	elif key == "module":
+	    assert type(value) is str
+	elif key == "reduction":
+	    assert (value in ["average", "min", "max", "none", "rms", "sum"] or
+		    re.search(r"^pow\d+$", value) or
+		    re.search(r"^diurnal\d+$", value))
+	elif key == "write_var":
+	    assert type(value) is bool
+	elif key == "output_name":
+	    assert type(value) is str
+	elif key == "long_name":
+	    assert type(value) is str
+	elif key == "attributes":
+	    assert type(value) is dict
+	elif key == "zbounds":
+	    assert type(value) is str
+	else:
+	    raise AttributeError("DiagTableVar: Invalid key name: {:s}".format(key))
 
     def __init__(self, var={}):
         """Initialize a DiagTableVar object from a Python dictionary"""
@@ -602,18 +598,17 @@ class DiagTableSubRegion(DiagTableBase):
 
     @staticmethod
     def validate_field(key, value):
-        match key:
-            case "grid_type":
-                assert value in ["indices", "latlon"]
-            case "corner1" | "corner2" | "corner3" | "corner4":
-                assert type(value) is list
-                assert len(value) == 2
-                for i in (0, 1):
-                    assert type(value[i]) is float
-            case "tile":
-                assert type(value) is int
-            case _:
-                raise AttributeError("DiagTableSubRegion: Invalid key name: {:s}".format(key))
+	if key == "grid_type":
+	    assert value in ("indices", "latlon")
+        elif key in ("corner1", "corner2", "corner3", "corner4"):
+	    assert type(value) is list
+	    assert len(value) == 2
+	    for i in (0, 1):
+		assert type(value[i]) is float
+	elif key == "tile":
+	    assert type(value) is int
+        else:
+	    raise AttributeError("DiagTableSubRegion: Invalid key name: {:s}".format(key))
 
     def __init__(self, sub_region={}):
         """Initialize a DiagTableSubRegion object from a Python dictionary"""
