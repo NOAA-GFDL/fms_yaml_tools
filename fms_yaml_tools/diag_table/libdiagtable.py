@@ -20,7 +20,6 @@
 
 import yaml
 import re
-import itertools
 import copy
 
 
