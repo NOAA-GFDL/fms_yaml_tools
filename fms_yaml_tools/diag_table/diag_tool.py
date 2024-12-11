@@ -20,14 +20,15 @@
 # ***********************************************************************
 
 import click
-from fms_yaml_tools.diag_table import *
+from fms_yaml_tools.diag_table import DiagTable
+
 
 def echo(msg):
     click.echo(msg, err=True)
 
+
 @click.group(help="Utility for updating, combining, subsetting, and summarizing diag tables")
 @click.pass_context
-
 @click.option("-i", "--in-place", is_flag=True, default=False,
               help="Overwrite the existing table, rather than writing to standard output")
 @click.option("-F", "--force", is_flag=True, default=False,
@@ -40,7 +41,6 @@ def echo(msg):
               help="Prune files which have no variables after filters are applied")
 @click.option("-a", "--abstract", type=click.Choice(("table", "file", "var"), case_sensitive=True), multiple=True,
               help="Exclude table, file, or variable attributes from the output")
-
 def diag_tool(ctx, in_place, force, file, var, prune, abstract):
     ctx.ensure_object(dict)
     options = ctx.obj
@@ -51,6 +51,7 @@ def diag_tool(ctx, in_place, force, file, var, prune, abstract):
     options["var"] = var
     options["prune"] = prune
     options["abstract"] = abstract
+
 
 def write_out(ctx, filename, diag_table_obj):
     options = ctx.obj
@@ -70,6 +71,7 @@ def write_out(ctx, filename, diag_table_obj):
     with click.open_file(filename, "w") as fh:
         fh.write(yaml)
 
+
 def get_filtered_table_obj(ctx, diag_table):
     options = ctx.obj
     diag_table_obj = DiagTable.from_file(diag_table).filter_files(options["file"]).filter_vars(options["var"])
@@ -79,11 +81,10 @@ def get_filtered_table_obj(ctx, diag_table):
 
     return diag_table_obj
 
+
 @diag_tool.command(help="Edit a table interactively")
 @click.pass_context
-
 @click.argument("diag_table", type=click.Path(), default="-")
-
 def edit(ctx, diag_table):
     options = ctx.obj
 
@@ -96,6 +97,7 @@ def edit(ctx, diag_table):
 
     diag_table_obj = DiagTable.from_yaml_str(yaml1)
     write_out(ctx, diag_table, diag_table_obj)
+
 
 def merge_generic(ctx, files, merge_func):
     if len(files) == 0:
@@ -112,6 +114,7 @@ def merge_generic(ctx, files, merge_func):
 
     write_out(ctx, files[-1], diag_tables[0])
 
+
 @diag_tool.command(help="Asymmetrically merge one table into another")
 @click.argument("tables", type=click.Path(), nargs=-1)
 @click.pass_context
@@ -120,6 +123,7 @@ def update(ctx, tables):
         lhs |= rhs
 
     merge_generic(ctx, tables, update_func)
+
 
 @diag_tool.command(help="Symmetrically merge two or more tables")
 @click.argument("tables", type=click.Path(), nargs=-1)
@@ -130,12 +134,14 @@ def merge(ctx, tables):
 
     merge_generic(ctx, tables, merge_func)
 
+
 @diag_tool.command(help="Filter files or variables from a table")
 @click.pass_context
 @click.argument("diag_table", type=click.Path(), default="-")
 def filter(ctx, diag_table):
     diag_table_obj = get_filtered_table_obj(ctx, diag_table)
     write_out(ctx, diag_table, diag_table_obj)
+
 
 @diag_tool.command(help="List the files and variables in a table")
 @click.pass_context
@@ -149,6 +155,7 @@ def list(ctx, diag_table):
     diag_table_obj = get_filtered_table_obj(ctx, diag_table)
     write_out(ctx, diag_table, diag_table_obj)
 
+
 @diag_tool.command(help="Pick out a particular file")
 @click.argument("diag_table", type=click.Path(), default="-")
 @click.pass_context
@@ -160,6 +167,7 @@ def grep_file(ctx, diag_table):
 
     diag_table_obj = get_filtered_table_obj(ctx, diag_table)
     write_out(ctx, diag_table, diag_table_obj)
+
 
 @diag_tool.command(help="Pick out a particular variable")
 @click.argument("diag_table", type=click.Path(), default="-")
@@ -174,6 +182,7 @@ def grep_var(ctx, diag_table):
 
     diag_table_obj = get_filtered_table_obj(ctx, diag_table)
     write_out(ctx, diag_table, diag_table_obj)
+
 
 def wizard_generic(ctx, diag_table, abstract):
     options = ctx.obj
@@ -194,20 +203,16 @@ def wizard_generic(ctx, diag_table, abstract):
 
     diag_table_changes = DiagTable.from_yaml_str(yaml1)
 
-    #print("----------------------------------")
-    #print(diag_table_original.render())
-    #print("----------------------------------")
-    #print(diag_table_changes.render())
-    #print("----------------------------------")
-
     diag_table_obj = diag_table_original | diag_table_changes
     write_out(ctx, diag_table, diag_table_obj)
+
 
 @diag_tool.command(help="Add a new file or modify an existing one")
 @click.pass_context
 @click.argument("diag_table", type=click.Path(), default="-")
 def file_wizard(ctx, diag_table):
     wizard_generic(ctx, diag_table, ("table",))
+
 
 @diag_tool.command(help="Add a new variable or modify an existing one")
 @click.pass_context
@@ -216,6 +221,7 @@ def var_wizard(ctx, diag_table):
     options = ctx.obj
     options["prune"] = True
     wizard_generic(ctx, diag_table, ("table","file"))
+
 
 if __name__ == "__main__":
     diag_tool(obj={})
