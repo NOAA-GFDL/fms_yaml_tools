@@ -220,7 +220,7 @@ def file_wizard(ctx, diag_table):
 def var_wizard(ctx, diag_table):
     options = ctx.obj
     options["prune"] = True
-    wizard_generic(ctx, diag_table, ("table","file"))
+    wizard_generic(ctx, diag_table, ("table", "file"))
 
 
 if __name__ == "__main__":

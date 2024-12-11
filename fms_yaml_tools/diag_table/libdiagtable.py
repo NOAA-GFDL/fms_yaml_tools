@@ -52,7 +52,7 @@ class DiagTableFilter:
 
         def file_filter(file_obj):
             match = False
-            for name,negate in iterate_cases():
+            for name, negate in iterate_cases():
                 if (file_obj.file_name == name or name == "*"):
                     match = True
             return match ^ negate
@@ -88,7 +88,7 @@ class DiagTableFilter:
 
         def var_filter(file_obj, var_obj):
             match = False
-            for file,module,var,negate in iterate_cases():
+            for file, module, var, negate in iterate_cases():
                 if (
                         (file_obj.file_name == file or file == "*") and
                         ((var_obj.module or file_obj.module) == module or module == "*") and
@@ -223,8 +223,8 @@ class DiagTable(DiagTableBase):
         if "diag_files" in self.__dict__ and "diag_files" in other.__dict__:
             b = copy.copy(other.diag_files)
 
-            for i,fi in enumerate(self.diag_files):
-                for j,fj in enumerate(b):
+            for i, fi in enumerate(self.diag_files):
+                for j, fj in enumerate(b):
                     if fi.file_name == fj.file_name:
                         fi += fj
                         del b[j]
@@ -245,8 +245,8 @@ class DiagTable(DiagTableBase):
         if "diag_files" in self.__dict__ and "diag_files" in other.__dict__:
             b = copy.copy(other.diag_files)
 
-            for i,fi in enumerate(self.diag_files):
-                for j,fj in enumerate(b):
+            for i, fi in enumerate(self.diag_files):
+                for j, fj in enumerate(b):
                     if fi.file_name == fj.file_name:
                         fi |= fj
                         del b[j]
@@ -367,8 +367,8 @@ class DiagTableFile(DiagTableBase):
 
         b = copy.copy(other.varlist)
 
-        for i,fi in enumerate(self.varlist):
-            for j,fj in enumerate(b):
+        for i, fi in enumerate(self.varlist):
+            for j, fj in enumerate(b):
                 if fi.var_name == fj.var_name:
                     fi += fj
                     del b[j]
@@ -393,8 +393,8 @@ class DiagTableFile(DiagTableBase):
 
         b = copy.copy(other.varlist)
 
-        for i,fi in enumerate(self.varlist):
-            for j,fj in enumerate(b):
+        for i, fi in enumerate(self.varlist):
+            for j, fj in enumerate(b):
                 if fi.var_name == fj.var_name:
                     fi |= fj
                     del b[j]
