@@ -71,31 +71,38 @@ class DiagTableFilter:
         return file_filter
 
     @staticmethod
-    def var_filter_factory(vars):
+    def var_filter_factory(filter_strings):
         """Return a function to be used as a variable filter"""
-        if type(vars) is str:
-            vars = (vars,)
+        if type(filter_strings) is str:
+            filter_strings = (filter_strings,)
 
         # Pass-through if no filter string is provided
-        if len(vars) == 0:
+        if len(filter_strings) == 0:
             return lambda file_obj, var_obj: True
 
         def iterate_cases():
-            for var in vars:
-                var, negate = DiagTableFilter.parse_negate_flag(var)
-                fmv = [p.split(",") or ("*",) for p in var.split(":")]
+            for filter_str in filter_strings:
+                filter_str, negate = DiagTableFilter.parse_negate_flag(filter_str)
+                #fmv = [p.split(",") or ("*",) for p in var.split(":")]
+                fmv = [part for part in var.split(":")]
 
-                if len(fmv) == 1:
-                    iter = itertools.product(("*",), ("*",), fmv[0], (negate,))
-                elif len(fmv) == 2:
-                    iter = itertools.product(fmv[0], ("*",), fmv[1], (negate,))
-                elif len(fmv) == 3:
-                    iter = itertools.product(fmv[0], fmv[1], fmv[2], (negate,))
-                else:
-                    raise Exception("Invalid variable filter specification")
+                def get_filter_component(index):
+                    try:
+                        return fmv.pop(index)
+                    except IndexError:
+                        return "*"
 
-                for case in iter:
-                    yield case
+                var_name = get_filter_component(-1)
+                file_name = get_filter_component(0)
+                mod_name = get_filter_component(0)
+
+                if len(fmv) > 0:
+                    raise Exception("Invalid variable filter specification: Too many components")
+
+                for f in file_name.split(","):
+                    for m in mod_name.split(","):
+                        for v in var_name.split(","):
+                            yield (f, m, v, negate)
 
         def var_filter(file_obj, var_obj):
             match = False
