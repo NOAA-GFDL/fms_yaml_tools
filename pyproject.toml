@@ -3,8 +3,3 @@ requires = [
     "setuptools>=42",
 ]
 build-backend = "setuptools.build_meta"
-
-[tool.flake8]
-max-line-length = 120
-per-file-ignores = ["__init__.py:F401"]
-ignore = ["C901"]
