@@ -19,12 +19,13 @@
 # ***********************************************************************
 
 import yaml
-import sys
 import re
 import itertools
 import copy
 
+
 strip_none = lambda d: dict(kv for kv in d.items() if kv[1] is not None)
+
 
 class DiagTableFilter:
     @staticmethod
@@ -98,6 +99,7 @@ class DiagTableFilter:
 
         return var_filter
 
+
 def dict_assert_mergeable(a, b):
     """Assert that two dictionaries can be symmetrically merged. This assertion fails
        if both dictionaries contain a common key with two different values."""
@@ -105,6 +107,7 @@ def dict_assert_mergeable(a, b):
     for k in common_keys:
         if a[k] != b[k]:
             raise Exception("Could not merge dictionaries: key '{:s}' has two different values".format(k))
+
 
 class DiagTableBase:
     """This class should not be used directly. Child classes must
@@ -139,6 +142,7 @@ class DiagTableBase:
         a = copy.deepcopy(a)
         a |= b
         return a
+
 
 class DiagTable(DiagTableBase):
     fields = {
@@ -276,6 +280,7 @@ class DiagTable(DiagTableBase):
             print("Failed to write YAML file: {:s}".format(err))
         #except Exception as err:
             #print("Failed to open file for writing: {:s}".format(err))
+
 
 class DiagTableFile(DiagTableBase):
     fields = {
@@ -475,6 +480,7 @@ class DiagTableFile(DiagTableBase):
     def set_reduction(self, reduction):
         self.set("reduction", reduction)
 
+
 class DiagTableVar(DiagTableBase):
     fields = {
         "var_name":    None,
@@ -585,6 +591,7 @@ class DiagTableVar(DiagTableBase):
 
     def set_zbounds(self, zbounds):
         self.set("zbounds", zbounds)
+
 
 class DiagTableSubRegion(DiagTableBase):
     fields = {
