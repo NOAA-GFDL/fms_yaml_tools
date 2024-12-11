@@ -83,8 +83,7 @@ class DiagTableFilter:
         def iterate_cases():
             for filter_str in filter_strings:
                 filter_str, negate = DiagTableFilter.parse_negate_flag(filter_str)
-                #fmv = [p.split(",") or ("*",) for p in var.split(":")]
-                fmv = [part for part in var.split(":")]
+                fmv = [component for component in filter_str.split(":")]
 
                 def get_filter_component(index):
                     try:
