@@ -20,7 +20,7 @@
 # ***********************************************************************
 
 import click
-from fms_yaml_tools.diag_table.libdiagtable import *
+from fms_yaml_tools.diag_table import *
 
 def echo(msg):
     click.echo(msg, err=True)
