@@ -24,7 +24,17 @@ import itertools
 import copy
 
 
-strip_none = lambda d: dict(kv for kv in d.items() if kv[1] is not None)
+def strip_none(d):
+    return dict(kv for kv in d.items() if kv[1] is not None)
+
+
+def dict_assert_mergeable(a, b):
+    """Assert that two dictionaries can be symmetrically merged. This assertion fails
+       if both dictionaries contain a common key with two different values."""
+    common_keys = a.keys() & b.keys()
+    for k in common_keys:
+        if a[k] != b[k]:
+            raise Exception("Could not merge dictionaries: key '{:s}' has two different values".format(k))
 
 
 class DiagTableFilter:
@@ -98,15 +108,6 @@ class DiagTableFilter:
             return match ^ negate
 
         return var_filter
-
-
-def dict_assert_mergeable(a, b):
-    """Assert that two dictionaries can be symmetrically merged. This assertion fails
-       if both dictionaries contain a common key with two different values."""
-    common_keys = a.keys() & b.keys()
-    for k in common_keys:
-        if a[k] != b[k]:
-            raise Exception("Could not merge dictionaries: key '{:s}' has two different values".format(k))
 
 
 class DiagTableBase:
@@ -278,8 +279,6 @@ class DiagTable(DiagTableBase):
                 self.dump_yaml(abstract, fh)
         except Exception as err:
             print("Failed to write YAML file: {:s}".format(err))
-        #except Exception as err:
-            #print("Failed to open file for writing: {:s}".format(err))
 
 
 class DiagTableFile(DiagTableBase):
@@ -336,7 +335,7 @@ class DiagTableFile(DiagTableBase):
         elif key == "varlist":
             assert type(value) is list
             for v in value:
-                  assert type(v) is DiagTableVar
+                assert type(v) is DiagTableVar
         else:
             raise AttributeError("DiagTableFile: Invalid key name: {:s}".format(key))
 
