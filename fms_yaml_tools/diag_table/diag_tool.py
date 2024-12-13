@@ -215,6 +215,7 @@ def grep_file(ctx, diag_table):
 
     if n == 0:
         echo("No file was found matching the filter criteria")
+        return
     elif n > 1:
         echo("Selecting the first out of {:d} files that match the filter criteria".format(n))
 
@@ -238,6 +239,7 @@ def grep_var(ctx, diag_table):
 
     if n == 0:
         echo("No variable was found matching the filter criteria")
+        return
     elif n > 1:
         echo("Selecting the first out of {:d} variables that match the filter criteria".format(n))
 
