@@ -24,6 +24,7 @@ import copy
 
 
 def strip_none(d):
+    """Strip all None values out of a dictionary and return the result"""
     return dict(kv for kv in d.items() if kv[1] is not None)
 
 
@@ -37,6 +38,7 @@ def dict_assert_mergeable(a, b):
 
 
 def parse_negate_flag(s):
+    """Check if the first character of a filter string is '~', which indicates that the filter shall be negated."""
     if s[0] == "~":
         return (s[1:], True)
     else:
@@ -44,7 +46,7 @@ def parse_negate_flag(s):
 
 
 def file_filter_factory(filter_spec):
-    """Return a function to be used as a file filter"""
+    """Return a function to be used as a file filter, from a specification string or a list thereof"""
     if callable(filter_spec):
         return filter_spec
 
@@ -73,7 +75,7 @@ def file_filter_factory(filter_spec):
 
 
 def var_filter_factory(filter_spec):
-    """Return a function to be used as a variable filter"""
+    """Return a function to be used as a variable filter, from a specification string or a list thereof"""
     if callable(filter_spec):
         return filter_spec
 
@@ -122,9 +124,8 @@ def var_filter_factory(filter_spec):
 
 
 class DiagTableBase:
-    """This class should not be used directly. Child classes must
-       implement a static `validate_field` method, which decides whether or
-       not a key/value pair is valid."""
+    """This class should not be used directly. Child classes must implement a static `validate_field` method, which
+    decides whether or not a key/value pair is valid."""
 
     def __add__(a, b):
         a = copy.deepcopy(a)
@@ -137,15 +138,19 @@ class DiagTableBase:
         return a
 
     def validate(self):
+        """Validate every field of the object"""
         for key, value in self.__dict__.items():
             if value is not None:
                 self.__class__.validate_field(key, value)
 
     def set(self, key, value):
+        """Generic setter with validation"""
         self.__class__.validate_field(key, value)
         self.__dict__[key] = value
 
     def coerce_type(self, other):
+        """Check that the `other` operand in a binary operation is either of the same type, or is a dictionary from
+        which an object of the correct type can be created"""
         if type(other) is dict:
             other = self.__class__(other)
 
@@ -156,6 +161,7 @@ class DiagTableBase:
         return other
 
     def dump_yaml(self, abstract=None, fh=None):
+        """Return the object as a YAML string"""
         return yaml.safe_dump(self.render(abstract), fh, default_flow_style=False, sort_keys=False)
 
     @classmethod
@@ -177,6 +183,7 @@ class DiagTable(DiagTableBase):
 
     @staticmethod
     def validate_field(key, value):
+        """Decide whether or not a given key/value pair is valid"""
         if key == "title":
             assert type(value) is str
         elif key == "base_date":
@@ -210,6 +217,7 @@ class DiagTable(DiagTableBase):
         self.validate()
 
     def render(self, abstract=None):
+        """Return a dictionary representation of the object"""
         table = strip_none(self.__dict__)
         table["diag_files"] = list(f.render(abstract) for f in table["diag_files"])
 
@@ -219,6 +227,7 @@ class DiagTable(DiagTableBase):
         return table
 
     def filter_files(self, filter):
+        """Apply a file filter and return the resulting DiagTable object"""
         filter = file_filter_factory(filter)
 
         table = copy.copy(self)
@@ -226,6 +235,7 @@ class DiagTable(DiagTableBase):
         return table
 
     def filter_vars(self, filter):
+        """Apply a variable filter and return the resulting DiagTable object"""
         filter = var_filter_factory(filter)
 
         table = copy.copy(self)
@@ -233,10 +243,12 @@ class DiagTable(DiagTableBase):
         return table
 
     def get_filtered_files(self, filter):
+        """Apply a file filter and return the resulting list of DiagTableFile objects"""
         filter = file_filter_factory(filter)
         return [f for f in self.diag_files if filter(f)]
 
     def get_filtered_vars(self, filter):
+        """Apply a variable filter and return the resulting list of DiagTableVar objects"""
         filter = var_filter_factory(filter)
         filtered_vars = []
 
@@ -324,6 +336,7 @@ class DiagTableFile(DiagTableBase):
 
     @staticmethod
     def validate_field(key, value):
+        """Decide whether or not a given key/value pair is valid"""
         if key == "file_name":
             assert type(value) is str
         elif key == "freq":
@@ -380,6 +393,8 @@ class DiagTableFile(DiagTableBase):
         self.validate()
 
     def __iadd__(self, other):
+        """Symmetric merge of two DiagTableFile objects. Any conflict between the
+           two operands shall result in a failure."""
         other = copy.copy(self.coerce_type(other))
 
         if self.global_meta and other.global_meta:
@@ -407,6 +422,8 @@ class DiagTableFile(DiagTableBase):
         return self
 
     def __ior__(self, other):
+        """Asymmetric merge of two DiagTableFile objects. Any conflict between the
+           two operands will resolve to the `other` value."""
         other = copy.copy(self.coerce_type(other))
 
         if self.global_meta and other.global_meta:
@@ -432,6 +449,7 @@ class DiagTableFile(DiagTableBase):
         return self
 
     def render(self, abstract=None):
+        """Return a dictionary representation of the object"""
         file = strip_none(self.__dict__)
         file["varlist"] = list(v.render(abstract) for v in file["varlist"])
 
@@ -518,6 +536,7 @@ class DiagTableVar(DiagTableBase):
 
     @staticmethod
     def validate_field(key, value):
+        """Decide whether or not a given key/value pair is valid"""
         if key == "var_name":
             assert type(value) is str
         elif key == "kind":
@@ -555,6 +574,8 @@ class DiagTableVar(DiagTableBase):
         self.validate()
 
     def __iadd__(self, other):
+        """Symmetric merge of two DiagTableVar objects. Any conflict between the
+           two operands shall result in a failure."""
         other = self.coerce_type(other)
 
         if "attributes" in self.__dict__ and "attributes" in other.__dict__:
@@ -568,6 +589,8 @@ class DiagTableVar(DiagTableBase):
         return self
 
     def __ior__(self, other):
+        """Asymmetric merge of two DiagTableVar objects. Any conflict between the
+           two operands will resolve to the `other` value."""
         other = self.coerce_type(other)
 
         if "attributes" in self.__dict__ and "attributes" in other.__dict__:
@@ -579,6 +602,7 @@ class DiagTableVar(DiagTableBase):
         return self
 
     def render(self, abstract=None):
+        """Return a dictionary representation of the object"""
         if abstract and "var" in abstract:
             return self.var_name
         else:
@@ -627,6 +651,7 @@ class DiagTableSubRegion(DiagTableBase):
 
     @staticmethod
     def validate_field(key, value):
+        """Decide whether or not a given key/value pair is valid"""
         if key == "grid_type":
             assert value in ("indices", "latlon")
         elif key in ("corner1", "corner2", "corner3", "corner4"):
@@ -649,17 +674,22 @@ class DiagTableSubRegion(DiagTableBase):
         self.validate()
 
     def __iadd__(self, other):
+        """Symmetric merge of two DiagTableSubRegion objects. Any conflict between the
+           two operands shall result in a failure."""
         other = self.coerce_type(other)
         dict_assert_mergeable(self.__dict__, other.__dict__)
         self.__dict__ |= other.__dict__
         return self
 
     def __ior__(self, other):
+        """Asymmetric merge of two DiagTableSubRegion objects. Any conflict between the
+           two operands will resolve to the `other` value."""
         other = self.coerce_type(other)
         self.__dict__ |= other.__dict__
         return self
 
     def render(self):
+        """Return a dictionary representation of the object"""
         return strip_none(self.__dict__)
 
     def set_grid_type(self, grid_type):
