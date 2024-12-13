@@ -231,6 +231,7 @@ def grep_var(ctx, diag_table):
     yaml = vars[0].dump_yaml(options["abstract"])
     sys.stdout.write(yaml)
 
+
 def wizard_generic(ctx, diag_table, abstract):
     options = ctx.obj
     abstract = options["abstract"] or abstract
@@ -251,7 +252,6 @@ def wizard_generic(ctx, diag_table, abstract):
 @click.pass_context
 @click.argument("diag_table", type=click.Path(), default="-")
 def file_wizard(ctx, diag_table):
-    options = ctx.obj
     wizard_generic(ctx, diag_table, ("table",))
 
 
