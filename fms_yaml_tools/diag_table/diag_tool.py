@@ -67,10 +67,7 @@ def write_out(ctx, filename, diag_table_obj):
     else:
         filename = "-"
 
-    yaml = diag_table_obj.dump_yaml(options["abstract"])
-
-    with click.open_file(filename, "w") as fh:
-        fh.write(yaml)
+    diag_table_obj.write(filename, options["abstract"])
 
 
 def get_filtered_table_obj(ctx, diag_table):
@@ -143,14 +140,8 @@ def merge(ctx, tables):
 def update_var(ctx, var_yaml, table_yaml):
     options = ctx.obj
 
-    with click.open_file(var_yaml, "r") as fh:
-        var_yaml_str = fh.read()
-
-    with click.open_file(table_yaml, "r") as fh:
-        table_yaml_str = fh.read()
-
-    var_obj = DiagTableVar.from_yaml_str(var_yaml_str)
-    table_obj = DiagTable.from_yaml_str(table_yaml_str)
+    var_obj = DiagTableVar.from_file(var_yaml)
+    table_obj = DiagTable.from_file(table_yaml)
 
     for v in table_obj.get_filtered_vars(options["var"]):
         v |= var_obj
@@ -165,14 +156,8 @@ def update_var(ctx, var_yaml, table_yaml):
 def update_file(ctx, file_yaml, table_yaml):
     options = ctx.obj
 
-    with click.open_file(file_yaml, "r") as fh:
-        file_yaml_str = fh.read()
-
-    with click.open_file(table_yaml, "r") as fh:
-        table_yaml_str = fh.read()
-
-    file_obj = DiagTableFile.from_yaml_str(file_yaml_str)
-    table_obj = DiagTable.from_yaml_str(table_yaml_str)
+    file_obj = DiagTableFile.from_file(file_yaml)
+    table_obj = DiagTable.from_file(table_yaml)
 
     for f in table_obj.get_filtered_files(options["file"]):
         f |= file_obj
@@ -246,15 +231,9 @@ def grep_var(ctx, diag_table):
     yaml = vars[0].dump_yaml(options["abstract"])
     sys.stdout.write(yaml)
 
-
-@diag_tool.command(help="Add a new variable or modify an existing one")
-@click.pass_context
-@click.argument("diag_table", type=click.Path(), default="-")
-def var_wizard(ctx, diag_table):
+def wizard_generic(ctx, diag_table, abstract):
     options = ctx.obj
-
-    options["prune"] = True
-    abstract = options["abstract"] or ("table", "file")
+    abstract = options["abstract"] or abstract
 
     yaml0 = get_filtered_table_obj(ctx, diag_table).dump_yaml(abstract)
     yaml1 = click.edit(yaml0)
@@ -263,13 +242,26 @@ def var_wizard(ctx, diag_table):
         echo("Changes have been discarded")
         return
 
-    with click.open_file(diag_table, "r") as fh:
-        diag_table_original = DiagTable.from_yaml_str(fh.read())
-
-    diag_table_changes = DiagTable.from_yaml_str(yaml1)
-
-    diag_table_obj = diag_table_original | diag_table_changes
+    diag_table_obj = DiagTable.from_file(diag_table)
+    diag_table_obj |= DiagTable.from_yaml_str(yaml1)
     write_out(ctx, diag_table, diag_table_obj)
+
+
+@diag_tool.command(help="Add a new file or modify an existing one")
+@click.pass_context
+@click.argument("diag_table", type=click.Path(), default="-")
+def file_wizard(ctx, diag_table):
+    options = ctx.obj
+    wizard_generic(ctx, diag_table, ("table",))
+
+
+@diag_tool.command(help="Add a new variable or modify an existing one")
+@click.pass_context
+@click.argument("diag_table", type=click.Path(), default="-")
+def var_wizard(ctx, diag_table):
+    options = ctx.obj
+    options["prune"] = True
+    wizard_generic(ctx, diag_table, ("table", "file"))
 
 
 if __name__ == "__main__":

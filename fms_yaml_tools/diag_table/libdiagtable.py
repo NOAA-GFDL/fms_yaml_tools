@@ -21,11 +21,7 @@
 import yaml
 import re
 import copy
-
-
-def strip_none(d):
-    """Strip all None values out of a dictionary and return the result"""
-    return dict(kv for kv in d.items() if kv[1] is not None)
+from click import open_file
 
 
 def dict_assert_mergeable(a, b):
@@ -148,30 +144,45 @@ class DiagTableBase:
         self.__class__.validate_field(key, value)
         self.__dict__[key] = value
 
-    def coerce_type(self, other):
-        """Check that the `other` operand in a binary operation is either of the same type, or is a dictionary from
-        which an object of the correct type can be created"""
-        if type(other) is dict:
-            other = self.__class__(other)
-
-        if type(other) is not self.__class__:
-            raise TypeError("Unable to create {:s} from type {:s}".format(type(self).__name__, type(other).__name__))
-
-        other.__dict__ = strip_none(other.__dict__)
-        return other
-
     def dump_yaml(self, abstract=None, fh=None):
         """Return the object as a YAML string"""
-        return yaml.safe_dump(self.render(abstract), fh, default_flow_style=False, sort_keys=False)
+        try:
+            return yaml.safe_dump(self.render(abstract), fh, default_flow_style=False, sort_keys=False)
+        except yaml.YAMLError as err:
+            print("Failed to represent data as YAML: {:s}".format(str(err)))
+        except OSError as err:
+            print("Failed to write to '{:s}': {:s}".format(err.filename, err.strerror))
+
+    def write(self, filename, abstract=None):
+        """Write the object to a YAML file"""
+        try:
+            with open_file(filename, "w") as fh:
+                self.dump_yaml(abstract, fh)
+        except OSError as err:
+            print("Failed to open '{:s}': {:s}".format(err.filename, err.strerror))
 
     @classmethod
     def from_yaml_str(cls, yaml_str):
         """Initialize a DiagTable, DiagTableFile, DiagTableVar, or DiagTableSubRegion object from a YAML string"""
         try:
             struct = yaml.safe_load(yaml_str)
-        except yaml.scanner.ScannerError as err:
-            print("YAML parsing error: {}".format(err))
-        return cls(struct)
+            return cls(struct)
+        except yaml.YAMLError as err:
+            print("Failed to parse YAML: {:s}".format(str(err)))
+
+    @classmethod
+    def from_file(cls, filename):
+        """Initialize a DiagTable, DiagTableFile, DiagTableVar, or DiagTableSubRegion object from a YAML file"""
+        try:
+            with open_file(filename, "r") as fh:
+                yaml_str = fh.read()
+            return cls.from_yaml_str(yaml_str)
+        except OSError as err:
+            print("Failed to open '{:s}': {:s}".format(err.filename, err.strerror))
+
+    def strip_none(self):
+        """Strip all None values out of a dictionary and return the result"""
+        return dict(kv for kv in self.__dict__.items() if kv[1] is not None)
 
 
 class DiagTable(DiagTableBase):
@@ -195,21 +206,12 @@ class DiagTable(DiagTableBase):
         else:
             raise AttributeError("DiagTable: Invalid key name: {:s}".format(key))
 
-    @staticmethod
-    def from_file(filename, open_func=open):
-        """Initialize a DiagTable object from a YAML file"""
-
-        try:
-            with open_func(filename, "r") as fh:
-                yaml_str = fh.read()
-            return DiagTable.from_yaml_str(yaml_str)
-        except FileNotFoundError as err:
-            print(err)
-
     def __init__(self, diag_table={}):
         """Initialize a DiagTable object from a Python dictionary"""
 
-        if type(diag_table) is not dict:
+        if type(diag_table) is self.__class__:
+            diag_table = diag_table.render()
+        elif type(diag_table) is not dict:
             raise TypeError("DiagTable must be constructed from a dictionary")
 
         self.__dict__ = self.fields | diag_table
@@ -218,7 +220,7 @@ class DiagTable(DiagTableBase):
 
     def render(self, abstract=None):
         """Return a dictionary representation of the object"""
-        table = strip_none(self.__dict__)
+        table = self.strip_none()
         table["diag_files"] = list(f.render(abstract) for f in table["diag_files"])
 
         if abstract and "table" in abstract:
@@ -260,44 +262,42 @@ class DiagTable(DiagTableBase):
     def __iadd__(self, other):
         """Symmetric merge of two DiagTable objects. Any conflict between the
            two operands shall result in a failure."""
-        other = copy.copy(self.coerce_type(other))
+        other = DiagTable(other)
 
-        if "diag_files" in self.__dict__ and "diag_files" in other.__dict__:
-            b = copy.copy(other.diag_files)
+        for i, fi in enumerate(self.diag_files):
+            for j, fj in enumerate(other.diag_files):
+                if fi.file_name == fj.file_name:
+                    fi += fj
+                    del other.diag_files[j]
+                    break
 
-            for i, fi in enumerate(self.diag_files):
-                for j, fj in enumerate(b):
-                    if fi.file_name == fj.file_name:
-                        fi += fj
-                        del b[j]
-                        break
+        self.diag_files += other.diag_files
+        del other.diag_files
 
-            self.diag_files += b
-            del other.diag_files
+        other = other.strip_none()
 
-        dict_assert_mergeable(self.__dict__, other.__dict__)
-        self.__dict__ |= other.__dict__
+        dict_assert_mergeable(self.__dict__, other)
+        self.__dict__ |= other
         return self
 
     def __ior__(self, other):
         """Asymmetric merge of two DiagTable objects. Any conflict between the
            two operands will resolve to the `other` value."""
-        other = copy.copy(self.coerce_type(other))
+        other = DiagTable(other)
 
-        if "diag_files" in self.__dict__ and "diag_files" in other.__dict__:
-            b = copy.copy(other.diag_files)
+        for i, fi in enumerate(self.diag_files):
+            for j, fj in enumerate(other.diag_files):
+                if fi.file_name == fj.file_name:
+                    fi |= fj
+                    del other.diag_files[j]
+                    break
 
-            for i, fi in enumerate(self.diag_files):
-                for j, fj in enumerate(b):
-                    if fi.file_name == fj.file_name:
-                        fi |= fj
-                        del b[j]
-                        break
+        self.diag_files += other.diag_files
+        del other.diag_files
 
-            self.diag_files += b
-            del other.diag_files
+        other = other.strip_none()
 
-        self.__dict__ |= other.__dict__
+        self.__dict__ |= other
         return self
 
     def set_title(self, title):
@@ -305,14 +305,6 @@ class DiagTable(DiagTableBase):
 
     def set_base_date(self, base_date):
         self.set("base_date", base_date)
-
-    def write(self, filename, abstract=None):
-        """Write the DiagTable to a file"""
-        try:
-            with open(filename, "w") as fh:
-                self.dump_yaml(abstract, fh)
-        except Exception as err:
-            print("Failed to write YAML file: {:s}".format(err))
 
 
 class DiagTableFile(DiagTableBase):
@@ -377,7 +369,9 @@ class DiagTableFile(DiagTableBase):
     def __init__(self, file={}):
         """Initialize a DiagTableFile object from a Python dictionary"""
 
-        if type(file) is not dict:
+        if type(file) is self.__class__:
+            file = file.render()
+        elif type(file) is not dict:
             raise TypeError("DiagTableFile must be constructed from a dictionary")
 
         self.__dict__ = self.fields | file
@@ -395,7 +389,7 @@ class DiagTableFile(DiagTableBase):
     def __iadd__(self, other):
         """Symmetric merge of two DiagTableFile objects. Any conflict between the
            two operands shall result in a failure."""
-        other = copy.copy(self.coerce_type(other))
+        other = DiagTableFile(other)
 
         if self.global_meta and other.global_meta:
             dict_assert_mergeable(self.global_meta, other.global_meta)
@@ -406,25 +400,26 @@ class DiagTableFile(DiagTableBase):
             self.sub_region += other.sub_region
             del other.sub_region
 
-        b = copy.copy(other.varlist)
-
         for i, fi in enumerate(self.varlist):
-            for j, fj in enumerate(b):
+            for j, fj in enumerate(other.varlist):
                 if fi.var_name == fj.var_name:
                     fi += fj
-                    del b[j]
+                    del other.varlist[j]
                     break
-        self.varlist += b
+
+        self.varlist += other.varlist
         del other.varlist
 
-        dict_assert_mergeable(self.__dict__, other.__dict__)
-        self.__dict__ |= other.__dict__
+        other = other.strip_none()
+
+        dict_assert_mergeable(self.__dict__, other)
+        self.__dict__ |= other
         return self
 
     def __ior__(self, other):
         """Asymmetric merge of two DiagTableFile objects. Any conflict between the
            two operands will resolve to the `other` value."""
-        other = copy.copy(self.coerce_type(other))
+        other = DiagTableFile(other)
 
         if self.global_meta and other.global_meta:
             self.global_meta |= other.global_meta
@@ -434,23 +429,24 @@ class DiagTableFile(DiagTableBase):
             self.sub_region |= other.sub_region
             del other.sub_region
 
-        b = copy.copy(other.varlist)
-
         for i, fi in enumerate(self.varlist):
-            for j, fj in enumerate(b):
+            for j, fj in enumerate(other.varlist):
                 if fi.var_name == fj.var_name:
                     fi |= fj
-                    del b[j]
+                    del other.varlist[j]
                     break
-        self.varlist += b
+
+        self.varlist += other.varlist
         del other.varlist
 
-        self.__dict__ |= other.__dict__
+        other = other.strip_none()
+
+        self.__dict__ |= other
         return self
 
     def render(self, abstract=None):
         """Return a dictionary representation of the object"""
-        file = strip_none(self.__dict__)
+        file = self.strip_none()
         file["varlist"] = list(v.render(abstract) for v in file["varlist"])
 
         if abstract and "file" in abstract:
@@ -563,7 +559,9 @@ class DiagTableVar(DiagTableBase):
     def __init__(self, var={}):
         """Initialize a DiagTableVar object from a Python dictionary"""
 
-        if type(var) is not dict:
+        if type(var) is self.__class__:
+            var = var.render()
+        elif type(var) is not dict:
             raise TypeError("DiagTableVar must be constructed from a dictionary")
 
         if "attributes" in var:
@@ -576,29 +574,31 @@ class DiagTableVar(DiagTableBase):
     def __iadd__(self, other):
         """Symmetric merge of two DiagTableVar objects. Any conflict between the
            two operands shall result in a failure."""
-        other = self.coerce_type(other)
+        other = DiagTableVar(other)
 
-        if "attributes" in self.__dict__ and "attributes" in other.__dict__:
+        if self.attributes and other.attributes:
             dict_assert_mergeable(self.attributes, other.attributes)
             self.attributes |= other.attributes
-            other = copy.copy(other)
             del other.attributes
 
-        dict_assert_mergeable(self.__dict__, other.__dict__)
-        self.__dict__ |= other.__dict__
+        other = other.strip_none()
+
+        dict_assert_mergeable(self.__dict__, other)
+        self.__dict__ |= other
         return self
 
     def __ior__(self, other):
         """Asymmetric merge of two DiagTableVar objects. Any conflict between the
            two operands will resolve to the `other` value."""
-        other = self.coerce_type(other)
+        other = DiagTableVar(other)
 
-        if "attributes" in self.__dict__ and "attributes" in other.__dict__:
+        if self.attributes and other.attributes:
             self.attributes |= other.attributes
-            other = copy.copy(other)
             del other.attributes
 
-        self.__dict__ |= other.__dict__
+        other = other.strip_none()
+
+        self.__dict__ |= other
         return self
 
     def render(self, abstract=None):
@@ -606,7 +606,7 @@ class DiagTableVar(DiagTableBase):
         if abstract and "var" in abstract:
             return self.var_name
         else:
-            var = strip_none(self.__dict__)
+            var = self.strip_none()
             if "attributes" in var:
                 var["attributes"] = [var["attributes"]]
             return var
@@ -667,7 +667,9 @@ class DiagTableSubRegion(DiagTableBase):
     def __init__(self, sub_region={}):
         """Initialize a DiagTableSubRegion object from a Python dictionary"""
 
-        if type(sub_region) is not dict:
+        if type(sub_region) is self.__class__:
+            sub_region = sub_region.render()
+        elif type(sub_region) is not dict:
             raise TypeError("DiagTableSubRegion must be constructed from a dictionary")
 
         self.__dict__ = self.fields | sub_region
@@ -676,21 +678,25 @@ class DiagTableSubRegion(DiagTableBase):
     def __iadd__(self, other):
         """Symmetric merge of two DiagTableSubRegion objects. Any conflict between the
            two operands shall result in a failure."""
-        other = self.coerce_type(other)
-        dict_assert_mergeable(self.__dict__, other.__dict__)
-        self.__dict__ |= other.__dict__
+        other = DiagTableSubRegion(other)
+        other = other.strip_none()
+
+        dict_assert_mergeable(self.__dict__, other)
+        self.__dict__ |= other
         return self
 
     def __ior__(self, other):
         """Asymmetric merge of two DiagTableSubRegion objects. Any conflict between the
            two operands will resolve to the `other` value."""
-        other = self.coerce_type(other)
-        self.__dict__ |= other.__dict__
+        other = DiagTableSubRegion(other)
+        other = other.strip_none()
+
+        self.__dict__ |= other
         return self
 
-    def render(self):
+    def render(self, abstract=None):
         """Return a dictionary representation of the object"""
-        return strip_none(self.__dict__)
+        return self.strip_none()
 
     def set_grid_type(self, grid_type):
         self.set("grid_type", grid_type)
