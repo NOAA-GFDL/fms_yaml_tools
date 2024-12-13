@@ -36,89 +36,105 @@ def dict_assert_mergeable(a, b):
             raise Exception("Could not merge dictionaries: key '{:s}' has two different values".format(k))
 
 
-class DiagTableFilter:
-    @staticmethod
-    def parse_negate_flag(s):
-        if s[0] == "~":
-            return (s[1:], True)
-        else:
-            return (s, False)
+def parse_negate_flag(s):
+    if s[0] == "~":
+        return (s[1:], True)
+    else:
+        return (s, False)
 
-    @staticmethod
-    def file_filter_factory(files):
-        """Return a function to be used as a file filter"""
-        if type(files) is str:
-            files = (files,)
 
-        # Pass-through if no filter string is provided
-        if len(files) == 0:
-            return lambda file_obj: True
+def file_filter_factory(filter_spec):
+    """Return a function to be used as a file filter"""
+    if callable(filter_spec):
+        return filter_spec
 
-        def iterate_cases():
-            for file in files:
-                file, negate = DiagTableFilter.parse_negate_flag(file)
-                for part in file.split(","):
-                    yield (part or "*", negate)
+    # Pass-through if no filter spec is provided
+    if not filter_spec:
+        return lambda file_obj: True
 
-        def file_filter(file_obj):
-            match = False
-            for name, negate in iterate_cases():
-                if (file_obj.file_name == name or name == "*"):
-                    match = True
-            return match ^ negate
+    if type(filter_spec) is str:
+        filter_spec = (filter_spec,)
 
-        return file_filter
+    def iterate_cases():
+        for filter_str in filter_spec:
+            filter_str, negate = parse_negate_flag(filter_str)
+            for part in filter_str.split(","):
+                yield (part or "*", negate)
 
-    @staticmethod
-    def var_filter_factory(filter_strings):
-        """Return a function to be used as a variable filter"""
-        if type(filter_strings) is str:
-            filter_strings = (filter_strings,)
+    def file_filter(file_obj):
+        match = False
+        for name, negate in iterate_cases():
+            if (file_obj.file_name == name or name == "*"):
+                match = True
+                break
+        return match ^ negate
 
-        # Pass-through if no filter string is provided
-        if len(filter_strings) == 0:
-            return lambda file_obj, var_obj: True
+    return file_filter
 
-        def iterate_cases():
-            for filter_str in filter_strings:
-                filter_str, negate = DiagTableFilter.parse_negate_flag(filter_str)
-                fmv = [component for component in filter_str.split(":")]
 
-                def get_filter_component(index):
-                    try:
-                        return fmv.pop(index)
-                    except IndexError:
-                        return "*"
+def var_filter_factory(filter_spec):
+    """Return a function to be used as a variable filter"""
+    if callable(filter_spec):
+        return filter_spec
 
-                var_name = get_filter_component(-1)
-                file_name = get_filter_component(0)
-                mod_name = get_filter_component(0)
+    # Pass-through if no filter spec is provided
+    if not filter_spec:
+        return lambda file_obj, var_obj: True
 
-                if len(fmv) > 0:
-                    raise Exception("Invalid variable filter specification: Too many components")
+    if type(filter_spec) is str:
+        filter_spec = (filter_spec,)
 
-                for f in file_name.split(","):
-                    for m in mod_name.split(","):
-                        for v in var_name.split(","):
-                            yield (f, m, v, negate)
+    def iterate_cases():
+        for filter_str in filter_spec:
+            filter_str, negate = parse_negate_flag(filter_str)
+            fmv = [component for component in filter_str.split(":")]
 
-        def var_filter(file_obj, var_obj):
-            match = False
-            for file, module, var, negate in iterate_cases():
-                if (
-                        (file_obj.file_name == file or file == "*") and
-                        ((var_obj.module or file_obj.module) == module or module == "*") and
-                        (var_obj.var_name == var or var == "*")):
-                    match = True
-            return match ^ negate
+            def get_filter_component(index):
+                try:
+                    return fmv.pop(index)
+                except IndexError:
+                    return "*"
 
-        return var_filter
+            var_name = get_filter_component(-1)
+            file_name = get_filter_component(0)
+            mod_name = get_filter_component(0)
+
+            if len(fmv) > 0:
+                raise Exception("Invalid variable filter specification: Too many components")
+
+            for f in file_name.split(","):
+                for m in mod_name.split(","):
+                    for v in var_name.split(","):
+                        yield (f, m, v, negate)
+
+    def var_filter(file_obj, var_obj):
+        match = False
+        for file, module, var, negate in iterate_cases():
+            if (
+                    (file_obj.file_name == file or file == "*") and
+                    ((var_obj.module or file_obj.module) == module or module == "*") and
+                    (var_obj.var_name == var or var == "*")):
+                match = True
+                break
+        return match ^ negate
+
+    return var_filter
 
 
 class DiagTableBase:
     """This class should not be used directly. Child classes must
        implement a static `validate_field` method, which decides whether or
        not a key/value pair is valid."""
+
+    def __add__(a, b):
+        a = copy.deepcopy(a)
+        a += b
+        return a
+
+    def __or__(a, b):
+        a = copy.deepcopy(a)
+        a |= b
+        return a
 
     def validate(self):
         for key, value in self.__dict__.items():
@@ -139,15 +155,17 @@ class DiagTableBase:
         other.__dict__ = strip_none(other.__dict__)
         return other
 
-    def __add__(a, b):
-        a = copy.deepcopy(a)
-        a += b
-        return a
+    def dump_yaml(self, abstract=None, fh=None):
+        return yaml.safe_dump(self.render(abstract), fh, default_flow_style=False, sort_keys=False)
 
-    def __or__(a, b):
-        a = copy.deepcopy(a)
-        a |= b
-        return a
+    @classmethod
+    def from_yaml_str(cls, yaml_str):
+        """Initialize a DiagTable, DiagTableFile, DiagTableVar, or DiagTableSubRegion object from a YAML string"""
+        try:
+            struct = yaml.safe_load(yaml_str)
+        except yaml.scanner.ScannerError as err:
+            print("YAML parsing error: {}".format(err))
+        return cls(struct)
 
 
 class DiagTable(DiagTableBase):
@@ -181,15 +199,6 @@ class DiagTable(DiagTableBase):
         except FileNotFoundError as err:
             print(err)
 
-    @staticmethod
-    def from_yaml_str(yaml_str):
-        """Initialize a DiagTable object from a YAML string"""
-        try:
-            diag_table = yaml.safe_load(yaml_str)
-            return DiagTable(diag_table)
-        except yaml.scanner.ScannerError as err:
-            print("YAML parsing error: {}".format(err))
-
     def __init__(self, diag_table={}):
         """Initialize a DiagTable object from a Python dictionary"""
 
@@ -210,20 +219,31 @@ class DiagTable(DiagTableBase):
         return table
 
     def filter_files(self, filter):
-        if not callable(filter):
-            filter = DiagTableFilter.file_filter_factory(filter)
+        filter = file_filter_factory(filter)
 
         table = copy.copy(self)
-        table.diag_files = [f for f in table.diag_files if filter(f)]
+        table.diag_files = self.get_filtered_files(filter)
         return table
 
     def filter_vars(self, filter):
-        if not callable(filter):
-            filter = DiagTableFilter.var_filter_factory(filter)
+        filter = var_filter_factory(filter)
 
         table = copy.copy(self)
         table.diag_files = [f.filter_vars(filter) for f in table.diag_files]
         return table
+
+    def get_filtered_files(self, filter):
+        filter = file_filter_factory(filter)
+        return [f for f in self.diag_files if filter(f)]
+
+    def get_filtered_vars(self, filter):
+        filter = var_filter_factory(filter)
+        filtered_vars = []
+
+        for f in self.diag_files:
+            filtered_vars += f.get_filtered_vars(filter)
+
+        return filtered_vars
 
     def __iadd__(self, other):
         """Symmetric merge of two DiagTable objects. Any conflict between the
@@ -273,9 +293,6 @@ class DiagTable(DiagTableBase):
 
     def set_base_date(self, base_date):
         self.set("base_date", base_date)
-
-    def dump_yaml(self, abstract=None, fh=None):
-        return yaml.safe_dump(self.render(abstract), fh, default_flow_style=False, sort_keys=False)
 
     def write(self, filename, abstract=None):
         """Write the DiagTable to a file"""
@@ -435,12 +452,13 @@ class DiagTableFile(DiagTableBase):
         return file
 
     def filter_vars(self, filter):
-        if not callable(filter):
-            filter = DiagTableFilter.var_filter_factory(filter)
-
         file = copy.copy(self)
-        file.varlist = [v for v in file.varlist if filter(self, v)]
+        file.varlist = self.get_filtered_vars(filter)
         return file
+
+    def get_filtered_vars(self, filter):
+        filter = var_filter_factory(filter)
+        return [v for v in self.varlist if filter(self, v)]
 
     def set_file_name(self, file_name):
         self.set("file_name", file_name)
