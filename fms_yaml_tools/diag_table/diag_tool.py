@@ -21,7 +21,7 @@
 
 import click
 import sys
-from fms_yaml_tools.diag_table import DiagTable, DiagTableFile, DiagTableVar
+from fms_yaml_tools.diag_table import DiagTable, DiagTableFile, DiagTableVar, DiagTableError
 
 
 def echo(msg):
@@ -75,7 +75,7 @@ def get_filtered_table_obj(ctx, diag_table):
     diag_table_obj = DiagTable.from_file(diag_table).filter_files(options["file"]).filter_vars(options["var"])
 
     if options["prune"]:
-        diag_table_obj = diag_table_obj.filter_files(lambda file_obj: len(file_obj.varlist) > 0)
+        diag_table_obj = diag_table_obj.prune()
 
     return diag_table_obj
 
@@ -86,15 +86,18 @@ def get_filtered_table_obj(ctx, diag_table):
 def edit(ctx, diag_table):
     options = ctx.obj
 
-    yaml0 = get_filtered_table_obj(ctx, diag_table).dump_yaml(options["abstract"])
-    yaml1 = click.edit(yaml0)
+    try:
+        yaml0 = get_filtered_table_obj(ctx, diag_table).dump_yaml(options["abstract"])
+        yaml1 = click.edit(yaml0)
 
-    if yaml1 is None:
-        echo("Changes have been discarded... passing original table through")
-        yaml1 = yaml0
+        if yaml1 is None:
+            echo("Changes have been discarded... passing original table through")
+            yaml1 = yaml0
 
-    diag_table_obj = DiagTable.from_yaml_str(yaml1)
-    write_out(ctx, diag_table, diag_table_obj)
+        diag_table_obj = DiagTable.from_yaml_str(yaml1)
+        write_out(ctx, diag_table, diag_table_obj)
+    except DiagTableError as err:
+        echo(err)
 
 
 def merge_generic(ctx, files, merge_func):
@@ -105,12 +108,15 @@ def merge_generic(ctx, files, merge_func):
     if len(files) == 1:
         files = ("-", files[0])
 
-    diag_tables = [get_filtered_table_obj(ctx, f) for f in files]
+    try:
+        diag_tables = [get_filtered_table_obj(ctx, f) for f in files]
 
-    while len(diag_tables) > 1:
-        merge_func(diag_tables[1], diag_tables.pop(0))
+        while len(diag_tables) > 1:
+            merge_func(diag_tables[1], diag_tables.pop(0))
 
-    write_out(ctx, files[-1], diag_tables[0])
+        write_out(ctx, files[-1], diag_tables[0])
+    except DiagTableError as err:
+        echo(err)
 
 
 @diag_tool.command(help="Asymmetrically merge one table into another")
@@ -140,13 +146,16 @@ def merge(ctx, tables):
 def update_var(ctx, var_yaml, table_yaml):
     options = ctx.obj
 
-    var_obj = DiagTableVar.from_file(var_yaml)
-    table_obj = DiagTable.from_file(table_yaml)
+    try:
+        var_obj = DiagTableVar.from_file(var_yaml)
+        table_obj = DiagTable.from_file(table_yaml)
 
-    for v in table_obj.get_filtered_vars(options["var"]):
-        v |= var_obj
+        for v in table_obj.get_filtered_vars(options["var"]):
+            v |= var_obj
 
-    write_out(ctx, table_yaml, table_obj)
+        write_out(ctx, table_yaml, table_obj)
+    except DiagTableError as err:
+        echo(err)
 
 
 @diag_tool.command(help="Update all files that match a given file filter")
@@ -156,21 +165,27 @@ def update_var(ctx, var_yaml, table_yaml):
 def update_file(ctx, file_yaml, table_yaml):
     options = ctx.obj
 
-    file_obj = DiagTableFile.from_file(file_yaml)
-    table_obj = DiagTable.from_file(table_yaml)
+    try:
+        file_obj = DiagTableFile.from_file(file_yaml)
+        table_obj = DiagTable.from_file(table_yaml)
 
-    for f in table_obj.get_filtered_files(options["file"]):
-        f |= file_obj
+        for f in table_obj.get_filtered_files(options["file"]):
+            f |= file_obj
 
-    write_out(ctx, table_yaml, table_obj)
+        write_out(ctx, table_yaml, table_obj)
+    except DiagTableError as err:
+        echo(err)
 
 
 @diag_tool.command(help="Filter files or variables from a table")
 @click.pass_context
 @click.argument("diag_table", type=click.Path(), default="-")
 def filter(ctx, diag_table):
-    diag_table_obj = get_filtered_table_obj(ctx, diag_table)
-    write_out(ctx, diag_table, diag_table_obj)
+    try:
+        diag_table_obj = get_filtered_table_obj(ctx, diag_table)
+        write_out(ctx, diag_table, diag_table_obj)
+    except DiagTableError as err:
+        echo(err)
 
 
 @diag_tool.command(help="List the files and variables in a table")
@@ -182,8 +197,11 @@ def list(ctx, diag_table):
     if len(options["abstract"]) == 0:
         options["abstract"] = ("table", "file", "var")
 
-    diag_table_obj = get_filtered_table_obj(ctx, diag_table)
-    write_out(ctx, diag_table, diag_table_obj)
+    try:
+        diag_table_obj = get_filtered_table_obj(ctx, diag_table)
+        write_out(ctx, diag_table, diag_table_obj)
+    except DiagTableError as err:
+        echo(err)
 
 
 @diag_tool.command(help="Pick out a particular file")
@@ -195,18 +213,21 @@ def grep_file(ctx, diag_table):
     if options["in_place"]:
         echo("Warning: --in-place option is incompatible with the grep-file subcommand")
 
-    diag_table_obj = get_filtered_table_obj(ctx, diag_table)
-    n = len(diag_table_obj.diag_files)
+    try:
+        diag_table_obj = get_filtered_table_obj(ctx, diag_table)
+        n = len(diag_table_obj.diag_files)
 
-    if n == 0:
-        echo("No file was found matching the filter criteria")
-        return
-    elif n > 1:
-        echo("Selecting the first out of {:d} files that match the filter criteria".format(n))
+        if n == 0:
+            echo("No file was found matching the filter criteria")
+            return
+        elif n > 1:
+            echo("Selecting the first out of {:d} files that match the filter criteria".format(n))
 
-    file = diag_table_obj.diag_files[0]
-    yaml = file.dump_yaml(options["abstract"])
-    sys.stdout.write(yaml)
+        file = diag_table_obj.diag_files[0]
+        yaml = file.dump_yaml(options["abstract"])
+        sys.stdout.write(yaml)
+    except DiagTableError as err:
+        echo(err)
 
 
 @diag_tool.command(help="Pick out a particular variable")
@@ -218,34 +239,40 @@ def grep_var(ctx, diag_table):
     if options["in_place"]:
         echo("Warning: --in-place option is incompatible with the grep-var subcommand")
 
-    diag_table_obj = get_filtered_table_obj(ctx, diag_table)
-    vars = diag_table_obj.get_filtered_vars(None)
-    n = len(vars)
+    try:
+        diag_table_obj = get_filtered_table_obj(ctx, diag_table)
+        vars = diag_table_obj.get_filtered_vars(None)
+        n = len(vars)
 
-    if n == 0:
-        echo("No variable was found matching the filter criteria")
-        return
-    elif n > 1:
-        echo("Selecting the first out of {:d} variables that match the filter criteria".format(n))
+        if n == 0:
+            echo("No variable was found matching the filter criteria")
+            return
+        elif n > 1:
+            echo("Selecting the first out of {:d} variables that match the filter criteria".format(n))
 
-    yaml = vars[0].dump_yaml(options["abstract"])
-    sys.stdout.write(yaml)
+        yaml = vars[0].dump_yaml(options["abstract"])
+        sys.stdout.write(yaml)
+    except DiagTableError as err:
+        echo(err)
 
 
 def wizard_generic(ctx, diag_table, abstract):
     options = ctx.obj
     abstract = options["abstract"] or abstract
 
-    yaml0 = get_filtered_table_obj(ctx, diag_table).dump_yaml(abstract)
-    yaml1 = click.edit(yaml0)
+    try:
+        yaml0 = get_filtered_table_obj(ctx, diag_table).dump_yaml(abstract)
+        yaml1 = click.edit(yaml0)
 
-    if yaml1 is None:
-        echo("Changes have been discarded")
-        return
+        if yaml1 is None:
+            echo("Changes have been discarded")
+            return
 
-    diag_table_obj = DiagTable.from_file(diag_table)
-    diag_table_obj |= DiagTable.from_yaml_str(yaml1)
-    write_out(ctx, diag_table, diag_table_obj)
+        diag_table_obj = DiagTable.from_file(diag_table)
+        diag_table_obj |= DiagTable.from_yaml_str(yaml1)
+        write_out(ctx, diag_table, diag_table_obj)
+    except DiagTableError as err:
+        echo(err)
 
 
 @diag_tool.command(help="Add a new file or modify an existing one")

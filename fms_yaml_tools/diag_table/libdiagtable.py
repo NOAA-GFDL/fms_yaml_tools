@@ -24,13 +24,20 @@ import copy
 from click import open_file
 
 
+def diag_assert(condition, msg):
+    """Raise a DiagTableError if condition is not true"""
+    if not condition:
+        raise DiagTableError(msg)
+
+
 def dict_assert_mergeable(a, b):
     """Assert that two dictionaries can be symmetrically merged. This assertion fails
        if both dictionaries contain a common key with two different values."""
     common_keys = a.keys() & b.keys()
     for k in common_keys:
-        if a[k] != b[k]:
-            raise Exception("Could not merge dictionaries: key '{:s}' has two different values".format(k))
+        diag_assert(a[k] == b[k],
+                    "Failed to merge tables: Field '{:}' has two different values: '{:}' and '{:}'".
+                    format(k, a[k], b[k]))
 
 
 def parse_negate_flag(s):
@@ -97,8 +104,8 @@ def var_filter_factory(filter_spec):
             file_name = get_filter_component(0)
             mod_name = get_filter_component(0)
 
-            if len(fmv) > 0:
-                raise Exception("Invalid variable filter specification: Too many components")
+            diag_assert(len(fmv) == 0, "Invalid variable filter was provided. Correct format is: " +
+                                       "[file1[,file2[,...]]:[module1[,module2[,...]]:]]var1[,var2[,...]]")
 
             for f in file_name.split(","):
                 for m in mod_name.split(","):
@@ -119,9 +126,13 @@ def var_filter_factory(filter_spec):
     return var_filter
 
 
+class DiagTableError(Exception):
+    pass
+
+
 class DiagTableBase:
-    """This class should not be used directly. Child classes must implement a static `validate_field` method, which
-    decides whether or not a key/value pair is valid."""
+    """This class should not be used directly. Child classes must implement a static `fields` dictionary, the values of
+    which are functions which determine whether or not a given value of that field is valid."""
 
     def __add__(a, b):
         a = copy.deepcopy(a)
@@ -133,16 +144,34 @@ class DiagTableBase:
         a |= b
         return a
 
-    def validate(self):
+    def validate(self, msg):
         """Validate every field of the object"""
-        for key, value in self.__dict__.items():
-            if value is not None:
-                self.__class__.validate_field(key, value)
+        for k, v in self.__dict__.items():
+            if v is not None:
+                self.validate_field(k, v, msg)
+
+    @classmethod
+    def get_empty_dict(cls, list_key=None):
+        """Return an empty dictionary for the child class"""
+        empty_dict = dict((k, None) for k in cls.fields.keys())
+        if list_key is not None:
+            empty_dict[list_key] = []
+        return empty_dict
+
+    @classmethod
+    def validate_field(cls, key, value, msg=""):
+        if msg:
+            msg = msg + ": "
+
+        diag_assert(key in cls.fields,
+                    msg + "Field name '{:}' is invalid".format(key))
+        diag_assert(cls.fields[key](value),
+                    msg + "Field '{:}' was assigned an invalid value: '{:}'". format(key, value))
 
     def set(self, key, value):
         """Generic setter with validation"""
-        self.__class__.validate_field(key, value)
-        self.__dict__[key] = value
+        self.validate_field(key, value, "{:}: Failed to set {:}={:}".format(self.__class__.__name__, key, value))
+        self.key = value
 
     def dump_yaml(self, abstract=None, fh=None):
         """Return the object as a YAML string"""
@@ -187,24 +216,10 @@ class DiagTableBase:
 
 class DiagTable(DiagTableBase):
     fields = {
-        "title":      None,
-        "base_date":  None,
-        "diag_files": []
-    }
-
-    @staticmethod
-    def validate_field(key, value):
-        """Decide whether or not a given key/value pair is valid"""
-        if key == "title":
-            assert type(value) is str
-        elif key == "base_date":
-            assert type(value) is str
-        elif key == "diag_files":
-            assert type(value) is list
-            for f in value:
-                assert type(f) is DiagTableFile
-        else:
-            raise AttributeError("DiagTable: Invalid key name: {:s}".format(key))
+            "title": lambda v: type(v) is str,
+            "base_date": lambda v: type(v) is str,
+            "diag_files": lambda v: type(v) is list and all(type(vi) is DiagTableFile for vi in v)
+            }
 
     def __init__(self, diag_table={}):
         """Initialize a DiagTable object from a Python dictionary"""
@@ -214,9 +229,9 @@ class DiagTable(DiagTableBase):
         elif type(diag_table) is not dict:
             raise TypeError("DiagTable must be constructed from a dictionary")
 
-        self.__dict__ = self.fields | diag_table
+        self.__dict__ = DiagTable.get_empty_dict("diag_files") | diag_table
         self.diag_files = [DiagTableFile(f) for f in self.diag_files]
-        self.validate()
+        self.validate("table failed to validate")
 
     def render(self, abstract=None):
         """Return a dictionary representation of the object"""
@@ -258,6 +273,10 @@ class DiagTable(DiagTableBase):
             filtered_vars += f.get_filtered_vars(filter)
 
         return filtered_vars
+
+    def prune(self):
+        """Remove files without any variables"""
+        return self.filter_files(lambda file_obj: len(file_obj.varlist) > 0)
 
     def __iadd__(self, other):
         """Symmetric merge of two DiagTable objects. Any conflict between the
@@ -309,62 +328,24 @@ class DiagTable(DiagTableBase):
 
 class DiagTableFile(DiagTableBase):
     fields = {
-        "file_name":     None,
-        "freq":          None,
-        "time_units":    None,
-        "unlimdim":      None,
-        "write_file":    None,
-        "global_meta":   None,
-        "sub_region":    None,
-        "new_file_freq": None,
-        "start_time":    None,
-        "file_duration": None,
-        "is_ocean":      None,
-        "kind":          None,
-        "module":        None,
-        "reduction":     None,
-        "varlist":       []
-    }
-
-    @staticmethod
-    def validate_field(key, value):
-        """Decide whether or not a given key/value pair is valid"""
-        if key == "file_name":
-            assert type(value) is str
-        elif key == "freq":
-            assert (type(value) is float) or (type(value) is str)
-        elif key == "time_units":
-            assert value in ["seconds", "minutes", "hours", "days", "months", "years"]
-        elif key == "unlimdim":
-            assert type(value) is str
-        elif key == "write_file":
-            assert type(value) is bool
-        elif key == "global_meta":
-            type(value) is dict
-        elif key == "sub_region":
-            assert type(value) is DiagTableSubRegion
-        elif key == "new_file_freq":
-            assert type(value) is str
-        elif key == "start_time":
-            assert type(value) is list and len(value) == 6
-        elif key == "file_duration":
-            assert type(value) is str
-        elif key == "is_ocean":
-            assert type(value) is bool
-        elif key == "kind":
-            assert value in ["r4", "r8", "i4", "i8"]
-        elif key == "module":
-            assert type(value) is str
-        elif key == "reduction":
-            assert (value in ["average", "min", "max", "none", "rms", "sum"] or
-                    re.search(r"^pow\d+$", value) or
-                    re.search(r"^diurnal\d+$", value))
-        elif key == "varlist":
-            assert type(value) is list
-            for v in value:
-                assert type(v) is DiagTableVar
-        else:
-            raise AttributeError("DiagTableFile: Invalid key name: {:s}".format(key))
+            "file_name": lambda v: type(v) is str,
+            "freq": lambda v: (type(v) is float) or (type(v) is str),
+            "time_units": lambda v: v in ("seconds", "minutes", "hours", "days", "months", "years"),
+            "unlimdim": lambda v: type(v) is str,
+            "write_file": lambda v: type(v) is bool,
+            "global_meta": lambda v: type(v) is dict,
+            "sub_region": lambda v: type(v) is DiagTableSubRegion,
+            "new_file_freq": lambda v: type(v) is str,
+            "start_time": lambda v: type(v) is list and len(v) == 6,
+            "file_duration": lambda v: type(v) is str,
+            "is_ocean": lambda v: type(v) is bool,
+            "kind": lambda v: v in ["r4", "r8", "i4", "i8"],
+            "module": lambda v: type(v) is str,
+            "reduction": lambda v: (v in ("average", "min", "max", "none", "rms", "sum") or
+                                    re.search(r"^pow\d+$", v) or
+                                    re.search(r"^diurnal\d+$", v)),
+            "varlist": lambda v: type(v) is list and all(type(vi) is DiagTableVar for vi in v)
+            }
 
     def __init__(self, file={}):
         """Initialize a DiagTableFile object from a Python dictionary"""
@@ -374,17 +355,18 @@ class DiagTableFile(DiagTableBase):
         elif type(file) is not dict:
             raise TypeError("DiagTableFile must be constructed from a dictionary")
 
-        self.__dict__ = self.fields | file
+        self.__dict__ = DiagTableFile.get_empty_dict("varlist") | file
         self.varlist = [DiagTableVar(v) for v in self.varlist]
 
         if self.sub_region:
             self.sub_region = DiagTableSubRegion(self.sub_region[0])
 
         if self.global_meta:
-            assert type(self.global_meta) is list and len(self.global_meta) == 1
+            diag_assert(type(self.global_meta) is list and len(self.global_meta) == 1,
+                        "Failed to initialize DiagTableFile: Invalid 'global_meta' value")
             self.global_meta = self.global_meta[0]
 
-        self.validate()
+        self.validate("table failed to validate due to an invalid file")
 
     def __iadd__(self, other):
         """Symmetric merge of two DiagTableFile objects. Any conflict between the
@@ -519,42 +501,18 @@ class DiagTableFile(DiagTableBase):
 
 class DiagTableVar(DiagTableBase):
     fields = {
-        "var_name":    None,
-        "kind":        None,
-        "module":      None,
-        "reduction":   None,
-        "write_var":   None,
-        "output_name": None,
-        "long_name":   None,
-        "attributes":  None,
-        "zbounds":     None
-    }
-
-    @staticmethod
-    def validate_field(key, value):
-        """Decide whether or not a given key/value pair is valid"""
-        if key == "var_name":
-            assert type(value) is str
-        elif key == "kind":
-            assert value in ["r4", "r8", "i4", "i8"]
-        elif key == "module":
-            assert type(value) is str
-        elif key == "reduction":
-            assert (value in ["average", "min", "max", "none", "rms", "sum"] or
-                    re.search(r"^pow\d+$", value) or
-                    re.search(r"^diurnal\d+$", value))
-        elif key == "write_var":
-            assert type(value) is bool
-        elif key == "output_name":
-            assert type(value) is str
-        elif key == "long_name":
-            assert type(value) is str
-        elif key == "attributes":
-            assert type(value) is dict
-        elif key == "zbounds":
-            assert type(value) is str
-        else:
-            raise AttributeError("DiagTableVar: Invalid key name: {:s}".format(key))
+            "var_name": lambda v: type(v) is str,
+            "kind": lambda v: v in ["r4", "r8", "i4", "i8"],
+            "module": lambda v: type(v) is str,
+            "reduction": lambda v: (v in ["average", "min", "max", "none", "rms", "sum"] or
+                                    re.search(r"^pow\d+$", v) or
+                                    re.search(r"^diurnal\d+$", v)),
+            "write_var": lambda v: type(v) is bool,
+            "output_name": lambda v: type(v) is str,
+            "long_name": lambda v: type(v) is str,
+            "attributes": lambda v: type(v) is dict,
+            "zbounds": lambda v: type(v) is str
+            }
 
     def __init__(self, var={}):
         """Initialize a DiagTableVar object from a Python dictionary"""
@@ -565,11 +523,12 @@ class DiagTableVar(DiagTableBase):
             raise TypeError("DiagTableVar must be constructed from a dictionary")
 
         if "attributes" in var:
-            assert type(var["attributes"]) is list and len(var["attributes"]) == 1
+            diag_assert(type(var["attributes"]) is list and len(var["attributes"]) == 1,
+                        "Failed to initialize DiagTableVar: Invalid 'attributes' value")
             var["attributes"] = var["attributes"][0]
 
-        self.__dict__ = self.fields | var
-        self.validate()
+        self.__dict__ = DiagTableVar.get_empty_dict() | var
+        self.validate("table failed to validate due to an invalid variable")
 
     def __iadd__(self, other):
         """Symmetric merge of two DiagTableVar objects. Any conflict between the
@@ -640,29 +599,18 @@ class DiagTableVar(DiagTableBase):
 
 
 class DiagTableSubRegion(DiagTableBase):
-    fields = {
-        "grid_type": None,
-        "corner1":   None,
-        "corner2":   None,
-        "corner3":   None,
-        "corner4":   None,
-        "tile":      None
-    }
-
     @staticmethod
-    def validate_field(key, value):
-        """Decide whether or not a given key/value pair is valid"""
-        if key == "grid_type":
-            assert value in ("indices", "latlon")
-        elif key in ("corner1", "corner2", "corner3", "corner4"):
-            assert type(value) is list
-            assert len(value) == 2
-            for i in (0, 1):
-                assert type(value[i]) is float
-        elif key == "tile":
-            assert type(value) is int
-        else:
-            raise AttributeError("DiagTableSubRegion: Invalid key name: {:s}".format(key))
+    def validate_corner(v):
+        return type(v) is list and len(v) == 2 and all(type(vi) is float for vi in v)
+
+    fields = {
+            "grid_type": lambda v: v in ("indices", "latlon"),
+            "corner1": validate_corner,
+            "corner2": validate_corner,
+            "corner3": validate_corner,
+            "corner4": validate_corner,
+            "tile": lambda v: type(v) is int
+            }
 
     def __init__(self, sub_region={}):
         """Initialize a DiagTableSubRegion object from a Python dictionary"""
@@ -672,8 +620,8 @@ class DiagTableSubRegion(DiagTableBase):
         elif type(sub_region) is not dict:
             raise TypeError("DiagTableSubRegion must be constructed from a dictionary")
 
-        self.__dict__ = self.fields | sub_region
-        self.validate()
+        self.__dict__ = DiagTableSubRegion.get_empty_dict() | sub_region
+        self.validate("table failed to validate due to an invalid subregion")
 
     def __iadd__(self, other):
         """Symmetric merge of two DiagTableSubRegion objects. Any conflict between the
