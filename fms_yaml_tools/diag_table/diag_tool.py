@@ -28,14 +28,19 @@ def echo(msg):
     click.echo(msg, err=True)
 
 
-def get_filtered_table_obj(ctx, diag_table):
+def apply_filters(ctx, diag_table_obj):
     options = ctx.obj
-    diag_table_obj = DiagTable.from_file(diag_table).filter_files(options["file"]).filter_vars(options["var"])
+
+    diag_table_obj = diag_table_obj.filter_files(options["file"]).filter_vars(options["var"])
 
     if options["prune"]:
         diag_table_obj = diag_table_obj.prune()
 
     return diag_table_obj
+
+
+def get_filtered_table_obj(ctx, diag_table):
+    return apply_filters(ctx, DiagTable.from_file(diag_table))
 
 
 def write_out(ctx, filename, diag_table_obj):
@@ -91,15 +96,21 @@ def edit(ctx, diag_table):
         from click._termui_impl import Editor
         editor = "1>&2 " + Editor().get_editor()
 
-        yaml0 = get_filtered_table_obj(ctx, diag_table).dump_yaml(options["abstract"])
+        diag_table_obj = DiagTable.from_file(diag_table)
+
+        yaml0 = apply_filters(ctx, diag_table_obj).dump_yaml(options["abstract"])
         yaml1 = click.edit(yaml0, editor=editor, extension=".yaml")
 
-        if yaml1 is None:
-            echo("Changes have been discarded... passing original table through")
-            yaml1 = yaml0
+        if yaml1:
+            diag_table_obj |= DiagTable.from_yaml_str(yaml1)
+        else:
+            if options["in_place"]:
+                echo("No changes were made... exiting without modifying '{}'".format(diag_table))
+                return
+            else:
+                echo("No changes were made... passing original table through")
 
         options["abstract"] = {}
-        diag_table_obj = DiagTable.from_yaml_str(yaml1)
         write_out(ctx, diag_table, diag_table_obj)
     except DiagTableError as err:
         echo(err)
@@ -257,45 +268,6 @@ def grep_var(ctx, diag_table):
         sys.stdout.write(yaml)
     except DiagTableError as err:
         echo(err)
-
-
-def wizard_generic(ctx, diag_table, abstract_default):
-    options = ctx.obj
-    abstract = abstract_dict(abstract_default) | options["abstract"]
-
-    try:
-        yaml0 = get_filtered_table_obj(ctx, diag_table).dump_yaml(abstract)
-        yaml1 = click.edit(yaml0)
-
-        if yaml1 is None:
-            echo("Changes have been discarded")
-            return
-
-        diag_table_obj = DiagTable.from_file(diag_table)
-        diag_table_obj |= DiagTable.from_yaml_str(yaml1)
-
-        options["abstract"] = {}
-        write_out(ctx, diag_table, diag_table_obj)
-    except DiagTableError as err:
-        echo(err)
-
-
-@diag_tool.command(help="Add a new file or modify an existing one")
-@click.pass_context
-@click.argument("diag_table", type=click.Path(), default="-")
-def file_wizard(ctx, diag_table):
-    abstract_default = ("table",)
-    wizard_generic(ctx, diag_table, abstract_default)
-
-
-@diag_tool.command(help="Add a new variable or modify an existing one")
-@click.pass_context
-@click.argument("diag_table", type=click.Path(), default="-")
-def var_wizard(ctx, diag_table):
-    options = ctx.obj
-    options["prune"] = True
-    abstract_default = ("table", "file")
-    wizard_generic(ctx, diag_table, abstract_default)
 
 
 if __name__ == "__main__":
