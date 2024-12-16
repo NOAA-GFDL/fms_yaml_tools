@@ -87,8 +87,12 @@ def edit(ctx, diag_table):
     options = ctx.obj
 
     try:
+        # Redirect the editor's STDOUT to STDERR, so that diag-tool's STDOUT works as expected when redirected or piped
+        from click._termui_impl import Editor
+        editor = "1>&2 " + Editor().get_editor()
+
         yaml0 = get_filtered_table_obj(ctx, diag_table).dump_yaml(options["abstract"])
-        yaml1 = click.edit(yaml0)
+        yaml1 = click.edit(yaml0, editor=editor, extension=".yaml")
 
         if yaml1 is None:
             echo("Changes have been discarded... passing original table through")
