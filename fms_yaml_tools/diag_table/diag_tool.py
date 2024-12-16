@@ -21,11 +21,37 @@
 
 import click
 import sys
-from fms_yaml_tools.diag_table import DiagTable, DiagTableFile, DiagTableVar, DiagTableError
+from fms_yaml_tools.diag_table import DiagTable, DiagTableFile, DiagTableVar, DiagTableError, abstract_dict
 
 
 def echo(msg):
     click.echo(msg, err=True)
+
+
+def get_filtered_table_obj(ctx, diag_table):
+    options = ctx.obj
+    diag_table_obj = DiagTable.from_file(diag_table).filter_files(options["file"]).filter_vars(options["var"])
+
+    if options["prune"]:
+        diag_table_obj = diag_table_obj.prune()
+
+    return diag_table_obj
+
+
+def write_out(ctx, filename, diag_table_obj):
+    options = ctx.obj
+
+    if options["in_place"]:
+        if filename == "-":
+            echo("Warning: Ignoring --in-place option, because the original table was read from standard input")
+        else:
+            if not (options["force"] or click.confirm("Overwrite {:s}?".format(click.format_filename(filename)))):
+                echo("Changes have been discarded")
+                return
+    else:
+        filename = "-"
+
+    diag_table_obj.write(filename, options["abstract"])
 
 
 @click.group(help="Utility for updating, combining, subsetting, and summarizing diag tables")
@@ -51,33 +77,7 @@ def diag_tool(ctx, in_place, force, file, var, prune, abstract):
     options["file"] = file
     options["var"] = var
     options["prune"] = prune
-    options["abstract"] = abstract
-
-
-def write_out(ctx, filename, diag_table_obj):
-    options = ctx.obj
-
-    if options["in_place"]:
-        if filename == "-":
-            echo("Warning: Ignoring --in-place option, because the original table was read from standard input")
-        else:
-            if not (options["force"] or click.confirm("Overwrite {:s}?".format(click.format_filename(filename)))):
-                echo("Changes have been discarded")
-                return
-    else:
-        filename = "-"
-
-    diag_table_obj.write(filename, options["abstract"])
-
-
-def get_filtered_table_obj(ctx, diag_table):
-    options = ctx.obj
-    diag_table_obj = DiagTable.from_file(diag_table).filter_files(options["file"]).filter_vars(options["var"])
-
-    if options["prune"]:
-        diag_table_obj = diag_table_obj.prune()
-
-    return diag_table_obj
+    options["abstract"] = abstract_dict(abstract)
 
 
 @diag_tool.command(help="Edit a table interactively")
@@ -94,6 +94,7 @@ def edit(ctx, diag_table):
             echo("Changes have been discarded... passing original table through")
             yaml1 = yaml0
 
+        options["abstract"] = {}
         diag_table_obj = DiagTable.from_yaml_str(yaml1)
         write_out(ctx, diag_table, diag_table_obj)
     except DiagTableError as err:
@@ -193,9 +194,7 @@ def filter(ctx, diag_table):
 @click.argument("diag_table", type=click.Path(), default="-")
 def list(ctx, diag_table):
     options = ctx.obj
-
-    if len(options["abstract"]) == 0:
-        options["abstract"] = ("table", "file", "var")
+    options["abstract"] = abstract_dict(("table", "file", "var")) | options["abstract"]
 
     try:
         diag_table_obj = get_filtered_table_obj(ctx, diag_table)
@@ -211,7 +210,7 @@ def grep_file(ctx, diag_table):
     options = ctx.obj
 
     if options["in_place"]:
-        echo("Warning: --in-place option is incompatible with the grep-file subcommand")
+        echo("Warning: --in-place option is unsupported by the grep-file subcommand")
 
     try:
         diag_table_obj = get_filtered_table_obj(ctx, diag_table)
@@ -237,7 +236,7 @@ def grep_var(ctx, diag_table):
     options = ctx.obj
 
     if options["in_place"]:
-        echo("Warning: --in-place option is incompatible with the grep-var subcommand")
+        echo("Warning: --in-place option is unsupported by the grep-var subcommand")
 
     try:
         diag_table_obj = get_filtered_table_obj(ctx, diag_table)
@@ -256,9 +255,9 @@ def grep_var(ctx, diag_table):
         echo(err)
 
 
-def wizard_generic(ctx, diag_table, abstract):
+def wizard_generic(ctx, diag_table, abstract_default):
     options = ctx.obj
-    abstract = options["abstract"] or abstract
+    abstract = abstract_dict(abstract_default) | options["abstract"]
 
     try:
         yaml0 = get_filtered_table_obj(ctx, diag_table).dump_yaml(abstract)
@@ -270,6 +269,8 @@ def wizard_generic(ctx, diag_table, abstract):
 
         diag_table_obj = DiagTable.from_file(diag_table)
         diag_table_obj |= DiagTable.from_yaml_str(yaml1)
+
+        options["abstract"] = {}
         write_out(ctx, diag_table, diag_table_obj)
     except DiagTableError as err:
         echo(err)
@@ -279,7 +280,8 @@ def wizard_generic(ctx, diag_table, abstract):
 @click.pass_context
 @click.argument("diag_table", type=click.Path(), default="-")
 def file_wizard(ctx, diag_table):
-    wizard_generic(ctx, diag_table, ("table",))
+    abstract_default = ("table",)
+    wizard_generic(ctx, diag_table, abstract_default)
 
 
 @diag_tool.command(help="Add a new variable or modify an existing one")
@@ -288,7 +290,8 @@ def file_wizard(ctx, diag_table):
 def var_wizard(ctx, diag_table):
     options = ctx.obj
     options["prune"] = True
-    wizard_generic(ctx, diag_table, ("table", "file"))
+    abstract_default = ("table", "file")
+    wizard_generic(ctx, diag_table, abstract_default)
 
 
 if __name__ == "__main__":

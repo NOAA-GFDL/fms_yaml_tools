@@ -130,6 +130,21 @@ class DiagTableError(Exception):
     pass
 
 
+def abstract_dict(options):
+    valid_flags = ("table", "file", "var")
+
+    def parse_options(flags):
+        for flag in flags:
+            flag, disable = parse_negate_flag(flag)
+            if flag in valid_flags:
+                enable = not disable
+                yield (flag, enable)
+            else:
+                raise DiagTableError("Attempted to set invalid 'abstract' option: {}".format(flag))
+
+    return dict(parse_options(options))
+
+
 class DiagTableBase:
     """This class should not be used directly. Child classes must implement a static `fields` dictionary, the values of
     which are functions which determine whether or not a given value of that field is valid."""
@@ -238,7 +253,7 @@ class DiagTable(DiagTableBase):
         table = self.strip_none()
         table["diag_files"] = list(f.render(abstract) for f in table["diag_files"])
 
-        if abstract and "table" in abstract:
+        if abstract and abstract.get("table"):
             table = {"diag_files": table["diag_files"]}
 
         return table
@@ -431,7 +446,7 @@ class DiagTableFile(DiagTableBase):
         file = self.strip_none()
         file["varlist"] = list(v.render(abstract) for v in file["varlist"])
 
-        if abstract and "file" in abstract:
+        if abstract and abstract.get("file"):
             file = {
                     "file_name": file["file_name"],
                     "varlist": file["varlist"]}
@@ -562,7 +577,7 @@ class DiagTableVar(DiagTableBase):
 
     def render(self, abstract=None):
         """Return a dictionary representation of the object"""
-        if abstract and "var" in abstract:
+        if abstract and abstract.get("var"):
             return self.var_name
         else:
             var = self.strip_none()
