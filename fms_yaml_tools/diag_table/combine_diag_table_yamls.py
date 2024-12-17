@@ -71,21 +71,23 @@ def is_different_field(entry, new_entry, verboseprint):
     if has_outname_in:
         if not has_outname_new:
             if entry['output_name'] == entry['var_name']:
-                verboseprint("---> The output_name in entry is the same as the var_name, so the field is expected to " +
-                             "be the same")
+                verboseprint("---> The output_name in entry is the same as the var_name, so the field is expected " +
+                             "to be the same")
                 return False
 
-            verboseprint("---> Entry has output_name, but new_entry does not, so the field is not expected to be the same")
+            verboseprint("---> Entry has output_name, but new_entry does not, so the field is not expected " +
+                         "to be the same")
             return True
 
     if has_outname_new:
         if not has_outname_in:
             if new_entry['output_name'] == new_entry['var_name']:
-                verboseprint("---> The output_name in new_entry is the same as the var_name, so the field is expected to " +
-                             "be the same")
+                verboseprint("---> The output_name in new_entry is the same as the var_name, so the field is " +
+                             "expected to be the same")
                 return False
 
-            verboseprint("---> New entry has output_name, but entry does not, so the field is not expected to be the same")
+            verboseprint("---> New entry has output_name, but entry does not, so the field is not expected to " +
+                         "be the same")
             return True
 
 

@@ -41,7 +41,8 @@ def field_to_yaml(field_table_name, debug, output_yaml, force_write):
         field-table-name - Path to the field table to convert \n
     """
     # Necessary to dump OrderedDict to yaml format
-    yaml.add_representer(OrderedDict, lambda dumper, data: dumper.represent_mapping('tag:yaml.org,2002:map', data.items()))
+    yaml.add_representer(OrderedDict, lambda dumper, data: dumper.represent_mapping('tag:yaml.org,2002:map',
+                                                                                    data.items()))
 
     if debug:
         print(field_table_name)
