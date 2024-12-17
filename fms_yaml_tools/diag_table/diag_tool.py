@@ -25,27 +25,38 @@ from fms_yaml_tools.diag_table import DiagTable, DiagTableFile, DiagTableVar, Di
 
 
 def echo(msg):
+    """Print a message to STDERR"""
     click.echo(msg, err=True)
 
 
-def apply_filters(ctx, diag_table_obj):
-    options = ctx.obj
-
-    diag_table_obj = diag_table_obj.filter_files(options["file"]).filter_vars(options["var"])
-
-    if options["prune"]:
-        diag_table_obj = diag_table_obj.prune()
-
-    return diag_table_obj
+def get_editor():
+    """Get the user's preferred editor as per the VISUAL or EDITOR env variable. Redirect the editor's STDOUT to STDERR,
+    so that diag-tool's own STDOUT can be redirected or piped by the user"""
+    from click._termui_impl import Editor
+    return "1>&2 " + Editor().get_editor()
 
 
-def get_filtered_table_obj(ctx, diag_table):
-    return apply_filters(ctx, DiagTable.from_file(diag_table))
+def apply_filters(obj):
+    """Apply file and var filters, then prune empty files if desired"""
+    if type(obj) is DiagTable:
+        obj = obj.filter_files(options["file"])
+
+    if type(obj) in (DiagTable, DiagTableFile):
+        obj = obj.filter_vars(options["var"])
+
+    if type(obj) is DiagTable and options["prune"]:
+        obj = obj.prune()
+
+    return obj
 
 
-def write_out(ctx, filename, diag_table_obj):
-    options = ctx.obj
+def get_filtered_table_obj(diag_table):
+    """Load a diag_table object from a filename, then apply file and var filters to it"""
+    return apply_filters(DiagTable.from_file(diag_table))
 
+
+def write_out(filename, obj):
+    """Write the object to standard output or to the filename provided, depending on the `in_place` option"""
     if options["in_place"]:
         if filename == "-":
             echo("Warning: Ignoring --in-place option, because the original table was read from standard input")
@@ -56,219 +67,191 @@ def write_out(ctx, filename, diag_table_obj):
     else:
         filename = "-"
 
-    diag_table_obj.write(filename, options["abstract"])
+    obj.write(filename, options["abstract"])
 
 
-@click.group(help="Utility for updating, combining, subsetting, and summarizing diag tables")
-@click.pass_context
+def get_filtered_files(table_obj):
+    """Get an iterator over the table's files after file filters are applied"""
+    return table_obj.get_filtered_files(options["file"])
+
+
+def get_filtered_vars(table_obj):
+    """Get an iterator over the table's variables after file and variable filters are applied"""
+    return table_obj.filter_files(options["file"]).get_filtered_vars(options["var"])
+
+
+def merge_generic(yamls, combine_func):
+    """Perform either a symmetric or asymmetric merge according to `combine_func`"""
+    if len(yamls) == 0:
+        echo("At least one YAML argument is required")
+        return
+    elif len(yamls) == 1:
+        yamls = ["-", yamls[0]]
+    else:
+        yamls = list(yamls)
+
+    if len(options["var"]) > 0:
+        cls = DiagTableVar
+        lhs_iter = get_filtered_vars
+    elif len(options["file"]) > 0:
+        cls = DiagTableFile
+        lhs_iter = get_filtered_files
+    else:
+        cls = DiagTable
+        lhs_iter = lambda table_obj: (table_obj,)
+
+    try:
+        diag_table = yamls.pop()
+        diag_table_obj = DiagTable.from_file(diag_table)
+
+        while len(yamls) > 0:
+            rhs = cls.from_file(yamls.pop())
+            for lhs in lhs_iter(diag_table_obj):
+                combine_func(lhs, rhs)
+
+        write_out(diag_table, diag_table_obj)
+    except DiagTableError as err:
+        echo(err)
+
+
+def yaml_str_from_file(yaml):
+    """Read a YAML string from a file"""
+    with click.open_file(yaml, "r") as fh:
+        return fh.read()
+
+
+def get_obj_generic(yaml):
+    """Get a DiagTable, DiagTableFile, or DiagTableVar object from a YAML file"""
+    yaml_str = yaml_str_from_file(yaml)
+    for cls in (DiagTable, DiagTableFile, DiagTableVar):
+        try:
+            return cls.from_yaml_str(yaml_str)
+        except DiagTableError:
+            pass
+
+
+@click.group(help="Utility to update, merge, subset, or summarize diag YAMLs")
 @click.option("-i", "--in-place", is_flag=True, default=False,
               help="Overwrite the existing table, rather than writing to standard output")
 @click.option("-F", "--force", is_flag=True, default=False,
-              help="Skip confirmation prompt when overwriting an existing table")
+              help="Skip the confirmation prompt when overwriting an existing table")
 @click.option("-f", "--file", type=click.STRING, multiple=True,
-              help="Comma-separated list of file filters; see README for more details")
+              help="Apply a file filter, of the form `[~]FILE`, where FILE may be an individual file name or a"
+              + " comma-separated list thereof")
 @click.option("-v", "--var", type=click.STRING, multiple=True,
-              help="Comma-separated list of variable filters; see README for more details")
+              help="Apply a variable filter, of the form `[~][FILE:[MODULE:]]VAR`, where FILE, MODULE, and VAR may be"
+              + " individual names or comma-separated lists thereof")
 @click.option("-p", "--prune", is_flag=True, default=False,
               help="Prune files which have no variables after filters are applied")
 @click.option("-a", "--abstract", type=click.Choice(("table", "file", "var"), case_sensitive=True), multiple=True,
               help="Exclude table, file, or variable attributes from the output")
-def diag_tool(ctx, in_place, force, file, var, prune, abstract):
-    ctx.ensure_object(dict)
-    options = ctx.obj
+def diag_tool(in_place, force, file, var, prune, abstract):
+    global options
+    options = {
+            "in_place": in_place,
+            "force": force,
+            "file": file,
+            "var": var,
+            "prune": prune,
+            "abstract": abstract_dict(abstract)
+            }
 
-    options["in_place"] = in_place
-    options["force"] = force
-    options["file"] = file
-    options["var"] = var
-    options["prune"] = prune
-    options["abstract"] = abstract_dict(abstract)
 
-
-@diag_tool.command(help="Edit a table interactively")
-@click.pass_context
-@click.argument("diag_table", type=click.Path(), default="-")
-def edit(ctx, diag_table):
-    options = ctx.obj
-
+@diag_tool.command(name="edit", help="Edit a table interactively, then merge the changes back in")
+@click.argument("yaml", type=click.Path(), default="-")
+def edit_cmd(yaml):
     try:
-        # Redirect the editor's STDOUT to STDERR, so that diag-tool's STDOUT works as expected when redirected or piped
-        from click._termui_impl import Editor
-        editor = "1>&2 " + Editor().get_editor()
+        obj = get_obj_generic(yaml)
 
-        diag_table_obj = DiagTable.from_file(diag_table)
+        if obj is None:
+            echo("{:s} was not a valid table, file, or variable... exiting".format(yaml))
+            return
 
-        yaml0 = apply_filters(ctx, diag_table_obj).dump_yaml(options["abstract"])
-        yaml1 = click.edit(yaml0, editor=editor, extension=".yaml")
+        yaml_str_0 = apply_filters(obj).dump_yaml(options["abstract"])
+        yaml_str_1 = click.edit(yaml_str_0, editor=get_editor(), extension=".yaml")
 
-        if yaml1:
-            diag_table_obj |= DiagTable.from_yaml_str(yaml1)
+        if yaml_str_1:
+            cls = obj.__class__
+            obj |= cls.from_yaml_str(yaml_str_1)
         else:
             if options["in_place"]:
-                echo("No changes were made... exiting without modifying '{}'".format(diag_table))
+                echo("No changes were made... exiting without modifying '{}'".format(yaml))
                 return
             else:
                 echo("No changes were made... passing original table through")
 
         options["abstract"] = {}
-        write_out(ctx, diag_table, diag_table_obj)
+        write_out(yaml, obj)
     except DiagTableError as err:
         echo(err)
 
 
-def merge_generic(ctx, files, merge_func):
-    if len(files) == 0:
-        echo("At least one diag_table argument is required")
-        return
-
-    if len(files) == 1:
-        files = ("-", files[0])
-
-    try:
-        diag_tables = [get_filtered_table_obj(ctx, f) for f in files]
-
-        while len(diag_tables) > 1:
-            merge_func(diag_tables[1], diag_tables.pop(0))
-
-        write_out(ctx, files[-1], diag_tables[0])
-    except DiagTableError as err:
-        echo(err)
-
-
-@diag_tool.command(help="Asymmetrically merge one table into another")
-@click.argument("tables", type=click.Path(), nargs=-1)
-@click.pass_context
-def update(ctx, tables):
-    def update_func(lhs, rhs):
+@diag_tool.command(name="update", help="Update a table or its files/variables")
+@click.argument("yamls", type=click.Path(), nargs=-1)
+def update_cmd(yamls):
+    def combine_func(lhs, rhs):
         lhs |= rhs
+    merge_generic(yamls, combine_func)
 
-    merge_generic(ctx, tables, update_func)
 
-
-@diag_tool.command(help="Symmetrically merge two or more tables")
-@click.argument("tables", type=click.Path(), nargs=-1)
-@click.pass_context
-def merge(ctx, tables):
-    def merge_func(lhs, rhs):
+@diag_tool.command(name="merge", help="Symmetrically merge tables, failing if any conflicts occur")
+@click.argument("yamls", type=click.Path(), nargs=-1)
+def merge_cmd(yamls):
+    def combine_func(lhs, rhs):
         lhs += rhs
-
-    merge_generic(ctx, tables, merge_func)
-
-
-@diag_tool.command(help="Update all variables that match a given variable filter")
-@click.argument("var-yaml", type=click.Path(), default="-", nargs=1)
-@click.argument("table-yaml", type=click.Path(), nargs=1)
-@click.pass_context
-def update_var(ctx, var_yaml, table_yaml):
-    options = ctx.obj
-
-    try:
-        var_obj = DiagTableVar.from_file(var_yaml)
-        table_obj = DiagTable.from_file(table_yaml)
-
-        for v in table_obj.get_filtered_vars(options["var"]):
-            v |= var_obj
-
-        write_out(ctx, table_yaml, table_obj)
-    except DiagTableError as err:
-        echo(err)
+    merge_generic(yamls, combine_func)
 
 
-@diag_tool.command(help="Update all files that match a given file filter")
-@click.argument("file-yaml", type=click.Path(), default="-", nargs=1)
-@click.argument("table-yaml", type=click.Path(), nargs=1)
-@click.pass_context
-def update_file(ctx, file_yaml, table_yaml):
-    options = ctx.obj
-
-    try:
-        file_obj = DiagTableFile.from_file(file_yaml)
-        table_obj = DiagTable.from_file(table_yaml)
-
-        for f in table_obj.get_filtered_files(options["file"]):
-            f |= file_obj
-
-        write_out(ctx, table_yaml, table_obj)
-    except DiagTableError as err:
-        echo(err)
-
-
-@diag_tool.command(help="Filter files or variables from a table")
-@click.pass_context
+@diag_tool.command(name="filter", help="Apply file or variable filters to a table")
 @click.argument("diag_table", type=click.Path(), default="-")
-def filter(ctx, diag_table):
+def filter_cmd(diag_table):
     try:
-        diag_table_obj = get_filtered_table_obj(ctx, diag_table)
-        write_out(ctx, diag_table, diag_table_obj)
+        diag_table_obj = get_filtered_table_obj(diag_table)
+        write_out(diag_table, diag_table_obj)
     except DiagTableError as err:
         echo(err)
 
 
-@diag_tool.command(help="List the files and variables in a table")
-@click.pass_context
+@diag_tool.command(name="list", help="List the files and variables in a table")
 @click.argument("diag_table", type=click.Path(), default="-")
-def list(ctx, diag_table):
-    options = ctx.obj
+def list_cmd(diag_table):
     options["abstract"] = abstract_dict(("table", "file", "var")) | options["abstract"]
 
     try:
-        diag_table_obj = get_filtered_table_obj(ctx, diag_table)
-        write_out(ctx, diag_table, diag_table_obj)
+        diag_table_obj = get_filtered_table_obj(diag_table)
+        write_out(diag_table, diag_table_obj)
     except DiagTableError as err:
         echo(err)
 
 
-@diag_tool.command(help="Pick out a particular file")
+@diag_tool.command(name="pick", help="Pick a single file or variable from a table")
 @click.argument("diag_table", type=click.Path(), default="-")
-@click.pass_context
-def grep_file(ctx, diag_table):
-    options = ctx.obj
-
-    if options["in_place"]:
-        echo("Warning: --in-place option is unsupported by the grep-file subcommand")
+def pick_cmd(diag_table):
+    if len(options["var"]) > 0:
+        noun = "variable"
+        pick_func = get_filtered_vars
+    elif len(options["file"]) > 0:
+        noun = "file"
+        pick_func = get_filtered_files
+    else:
+        echo("`diag-tool pick` requires a file or variable filter to be provided")
+        return
 
     try:
-        diag_table_obj = get_filtered_table_obj(ctx, diag_table)
-        n = len(diag_table_obj.diag_files)
+        diag_table_obj = DiagTable.from_file(diag_table)
+        picked_objs = tuple(pick_func(diag_table_obj))
+        n = len(picked_objs)
 
         if n == 0:
-            echo("No file was found matching the filter criteria")
+            echo("No {:s} was found matching the filter criteria".format(noun))
             return
         elif n > 1:
-            echo("Selecting the first out of {:d} files that match the filter criteria".format(n))
+            echo("Selecting the first out of {:d} {:s}s which satisfy the filter criteria".format(n, noun))
 
-        file = diag_table_obj.diag_files[0]
-        yaml = file.dump_yaml(options["abstract"])
-        sys.stdout.write(yaml)
-    except DiagTableError as err:
-        echo(err)
-
-
-@diag_tool.command(help="Pick out a particular variable")
-@click.argument("diag_table", type=click.Path(), default="-")
-@click.pass_context
-def grep_var(ctx, diag_table):
-    options = ctx.obj
-
-    if options["in_place"]:
-        echo("Warning: --in-place option is unsupported by the grep-var subcommand")
-
-    try:
-        diag_table_obj = get_filtered_table_obj(ctx, diag_table)
-        vars = diag_table_obj.get_filtered_vars(None)
-        n = len(vars)
-
-        if n == 0:
-            echo("No variable was found matching the filter criteria")
-            return
-        elif n > 1:
-            echo("Selecting the first out of {:d} variables that match the filter criteria".format(n))
-
-        yaml = vars[0].dump_yaml(options["abstract"])
-        sys.stdout.write(yaml)
+        write_out(diag_table, picked_objs[0])
     except DiagTableError as err:
         echo(err)
 
 
 if __name__ == "__main__":
-    diag_tool(obj={})
+    diag_tool()

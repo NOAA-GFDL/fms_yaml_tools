@@ -246,7 +246,7 @@ class DiagTable(DiagTableBase):
 
         self.__dict__ = DiagTable.get_empty_dict("diag_files") | diag_table
         self.diag_files = [DiagTableFile(f) for f in self.diag_files]
-        self.validate("table failed to validate")
+        self.validate("Table failed to validate")
 
     def render(self, abstract=None):
         """Return a dictionary representation of the object"""
@@ -263,7 +263,7 @@ class DiagTable(DiagTableBase):
         filter = file_filter_factory(filter)
 
         table = copy.copy(self)
-        table.diag_files = self.get_filtered_files(filter)
+        table.diag_files = list(self.get_filtered_files(filter))
         return table
 
     def filter_vars(self, filter):
@@ -275,19 +275,16 @@ class DiagTable(DiagTableBase):
         return table
 
     def get_filtered_files(self, filter):
-        """Apply a file filter and return the resulting list of DiagTableFile objects"""
+        """Apply a file filter and return the resulting iterator over DiagTableFile objects"""
         filter = file_filter_factory(filter)
-        return [f for f in self.diag_files if filter(f)]
+        return (f for f in self.diag_files if filter(f))
 
     def get_filtered_vars(self, filter):
-        """Apply a variable filter and return the resulting list of DiagTableVar objects"""
+        """Apply a variable filter and return the resulting iterator over DiagTableVar objects"""
         filter = var_filter_factory(filter)
-        filtered_vars = []
-
         for f in self.diag_files:
-            filtered_vars += f.get_filtered_vars(filter)
-
-        return filtered_vars
+            for v in f.get_filtered_vars(filter):
+                yield v
 
     def prune(self):
         """Remove files without any variables"""
@@ -381,7 +378,7 @@ class DiagTableFile(DiagTableBase):
                         "Failed to initialize DiagTableFile: Invalid 'global_meta' value")
             self.global_meta = self.global_meta[0]
 
-        self.validate("table failed to validate due to an invalid file")
+        self.validate("Table failed to validate due to an invalid file")
 
     def __iadd__(self, other):
         """Symmetric merge of two DiagTableFile objects. Any conflict between the
@@ -463,13 +460,15 @@ class DiagTableFile(DiagTableBase):
         return file
 
     def filter_vars(self, filter):
+        """Apply a variable filter and return a modified copy of the DiagTableFile object"""
         file = copy.copy(self)
-        file.varlist = self.get_filtered_vars(filter)
+        file.varlist = list(self.get_filtered_vars(filter))
         return file
 
     def get_filtered_vars(self, filter):
+        """Apply a variable filter and return the resulting iterator over DiagTableVar objects"""
         filter = var_filter_factory(filter)
-        return [v for v in self.varlist if filter(self, v)]
+        return (v for v in self.varlist if filter(self, v))
 
     def set_file_name(self, file_name):
         self.set("file_name", file_name)
@@ -543,7 +542,7 @@ class DiagTableVar(DiagTableBase):
             var["attributes"] = var["attributes"][0]
 
         self.__dict__ = DiagTableVar.get_empty_dict() | var
-        self.validate("table failed to validate due to an invalid variable")
+        self.validate("Table failed to validate due to an invalid variable")
 
     def __iadd__(self, other):
         """Symmetric merge of two DiagTableVar objects. Any conflict between the
@@ -636,7 +635,7 @@ class DiagTableSubRegion(DiagTableBase):
             raise TypeError("DiagTableSubRegion must be constructed from a dictionary")
 
         self.__dict__ = DiagTableSubRegion.get_empty_dict() | sub_region
-        self.validate("table failed to validate due to an invalid subregion")
+        self.validate("Table failed to validate due to an invalid subregion")
 
     def __iadd__(self, other):
         """Symmetric merge of two DiagTableSubRegion objects. Any conflict between the
