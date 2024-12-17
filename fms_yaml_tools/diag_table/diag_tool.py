@@ -20,7 +20,6 @@
 # ***********************************************************************
 
 import click
-import sys
 from fms_yaml_tools.diag_table import DiagTable, DiagTableFile, DiagTableVar, DiagTableError, abstract_dict
 
 
