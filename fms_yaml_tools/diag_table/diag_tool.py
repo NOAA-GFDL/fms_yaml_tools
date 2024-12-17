@@ -130,6 +130,7 @@ def get_obj_generic(yaml):
 
 
 @click.group(help="Utility to update, merge, subset, or summarize diag YAMLs")
+@click.version_option("alpha1")
 @click.option("-i", "--in-place", is_flag=True, default=False,
               help="Overwrite the existing table, rather than writing to standard output")
 @click.option("-F", "--force", is_flag=True, default=False,
