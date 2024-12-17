@@ -97,7 +97,7 @@ def merge_generic(yamls, combine_func):
         lhs_iter = get_filtered_files
     else:
         cls = DiagTable
-        lhs_iter = lambda table_obj: (table_obj,)
+        lhs_iter = lambda table_obj: (yield table_obj)
 
     try:
         diag_table = yamls.pop()
