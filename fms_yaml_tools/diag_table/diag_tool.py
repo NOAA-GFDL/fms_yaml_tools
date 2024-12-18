@@ -49,24 +49,24 @@ def apply_filters(obj):
     return obj
 
 
-def get_filtered_table_obj(diag_table):
-    """Load a diag_table object from a filename, then apply file and var filters to it"""
-    return apply_filters(DiagTable.from_file(diag_table))
+def get_filtered_table_obj(yaml):
+    """Load a DiagTable object from a filename, then apply file and var filters to it"""
+    return apply_filters(DiagTable.from_file(yaml))
 
 
-def write_out(filename, obj):
-    """Write the object to standard output or to the filename provided, depending on the `in_place` option"""
+def write_out(yaml, obj):
+    """Write obj to standard output or to the YAML file provided, depending on the `in_place` option"""
     if options["in_place"]:
-        if filename == "-":
+        if yaml == "-":
             echo("Warning: Ignoring --in-place option, because the original table was read from standard input")
         else:
-            if not (options["force"] or click.confirm("Overwrite {:s}?".format(click.format_filename(filename)))):
+            if not (options["force"] or click.confirm("Overwrite {:s}?".format(click.format_filename(yaml)))):
                 echo("Changes have been discarded")
                 return
     else:
-        filename = "-"
+        yaml = "-"
 
-    obj.write(filename, options["abstract"])
+    obj.write(yaml, options["abstract"])
 
 
 def get_filtered_files(table_obj):
@@ -100,15 +100,15 @@ def merge_generic(yamls, combine_func):
         lhs_iter = lambda table_obj: (yield table_obj)
 
     try:
-        diag_table = yamls.pop()
-        diag_table_obj = DiagTable.from_file(diag_table)
+        yaml = yamls.pop()
+        diag_table_obj = DiagTable.from_file(yaml)
 
         while len(yamls) > 0:
             rhs = cls.from_file(yamls.pop())
             for lhs in lhs_iter(diag_table_obj):
                 combine_func(lhs, rhs)
 
-        write_out(diag_table, diag_table_obj)
+        write_out(yaml, diag_table_obj)
     except DiagTableError as err:
         echo(err)
 
@@ -160,6 +160,7 @@ def diag_tool(in_place, force, file, var, prune, abstract):
 
 
 @diag_tool.command(name="edit")
+@click.help_option("-h", "--help")
 @click.argument("yaml", type=click.Path(), default="-")
 def edit_cmd(yaml):
     """Edit a table interactively, then merge the changes back in"""
@@ -190,6 +191,7 @@ def edit_cmd(yaml):
 
 
 @diag_tool.command(name="update")
+@click.help_option("-h", "--help")
 @click.argument("yamls", type=click.Path(), nargs=-1)
 def update_cmd(yamls):
     """Update a table or its files/variables"""
@@ -199,6 +201,7 @@ def update_cmd(yamls):
 
 
 @diag_tool.command(name="merge")
+@click.help_option("-h", "--help")
 @click.argument("yamls", type=click.Path(), nargs=-1)
 def merge_cmd(yamls):
     """Symmetrically merge tables, failing if any conflicts occur"""
@@ -208,32 +211,35 @@ def merge_cmd(yamls):
 
 
 @diag_tool.command(name="filter")
-@click.argument("diag_table", type=click.Path(), default="-")
-def filter_cmd(diag_table):
+@click.help_option("-h", "--help")
+@click.argument("yaml", type=click.Path(), default="-")
+def filter_cmd(yaml):
     """Apply file or variable filters to a table"""
     try:
-        diag_table_obj = get_filtered_table_obj(diag_table)
-        write_out(diag_table, diag_table_obj)
+        diag_table_obj = get_filtered_table_obj(yaml)
+        write_out(yaml, diag_table_obj)
     except DiagTableError as err:
         echo(err)
 
 
 @diag_tool.command(name="list")
-@click.argument("diag_table", type=click.Path(), default="-")
-def list_cmd(diag_table):
+@click.help_option("-h", "--help")
+@click.argument("yaml", type=click.Path(), default="-")
+def list_cmd(yaml):
     """List the files and variables in a table"""
     options["abstract"] = abstract_dict(("table", "file", "var")) | options["abstract"]
 
     try:
-        diag_table_obj = get_filtered_table_obj(diag_table)
-        write_out(diag_table, diag_table_obj)
+        diag_table_obj = get_filtered_table_obj(yaml)
+        write_out(yaml, diag_table_obj)
     except DiagTableError as err:
         echo(err)
 
 
 @diag_tool.command(name="pick")
-@click.argument("diag_table", type=click.Path(), default="-")
-def pick_cmd(diag_table):
+@click.help_option("-h", "--help")
+@click.argument("yaml", type=click.Path(), default="-")
+def pick_cmd(yaml):
     """Pick a single file or variable from a table"""
     if len(options["var"]) > 0:
         noun = "variable"
@@ -246,7 +252,7 @@ def pick_cmd(diag_table):
         return
 
     try:
-        diag_table_obj = DiagTable.from_file(diag_table)
+        diag_table_obj = DiagTable.from_file(yaml)
         picked_objs = tuple(pick_func(diag_table_obj))
         n = len(picked_objs)
 
@@ -256,7 +262,7 @@ def pick_cmd(diag_table):
         elif n > 1:
             echo("Selecting the first out of {:d} {:s}s which satisfy the filter criteria".format(n, noun))
 
-        write_out(diag_table, picked_objs[0])
+        write_out(yaml, picked_objs[0])
     except DiagTableError as err:
         echo(err)
 
