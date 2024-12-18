@@ -129,7 +129,7 @@ def get_obj_generic(yaml):
             pass
 
 
-@click.group(help="Utility to update, merge, subset, or summarize diag YAMLs")
+@click.group()
 @click.version_option("alpha1")
 @click.option("-i", "--in-place", is_flag=True, default=False,
               help="Overwrite the existing table, rather than writing to standard output")
@@ -146,6 +146,7 @@ def get_obj_generic(yaml):
 @click.option("-a", "--abstract", type=click.Choice(("table", "file", "var"), case_sensitive=True), multiple=True,
               help="Exclude table, file, or variable attributes from the output")
 def diag_tool(in_place, force, file, var, prune, abstract):
+    """Utility to update, merge, subset, or summarize diag YAMLs"""
     global options
     options = {
             "in_place": in_place,
@@ -157,9 +158,10 @@ def diag_tool(in_place, force, file, var, prune, abstract):
             }
 
 
-@diag_tool.command(name="edit", help="Edit a table interactively, then merge the changes back in")
+@diag_tool.command(name="edit")
 @click.argument("yaml", type=click.Path(), default="-")
 def edit_cmd(yaml):
+    """Edit a table interactively, then merge the changes back in"""
     try:
         obj = get_obj_generic(yaml)
 
@@ -186,25 +188,28 @@ def edit_cmd(yaml):
         echo(err)
 
 
-@diag_tool.command(name="update", help="Update a table or its files/variables")
+@diag_tool.command(name="update")
 @click.argument("yamls", type=click.Path(), nargs=-1)
 def update_cmd(yamls):
+    """Update a table or its files/variables"""
     def combine_func(lhs, rhs):
         lhs |= rhs
     merge_generic(yamls, combine_func)
 
 
-@diag_tool.command(name="merge", help="Symmetrically merge tables, failing if any conflicts occur")
+@diag_tool.command(name="merge")
 @click.argument("yamls", type=click.Path(), nargs=-1)
 def merge_cmd(yamls):
+    """Symmetrically merge tables, failing if any conflicts occur"""
     def combine_func(lhs, rhs):
         lhs += rhs
     merge_generic(yamls, combine_func)
 
 
-@diag_tool.command(name="filter", help="Apply file or variable filters to a table")
+@diag_tool.command(name="filter")
 @click.argument("diag_table", type=click.Path(), default="-")
 def filter_cmd(diag_table):
+    """Apply file or variable filters to a table"""
     try:
         diag_table_obj = get_filtered_table_obj(diag_table)
         write_out(diag_table, diag_table_obj)
@@ -212,9 +217,10 @@ def filter_cmd(diag_table):
         echo(err)
 
 
-@diag_tool.command(name="list", help="List the files and variables in a table")
+@diag_tool.command(name="list")
 @click.argument("diag_table", type=click.Path(), default="-")
 def list_cmd(diag_table):
+    """List the files and variables in a table"""
     options["abstract"] = abstract_dict(("table", "file", "var")) | options["abstract"]
 
     try:
@@ -224,9 +230,10 @@ def list_cmd(diag_table):
         echo(err)
 
 
-@diag_tool.command(name="pick", help="Pick a single file or variable from a table")
+@diag_tool.command(name="pick")
 @click.argument("diag_table", type=click.Path(), default="-")
 def pick_cmd(diag_table):
+    """Pick a single file or variable from a table"""
     if len(options["var"]) > 0:
         noun = "variable"
         pick_func = get_filtered_vars
