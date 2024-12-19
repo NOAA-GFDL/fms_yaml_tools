@@ -193,9 +193,9 @@ class DiagTableBase:
         try:
             return yaml.safe_dump(self.render(abstract), fh, default_flow_style=False, sort_keys=False)
         except yaml.YAMLError as err:
-            print("Failed to represent data as YAML: {:s}".format(str(err)))
+            raise DiagTableError("Failed to represent data as YAML: {:s}".format(str(err)))
         except OSError as err:
-            print("Failed to write to '{:s}': {:s}".format(err.filename, err.strerror))
+            raise DiagTableError("Failed to write to '{:s}': {:s}".format(err.filename, err.strerror))
 
     def write(self, filename, abstract=None):
         """Write the object to a YAML file"""
@@ -203,7 +203,7 @@ class DiagTableBase:
             with open_file(filename, "w") as fh:
                 self.dump_yaml(abstract, fh)
         except OSError as err:
-            print("Failed to open '{:s}': {:s}".format(err.filename, err.strerror))
+            raise DiagTableError("Failed to open '{:s}': {:s}".format(err.filename, err.strerror))
 
     @classmethod
     def from_yaml_str(cls, yaml_str):
@@ -212,7 +212,7 @@ class DiagTableBase:
             struct = yaml.safe_load(yaml_str)
             return cls(struct)
         except yaml.YAMLError as err:
-            print("Failed to parse YAML: {:s}".format(str(err)))
+            raise DiagTableError("Failed to parse YAML: {:s}".format(str(err)))
 
     @classmethod
     def from_file(cls, filename):
@@ -222,7 +222,7 @@ class DiagTableBase:
                 yaml_str = fh.read()
             return cls.from_yaml_str(yaml_str)
         except OSError as err:
-            print("Failed to open '{:s}': {:s}".format(err.filename, err.strerror))
+            raise DiagTableError("Failed to open '{:s}': {:s}".format(err.filename, err.strerror))
 
     def strip_none(self):
         """Strip all None values out of a dictionary and return the result"""
