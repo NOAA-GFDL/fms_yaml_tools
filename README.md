@@ -1,5 +1,6 @@
-# table_to_yaml_pyscripts
-Python scripts to convert diag_tables, data tables, and field tables to yaml format
+# fms_yaml_tools
+Python scripts to convert diag tables, data tables, and field tables to YAML format, and
+to validate and work with YAML-format tables.
 
 ## How to install with pip
 
