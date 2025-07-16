@@ -11,8 +11,9 @@ from fms_yaml_tools.diag_table.combine_diag_table_yamls import (
     DuplicateKeyError,
     DuplicateOptionalKeyError,
     combine_yaml,
-    combine_diag_table_yaml
+    combine_diag_table_yaml,
 )
+
 
 @contextmanager
 def test_directory(tmp_path: pathlib.Path):
@@ -30,6 +31,7 @@ def test_directory(tmp_path: pathlib.Path):
         yield
     finally:
         os.chdir(origin)
+
 
 class TestDataTable(unittest.TestCase):
     # Test with a yaml that does not exist
@@ -49,7 +51,7 @@ class TestDataTable(unittest.TestCase):
 
                 self.assertIn(
                     "ERROR: diagYaml contains incorrectly formatted key value pairs.",
-                    str(context.exception)
+                    str(context.exception),
                 )
 
     # Test with a yaml that is not propertly formatted
@@ -63,7 +65,9 @@ class TestDataTable(unittest.TestCase):
             with self.assertRaises(Exception) as context:
                 combine_yaml([tmp.name], print)
 
-            self.assertIn("Please verify that the previous entry", str(context.exception))
+            self.assertIn(
+                "Please verify that the previous entry", str(context.exception)
+            )
 
     # Test with a yaml that does not include the title and the base_date
     def test_no_title_basedate_crash(self):
@@ -75,13 +79,10 @@ class TestDataTable(unittest.TestCase):
         with self.assertRaises(ValueError) as context:
             out_dic.test_combine()
 
-        self.assertIn(
-            "base_date or title defined",
-            str(context.exception)
-        )
+        self.assertIn("base_date or title defined", str(context.exception))
 
     # Test with two yamls that have the same diag_file, but a different frequency
-    def test_same_diag_file_different_keys (self):
+    def test_same_diag_file_different_keys(self):
         out_dic = DiagYamlFiles()
 
         diag_yaml = DiagYamlFile()
@@ -104,12 +105,16 @@ class TestDataTable(unittest.TestCase):
 
         diag_yaml = DiagYamlFile()
         diag_yaml.set_title_basedate()
-        diag_file = DiagFile("atmos_daily", "1 days", "time_units", "unlimid", "2 1 1 0 0 0")
+        diag_file = DiagFile(
+            "atmos_daily", "1 days", "time_units", "unlimid", "2 1 1 0 0 0"
+        )
         diag_yaml.append_to_diag_files([diag_file])
         out_dic.append_yaml([diag_yaml])
 
         diag_yaml = DiagYamlFile()
-        diag_file = DiagFile("atmos_daily", "1 days", "time_units", "unlimid", "2 2 1 0 0 0")
+        diag_file = DiagFile(
+            "atmos_daily", "1 days", "time_units", "unlimid", "2 2 1 0 0 0"
+        )
         diag_yaml.append_to_diag_files([diag_file])
         out_dic.append_yaml([diag_yaml])
 
@@ -130,15 +135,20 @@ class TestDataTable(unittest.TestCase):
         diag_yaml = DiagYamlFile()
         diag_yaml.set_title_basedate()
 
-        diag_files = [DiagFile("atmos_daily", "1 days", "time_units", "unlimid"),
-                      DiagFile("atmos_daily", "1 days", "time_units", "unlimid")]
+        diag_files = [
+            DiagFile("atmos_daily", "1 days", "time_units", "unlimid"),
+            DiagFile("atmos_daily", "1 days", "time_units", "unlimid"),
+        ]
         diag_yaml.append_to_diag_files(diag_files)
         out_dic.append_yaml([diag_yaml])
 
         combined = out_dic.test_combine()
         expected = get_duplicate_diag_file_same_yaml()
-        self.assertDictEqual(combined, expected,
-                             msg="Combined YAML output does not match expected structure.")
+        self.assertDictEqual(
+            combined,
+            expected,
+            msg="Combined YAML output does not match expected structure.",
+        )
 
     # Test two yamls with different diag_yamls, but the same field
     def test_combine_two_simple_yaml_files(self):
@@ -161,8 +171,11 @@ class TestDataTable(unittest.TestCase):
 
         combined = out_dic.test_combine()
         expected = get_test_combine_two_simple_yaml_files()
-        self.assertDictEqual(combined, expected,
-                             msg="Combined YAML output does not match expected structure.")
+        self.assertDictEqual(
+            combined,
+            expected,
+            msg="Combined YAML output does not match expected structure.",
+        )
 
     # Test two yamls with the same diag_file, but different diag_fields in each (1 is repeated)
     def test_combine_duplicate_diag_files(self):
@@ -179,17 +192,22 @@ class TestDataTable(unittest.TestCase):
 
         diag_yaml = DiagYamlFile()
         diag_file = DiagFile("atmos_daily", "1 days", "time_units", "unlimid")
-        diag_fields = [DiagField("tdata", "ocn_mod", "average", "r4"),
-                       DiagField("pdata", "ocn_mod", "average", "r4"),
-                       DiagField("udata", "ocn_mod", "average", "r4")]
+        diag_fields = [
+            DiagField("tdata", "ocn_mod", "average", "r4"),
+            DiagField("pdata", "ocn_mod", "average", "r4"),
+            DiagField("udata", "ocn_mod", "average", "r4"),
+        ]
         diag_file.append_to_varlist(diag_fields)
         diag_yaml.append_to_diag_files([diag_file])
         out_dic.append_yaml([diag_yaml])
 
         combined = out_dic.test_combine()
         expected = get_test_combine_duplicate_diag_files()
-        self.assertDictEqual(combined, expected,
-                             msg="Combined YAML output does not match expected structure.")
+        self.assertDictEqual(
+            combined,
+            expected,
+            msg="Combined YAML output does not match expected structure.",
+        )
 
     # Test two yamls with the same diag_file, they each have same diag_field, but with
     # a different module (should still)
@@ -197,33 +215,49 @@ class TestDataTable(unittest.TestCase):
         out_dic = create_base_input_yaml(diff_mod="ocn_z_mod")
         combined = out_dic.test_combine()
         expected = get_base_output_dic(mod2="ocn_z_mod")
-        self.assertDictEqual(combined, expected,
-                             msg="Combined YAML output does not match expected structure.")
+        self.assertDictEqual(
+            combined,
+            expected,
+            msg="Combined YAML output does not match expected structure.",
+        )
 
     # Test two yamls with the same diag_file, they each have same diag_field, but with
     # a different out_name and reduction
     def test_combine_duplicate_diag_fields(self):
-        out_dic = create_base_input_yaml(output_name1="tdata_average", output_name2="tdata_min")
+        out_dic = create_base_input_yaml(
+            output_name1="tdata_average", output_name2="tdata_min"
+        )
         combined = out_dic.test_combine()
-        expected = get_base_output_dic(output_name1="tdata_average", output_name2="tdata_min")
-        self.assertDictEqual(combined, expected,
-                             msg="Combined YAML output does not match expected structure.")
- 
+        expected = get_base_output_dic(
+            output_name1="tdata_average", output_name2="tdata_min"
+        )
+        self.assertDictEqual(
+            combined,
+            expected,
+            msg="Combined YAML output does not match expected structure.",
+        )
+
     # Test two yamls with the same diag_file, same diag field one has output_name other one doesn't
     def test_combine_duplicate_diag_fields_1outputname(self):
         out_dic = create_base_input_yaml(output_name2="tdata_min")
         combined = out_dic.test_combine()
         expected = get_base_output_dic(output_name2="tdata_min")
-        self.assertDictEqual(combined, expected,
-                             msg="Combined YAML output does not match expected structure.")
+        self.assertDictEqual(
+            combined,
+            expected,
+            msg="Combined YAML output does not match expected structure.",
+        )
 
-    # Test two yamls with the same diag_file, same field one has outputname, other one doesn't 
+    # Test two yamls with the same diag_file, same field one has outputname, other one doesn't
     def test_combine_duplicate_diag_fields_1outputname_flip(self):
         out_dic = create_base_input_yaml(output_name1="tdata_average")
         combined = out_dic.test_combine()
         expected = get_base_output_dic(output_name1="tdata_average")
-        self.assertDictEqual(combined, expected,
-                             msg="Combined YAML output does not match expected structure.")
+        self.assertDictEqual(
+            combined,
+            expected,
+            msg="Combined YAML output does not match expected structure.",
+        )
 
     # Test two yamls with the same diag_file, different fields with the same varname and module,
     # file two has output_name, the other one doesn't
@@ -244,27 +278,42 @@ class TestDataTable(unittest.TestCase):
         with tempfile.TemporaryDirectory() as testdir:
             with test_directory(testdir):
                 combined = run_full_combine_cli_test()
-                expected = get_base_output_dic(output_name1="tdata_average", output_name2="tdata_min")
-                self.assertDictEqual(combined, expected,
-                    msg="Combined YAML output does not match expected structure.")
+                expected = get_base_output_dic(
+                    output_name1="tdata_average", output_name2="tdata_min"
+                )
+                self.assertDictEqual(
+                    combined,
+                    expected,
+                    msg="Combined YAML output does not match expected structure.",
+                )
 
     # Test the full combine cli with a specified output yaml
     def test_combine_yaml_cli_with_outyaml(self):
         with tempfile.TemporaryDirectory() as testdir:
             with test_directory(testdir):
                 combined = run_full_combine_cli_test(output_yaml_name="out.yaml")
-                expected = get_base_output_dic(output_name1="tdata_average", output_name2="tdata_min")
-                self.assertDictEqual(combined, expected,
-                    msg="Combined YAML output does not match expected structure.")
+                expected = get_base_output_dic(
+                    output_name1="tdata_average", output_name2="tdata_min"
+                )
+                self.assertDictEqual(
+                    combined,
+                    expected,
+                    msg="Combined YAML output does not match expected structure.",
+                )
 
     # Test the full combine cli with force write
     def test_combine_yaml_cli_force_write(self):
         with tempfile.TemporaryDirectory() as testdir:
             with test_directory(testdir):
                 combined = run_full_combine_cli_test(use_force=True)
-                expected = get_base_output_dic(output_name1="tdata_average", output_name2="tdata_min")
-                self.assertDictEqual(combined, expected,
-                    msg="Combined YAML output does not match expected structure.")
+                expected = get_base_output_dic(
+                    output_name1="tdata_average", output_name2="tdata_min"
+                )
+                self.assertDictEqual(
+                    combined,
+                    expected,
+                    msg="Combined YAML output does not match expected structure.",
+                )
 
     # Test the full combine cli without force write and the file already exists!
     def test_combine_yaml_cli_existing_output(self):
@@ -273,25 +322,29 @@ class TestDataTable(unittest.TestCase):
                 existing_output = pathlib.Path("diag_table.yaml")
                 existing_output.write_text("# existing content\n")
 
-                out_dic = create_base_input_yaml(output_name1="tdata_average", output_name2="tdata_min")
+                out_dic = create_base_input_yaml(
+                    output_name1="tdata_average", output_name2="tdata_min"
+                )
                 input_yamls_names = out_dic.create_input()
 
                 runner = CliRunner()
-                result = runner.invoke(
-                    combine_diag_table_yaml,
-                    input_yamls_names
+                result = runner.invoke(combine_diag_table_yaml, input_yamls_names)
+
+                assert (
+                    result.exit_code != 0
+                ), "CLI should fail when output file exists and --force-write is not used"
+                assert "File exists" in result.output or isinstance(
+                    result.exception, SystemExit
                 )
 
-                assert result.exit_code != 0, "CLI should fail when output file exists and --force-write is not used"
-                assert "File exists" in result.output or isinstance(result.exception, SystemExit)
 
-class DiagYamlFiles():
+class DiagYamlFiles:
     def __init__(self):
         self.yamls = []
 
     def append_yaml(self, yamls):
-        for yaml in yamls:
-            self.yamls.append(yaml)
+        for yaml_in in yamls:
+            self.yamls.append(yaml_in)
 
     def create_input(self):
         yaml_count = 0
@@ -313,13 +366,13 @@ class DiagYamlFiles():
         return combined
 
 
-class DiagYamlFile():
+class DiagYamlFile:
     def __init__(self):
         self.diag_files = []
 
     def set_title_basedate(self):
         self.title = "Very_Important_Title"
-        self.base_date = '1 1 1 0 0 0'
+        self.base_date = "1 1 1 0 0 0"
 
     def append_to_diag_files(self, diag_files):
         for diag_file in diag_files:
@@ -328,20 +381,21 @@ class DiagYamlFile():
     def to_dict(self):
         # Return a plain dict with all the relevant data, recursively converting nested objects if needed
         out = {}
-        if hasattr(self, 'title') and self.title:
-            out['title'] = self.title
-        if hasattr(self, 'base_date') and self.base_date:
-            out['base_date'] = self.base_date
+        if hasattr(self, "title") and self.title:
+            out["title"] = self.title
+        if hasattr(self, "base_date") and self.base_date:
+            out["base_date"] = self.base_date
 
-        out['diag_files'] = [df.to_dict() for df in self.diag_files]
+        out["diag_files"] = [df.to_dict() for df in self.diag_files]
         return out
 
-class DiagFile():
+
+class DiagFile:
     def __init__(self, file_name, freq, time_units, unlimdim, start_time=None):
         self.varlist = []
 
         self.file_name = file_name
-        self.freq =freq
+        self.freq = freq
         self.time_units = time_units
         self.unlimdim = unlimdim
         self.start_time = start_time
@@ -350,12 +404,14 @@ class DiagFile():
         self.varlist.extend(vars)
 
     def to_dict(self):
-        data = {k: v for k, v in self.__dict__.items() if v is not None and k != 'varlist'}
-        data['varlist'] = [var.to_dict() for var in self.varlist]
+        data = {
+            k: v for k, v in self.__dict__.items() if v is not None and k != "varlist"
+        }
+        data["varlist"] = [var.to_dict() for var in self.varlist]
         return data
 
 
-class DiagField():
+class DiagField:
     def __init__(self, var_name, module, reduction, kind, output_name=None):
         self.var_name = var_name
         self.module = module
@@ -366,8 +422,11 @@ class DiagField():
     def to_dict(self):
         return {k: v for k, v in self.__dict__.items() if v is not None}
 
+
 def run_full_combine_cli_test(output_yaml_name=None, use_force=False):
-    out_dic = create_base_input_yaml(output_name1="tdata_average", output_name2="tdata_min")
+    out_dic = create_base_input_yaml(
+        output_name1="tdata_average", output_name2="tdata_min"
+    )
     input_yamls_names = out_dic.create_input()
 
     args = input_yamls_names
@@ -380,7 +439,7 @@ def run_full_combine_cli_test(output_yaml_name=None, use_force=False):
         args += ["--force-write"]
 
     runner = CliRunner()
-    result = runner.invoke( combine_diag_table_yaml, args)
+    result = runner.invoke(combine_diag_table_yaml, args)
     assert result.exit_code == 0
 
     # Check that the out yaml exists
@@ -393,77 +452,80 @@ def run_full_combine_cli_test(output_yaml_name=None, use_force=False):
     # Returns a dictionary wit the conents of the output yaml
     return combined
 
+
 def get_test_combine_two_simple_yaml_files():
     expected = {
-        'title': 'Very_Important_Title',
-        'base_date': '1 1 1 0 0 0',
-        'diag_files': [
+        "title": "Very_Important_Title",
+        "base_date": "1 1 1 0 0 0",
+        "diag_files": [
             {
-                'file_name': 'atmos_daily',
-                'freq': '1 days',
-                'time_units': 'time_units',
-                'unlimdim': 'unlimid',
-                'varlist': [
+                "file_name": "atmos_daily",
+                "freq": "1 days",
+                "time_units": "time_units",
+                "unlimdim": "unlimid",
+                "varlist": [
                     {
-                        'var_name': 'tdata',
-                        'module': 'ocn_mod',
-                        'reduction': 'average',
-                        'kind': 'r4'
+                        "var_name": "tdata",
+                        "module": "ocn_mod",
+                        "reduction": "average",
+                        "kind": "r4",
                     }
-                ]
+                ],
             },
             {
-                'file_name': 'atmos_8xdaily',
-                'freq': '8 hours',
-                'time_units': 'time_units',
-                'unlimdim': 'unlimid',
-                'varlist': [
+                "file_name": "atmos_8xdaily",
+                "freq": "8 hours",
+                "time_units": "time_units",
+                "unlimdim": "unlimid",
+                "varlist": [
                     {
-                        'var_name': 'tdata',
-                        'module': 'ocn_mod',
-                        'reduction': 'average',
-                        'kind': 'r4'
+                        "var_name": "tdata",
+                        "module": "ocn_mod",
+                        "reduction": "average",
+                        "kind": "r4",
                     }
-                ]
-            }
-        ]
+                ],
+            },
+        ],
     }
     return expected
 
+
 def get_test_combine_duplicate_diag_files():
     expected = {
-    'title': 'Very_Important_Title',
-    'base_date': '1 1 1 0 0 0',
-    'diag_files': [
-        {
-            'file_name': 'atmos_daily',
-            'freq': '1 days',
-            'time_units': 'time_units',
-            'unlimdim': 'unlimid',
-            'varlist': [
-                {
-                    'kind': 'r4',
-                    'module': 'ocn_mod',
-                    'reduction': 'average',
-                    'var_name': 'tdata'
-                },
-                {
-                    'kind': 'r4',
-                    'module': 'ocn_mod',
-                    'reduction': 'average',
-                    'var_name': 'pdata'
-                },
-                {
-                    'kind': 'r4',
-                    'module': 'ocn_mod',
-                    'reduction': 'average',
-                    'var_name': 'udata'
-                }
-            ]
-        }
-    ]
+        "title": "Very_Important_Title",
+        "base_date": "1 1 1 0 0 0",
+        "diag_files": [
+            {
+                "file_name": "atmos_daily",
+                "freq": "1 days",
+                "time_units": "time_units",
+                "unlimdim": "unlimid",
+                "varlist": [
+                    {
+                        "kind": "r4",
+                        "module": "ocn_mod",
+                        "reduction": "average",
+                        "var_name": "tdata",
+                    },
+                    {
+                        "kind": "r4",
+                        "module": "ocn_mod",
+                        "reduction": "average",
+                        "var_name": "pdata",
+                    },
+                    {
+                        "kind": "r4",
+                        "module": "ocn_mod",
+                        "reduction": "average",
+                        "var_name": "udata",
+                    },
+                ],
+            }
+        ],
     }
     return expected
+
 
 def get_duplicate_diag_file_same_yaml():
     expected = {
@@ -475,26 +537,22 @@ def get_duplicate_diag_file_same_yaml():
                 "freq": "1 days",
                 "time_units": "time_units",
                 "unlimdim": "unlimid",
-                "varlist": []
+                "varlist": [],
             }
-        ]
+        ],
     }
     return expected
+
 
 def get_base_output_dic(mod2="ocn_mod", output_name1=None, output_name2=None):
     var1 = {
         "var_name": "tdata",
         "module": "ocn_mod",
         "reduction": "average",
-        "kind": "r4"
+        "kind": "r4",
     }
 
-    var2 = {
-        "var_name": "tdata",
-        "module": mod2,
-        "reduction": "min",
-        "kind": "r4"
-    }
+    var2 = {"var_name": "tdata", "module": mod2, "reduction": "min", "kind": "r4"}
 
     # Conditionally add Output_name
     if output_name1 is not None:
@@ -512,12 +570,13 @@ def get_base_output_dic(mod2="ocn_mod", output_name1=None, output_name2=None):
                 "freq": "1 days",
                 "time_units": "time_units",
                 "unlimdim": "unlimid",
-                "varlist": [var1, var2]
+                "varlist": [var1, var2],
             }
-        ]
+        ],
     }
 
     return expected
+
 
 def create_base_input_yaml(output_name1=None, output_name2=None, diff_mod="ocn_mod"):
     out_dic = DiagYamlFiles()

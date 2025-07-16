@@ -30,15 +30,18 @@ class DuplicateFieldError(ValueError):
     """Raised when a variable is defined twice with conflicting definitions."""
     pass
 
+
 class DuplicateKeyError(ValueError):
     """Raised when a diag file is defined twice with different required keys."""
     def __init__(self, file_name, key):
         super().__init__(f"The diag_file: {file_name} is defined twice with different {key}")
 
+
 class DuplicateOptionalKeyError(ValueError):
     """Raised when a diag file is defined twice with different optional keys."""
     def __init__(self, file_name, key):
         super().__init__(f"The diag_file: {file_name} is defined twice with an optional different {key}")
+
 
 @click.command()
 @click.argument('in-files', nargs=-1)
@@ -96,6 +99,7 @@ def is_outputname_different(entry, new_entry, verboseprint):
         else:
             verboseprint("---> New entry has output_name, entry does not, field not expected to be the same")
             return True
+
 
 def compare_key_value_pairs(entry1, entry2, key, is_optional=False):
     file_name = entry1['file_name']
@@ -230,10 +234,10 @@ def combine_yaml(files, verboseprint):
             if not is_file_duplicate(diag_table['diag_files'], entry, verboseprint):
                 diag_table['diag_files'].append(entry)
 
-    if  diag_table['base_date'] == "" or diag_table['title'] == "":
-                raise ValueError("The ouput combined yaml file does not have the " +
-                                "base_date or title defined. Ensure that one " +
-                                "yaml file has the base_date and title defined!")
+    if diag_table['base_date'] == "" or diag_table['title'] == "":
+        raise ValueError("The ouput combined yaml file does not have the " +
+                         "base_date or title defined. Ensure that one " +
+                         "yaml file has the base_date and title defined!")
     return diag_table
 
 
