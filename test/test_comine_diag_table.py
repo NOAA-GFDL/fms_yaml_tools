@@ -239,28 +239,51 @@ class TestDataTable(unittest.TestCase):
         with self.assertRaises(DuplicateFieldError):
             out_dic.test_combine()
 
-    # Test the full click cli
+    # Test the full combine cli
     def test_combine_yaml_cli(self):
-        # This is going to create two dictionaries
-        out_dic = create_base_input_yaml(output_name1="tdata_average", output_name2="tdata_min")
         with tempfile.TemporaryDirectory() as testdir:
             with test_directory(testdir):
+                combined = run_full_combine_cli_test()
+                expected = get_base_output_dic(output_name1="tdata_average", output_name2="tdata_min")
+                self.assertDictEqual(combined, expected,
+                    msg="Combined YAML output does not match expected structure.")
+
+    # Test the full combine cli with a specified output yaml
+    def test_combine_yaml_cli_with_outyaml(self):
+        with tempfile.TemporaryDirectory() as testdir:
+            with test_directory(testdir):
+                combined = run_full_combine_cli_test(output_yaml_name="out.yaml")
+                expected = get_base_output_dic(output_name1="tdata_average", output_name2="tdata_min")
+                self.assertDictEqual(combined, expected,
+                    msg="Combined YAML output does not match expected structure.")
+
+    # Test the full combine cli with force write
+    def test_combine_yaml_cli_force_write(self):
+        with tempfile.TemporaryDirectory() as testdir:
+            with test_directory(testdir):
+                combined = run_full_combine_cli_test(use_force=True)
+                expected = get_base_output_dic(output_name1="tdata_average", output_name2="tdata_min")
+                self.assertDictEqual(combined, expected,
+                    msg="Combined YAML output does not match expected structure.")
+
+    # Test the full combine cli without force write and the file already exists!
+    def test_combine_yaml_cli_existing_output(self):
+        with tempfile.TemporaryDirectory() as testdir:
+            with test_directory(testdir):
+                existing_output = pathlib.Path("diag_table.yaml")
+                existing_output.write_text("# existing content\n")
+
+                out_dic = create_base_input_yaml(output_name1="tdata_average", output_name2="tdata_min")
                 input_yamls_names = out_dic.create_input()
+
                 runner = CliRunner()
                 result = runner.invoke(
                     combine_diag_table_yaml,
-                    input_yamls_names)
-                assert result.exit_code == 0
+                    input_yamls_names
+                )
 
-                # Check that the out yaml exists
-                output_file = pathlib.Path("diag_table.yaml")
-                assert output_file.exists()
-
-                # Check the contents of the output yaml
-                combined = yaml.safe_load(output_file.read_text())
-                expected = get_base_output_dic(output_name1="tdata_average", output_name2="tdata_min")
-                self.assertDictEqual(combined, expected,
-                             msg="Combined YAML output does not match expected structure.")
+                assert result.exit_code != 0, "CLI should fail when output file exists and --force-write is not used"
+                assert "File exists" in result.output or isinstance(result.exception, SystemExit)
 
 class DiagYamlFiles():
     def __init__(self):
@@ -343,6 +366,32 @@ class DiagField():
     def to_dict(self):
         return {k: v for k, v in self.__dict__.items() if v is not None}
 
+def run_full_combine_cli_test(output_yaml_name=None, use_force=False):
+    out_dic = create_base_input_yaml(output_name1="tdata_average", output_name2="tdata_min")
+    input_yamls_names = out_dic.create_input()
+
+    args = input_yamls_names
+    if output_yaml_name:
+        args += ["--output-yaml", output_yaml_name]
+    else:
+        output_yaml_name = "diag_table.yaml"
+
+    if use_force:
+        args += ["--force-write"]
+
+    runner = CliRunner()
+    result = runner.invoke( combine_diag_table_yaml, args)
+    assert result.exit_code == 0
+
+    # Check that the out yaml exists
+    output_file = pathlib.Path(output_yaml_name)
+    assert output_file.exists()
+
+    # Check the contents of the output yaml
+    combined = yaml.safe_load(output_file.read_text())
+
+    # Returns a dictionary wit the conents of the output yaml
+    return combined
 
 def get_test_combine_two_simple_yaml_files():
     expected = {
