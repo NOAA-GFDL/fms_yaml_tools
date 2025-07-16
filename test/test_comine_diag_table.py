@@ -13,6 +13,11 @@ from fms_yaml_tools.diag_table.combine_diag_table_yamls import (
     combine_yaml,
     combine_diag_table_yaml,
 )
+from fms_yaml_tools.diag_table.test_constants import (
+    DUPLICATE_DIAG_FILE_SAME_YAML,
+    TEST_COMBINE_TWO_SIMPLE_YAML_FILES,
+    TEST_COMBINE_DUPLICATE_DIAG_FILES,
+)
 
 
 @contextmanager
@@ -143,7 +148,7 @@ class TestDataTable(unittest.TestCase):
         out_dic.append_yaml([diag_yaml])
 
         combined = out_dic.test_combine()
-        expected = get_duplicate_diag_file_same_yaml()
+        expected = DUPLICATE_DIAG_FILE_SAME_YAML
         self.assertDictEqual(
             combined,
             expected,
@@ -170,7 +175,7 @@ class TestDataTable(unittest.TestCase):
         out_dic.append_yaml([diag_yaml])
 
         combined = out_dic.test_combine()
-        expected = get_test_combine_two_simple_yaml_files()
+        expected = TEST_COMBINE_TWO_SIMPLE_YAML_FILES
         self.assertDictEqual(
             combined,
             expected,
@@ -202,7 +207,7 @@ class TestDataTable(unittest.TestCase):
         out_dic.append_yaml([diag_yaml])
 
         combined = out_dic.test_combine()
-        expected = get_test_combine_duplicate_diag_files()
+        expected = TEST_COMBINE_DUPLICATE_DIAG_FILES
         self.assertDictEqual(
             combined,
             expected,
@@ -451,97 +456,6 @@ def run_full_combine_cli_test(output_yaml_name=None, use_force=False):
 
     # Returns a dictionary wit the conents of the output yaml
     return combined
-
-
-def get_test_combine_two_simple_yaml_files():
-    expected = {
-        "title": "Very_Important_Title",
-        "base_date": "1 1 1 0 0 0",
-        "diag_files": [
-            {
-                "file_name": "atmos_daily",
-                "freq": "1 days",
-                "time_units": "time_units",
-                "unlimdim": "unlimid",
-                "varlist": [
-                    {
-                        "var_name": "tdata",
-                        "module": "ocn_mod",
-                        "reduction": "average",
-                        "kind": "r4",
-                    }
-                ],
-            },
-            {
-                "file_name": "atmos_8xdaily",
-                "freq": "8 hours",
-                "time_units": "time_units",
-                "unlimdim": "unlimid",
-                "varlist": [
-                    {
-                        "var_name": "tdata",
-                        "module": "ocn_mod",
-                        "reduction": "average",
-                        "kind": "r4",
-                    }
-                ],
-            },
-        ],
-    }
-    return expected
-
-
-def get_test_combine_duplicate_diag_files():
-    expected = {
-        "title": "Very_Important_Title",
-        "base_date": "1 1 1 0 0 0",
-        "diag_files": [
-            {
-                "file_name": "atmos_daily",
-                "freq": "1 days",
-                "time_units": "time_units",
-                "unlimdim": "unlimid",
-                "varlist": [
-                    {
-                        "kind": "r4",
-                        "module": "ocn_mod",
-                        "reduction": "average",
-                        "var_name": "tdata",
-                    },
-                    {
-                        "kind": "r4",
-                        "module": "ocn_mod",
-                        "reduction": "average",
-                        "var_name": "pdata",
-                    },
-                    {
-                        "kind": "r4",
-                        "module": "ocn_mod",
-                        "reduction": "average",
-                        "var_name": "udata",
-                    },
-                ],
-            }
-        ],
-    }
-    return expected
-
-
-def get_duplicate_diag_file_same_yaml():
-    expected = {
-        "title": "Very_Important_Title",
-        "base_date": "1 1 1 0 0 0",
-        "diag_files": [
-            {
-                "file_name": "atmos_daily",
-                "freq": "1 days",
-                "time_units": "time_units",
-                "unlimdim": "unlimid",
-                "varlist": [],
-            }
-        ],
-    }
-    return expected
 
 
 def get_base_output_dic(mod2="ocn_mod", output_name1=None, output_name2=None):
