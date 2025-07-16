@@ -64,7 +64,7 @@ def combine_diag_table_yaml(in_files, debug, output_yaml, force_write):
         out_file_op = "x"  # Exclusive write
         if force_write:
             out_file_op = "w"
-        verboseprint("Writing the output yaml: " + output_yaml)
+        verboseprint(f"Writing the output yaml: {output_yaml}")
         with open(output_yaml, out_file_op) as myfile:
             yaml.dump(diag_table, myfile, default_flow_style=False, sort_keys=False)
     except Exception as err:
@@ -158,15 +158,14 @@ def is_file_duplicate(diag_table, new_entry, verboseprint):
     # Check if a diag_table entry was already defined
     for entry in diag_table:
         if entry == new_entry:
-            verboseprint("---> " + new_entry["file_name"] + " is a duplicate file. Moving on!")
+            verboseprint(f"---> {new_entry['file_name']} is a duplicate file. Moving on!")
             return True
         else:
             # If the file_name is not the same, then move on to the next file
             if entry['file_name'] != new_entry['file_name']:
                 continue
 
-            verboseprint("---> " + entry["file_name"] + " has already been added. Checking that all "
-                         + "the keys are the same")
+            verboseprint(f"---> {entry['file_name']} has already been added. Checking that all the keys are the same")
 
             # Since there are duplicate files, check fhat all the keys are the same:
             compare_key_value_pairs(entry, new_entry, 'freq')
@@ -182,15 +181,18 @@ def is_file_duplicate(diag_table, new_entry, verboseprint):
             compare_key_value_pairs(entry, new_entry, 'is_ocean', is_optional=True)
             compare_key_value_pairs(entry, new_entry, 'reduction', is_optional=True)
             compare_key_value_pairs(entry, new_entry, 'kind', is_optional=True)
+
+            # If entry has entry['modules'], then new_entry must also have it and it cannot have new_entry['varlist']
+            # There will need be an extra layer to add the variables to entry['modules']['varlist']
             compare_key_value_pairs(entry, new_entry, 'module', is_optional=True)
 
             # Since the file is the same, check if there are any new variables to add to the file:
-            verboseprint("---> Looking for new variables for the file " + new_entry["file_name"])
+            verboseprint(f"---> Looking for new variables for the file {new_entry['file_name']}")
             for field_entry in new_entry['varlist']:
                 if not is_field_duplicate(entry['varlist'], field_entry, entry['file_name'], verboseprint):
                     entry['varlist'].append(field_entry)
             return True
-    verboseprint("---> " + new_entry["file_name"] + " is a new file. Adding it!")
+    verboseprint(f"---> {new_entry['file_name']} is a new file. Adding it!")
     return False
 
 
@@ -235,9 +237,7 @@ def combine_yaml(files, verboseprint):
                 diag_table['diag_files'].append(entry)
 
     if diag_table['base_date'] == "" or diag_table['title'] == "":
-        raise ValueError("The ouput combined yaml file does not have the " +
-                         "base_date or title defined. Ensure that one " +
-                         "yaml file has the base_date and title defined!")
+        raise ValueError("The ouput combined yaml file does not have the base_date or title defined. Ensure that one yaml file has the base_date and title defined!")
     return diag_table
 
 
