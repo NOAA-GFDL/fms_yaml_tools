@@ -237,7 +237,8 @@ def combine_yaml(files, verboseprint):
                 diag_table['diag_files'].append(entry)
 
     if diag_table['base_date'] == "" or diag_table['title'] == "":
-        raise ValueError("The ouput combined yaml file does not have the base_date or title defined. Ensure that one yaml file has the base_date and title defined!")
+        raise ValueError("The ouput combined yaml file does not have the base_date or title defined. "
+                         "Ensure that one yaml file has the base_date and title defined!")
     return diag_table
 
 
