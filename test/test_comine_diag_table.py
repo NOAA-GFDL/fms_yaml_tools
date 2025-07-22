@@ -38,6 +38,10 @@ from fms_yaml_tools.diag_table.test_constants import (
     DUPLICATE_DIAG_FILE_SAME_YAML,
     TEST_COMBINE_TWO_SIMPLE_YAML_FILES,
     TEST_COMBINE_DUPLICATE_DIAG_FILES,
+    DIAG_TABLE_YAML_ANCHORS,
+    DIAG_TABLE_YAML_ANCHORS2,
+    TEST_DIAG_ANCHORS,
+    TEST_SIMPLE_YAML_DEFS,
 )
 
 
@@ -299,6 +303,93 @@ class TestDataTable(unittest.TestCase):
         with self.assertRaises(DuplicateFieldError):
             out_dic.test_combine()
 
+    # Test with a yaml that is using anchors
+    def test_combine_yaml_with_anchors(self):
+        with tempfile.TemporaryDirectory() as testdir:
+            with test_directory(testdir):
+                # Create a yaml file with anchors
+                with open("anchor_file.yaml", "w") as f:
+                    f.write(DIAG_TABLE_YAML_ANCHORS)
+
+                with open("anchor_file2.yaml", "w") as f:
+                    f.write(DIAG_TABLE_YAML_ANCHORS2)
+
+                input_yamls_names = ["anchor_file.yaml", "anchor_file2.yaml"]
+                combined = combine_yaml(input_yamls_names, print)
+                print(combined)
+                expected = TEST_DIAG_ANCHORS
+                self.assertDictEqual(
+                    combined,
+                    expected,
+                    msg="Combined YAML output does not match expected structure."
+                )
+
+    # Test with yamls that define the reduction, kind and module at the file level
+    def test_simple_yaml_defs(self):
+        out_dic = DiagYamlFiles()
+
+        diag_yaml = DiagYamlFile()
+        diag_yaml.set_title_basedate()
+        diag_file = DiagFile("atmos_daily", "1 days", "time_units", "unlimid",
+                             module="ocn_mod", reduction="average", kind="r4")
+        diag_fields = [DiagField("tdata", None, None, None)]
+        diag_file.append_to_varlist(diag_fields)
+        diag_yaml.append_to_diag_files([diag_file])
+        out_dic.append_yaml([diag_yaml])
+
+        diag_yaml = DiagYamlFile()
+        diag_yaml.set_title_basedate()
+        diag_file = DiagFile("atmos_daily", "1 days", "time_units", "unlimid",
+                             module="ocn_mod", reduction="average", kind="r4")
+        diag_fields = [
+            DiagField("vdata", None, None, None),
+            DiagField("tdata", None, None, None),
+            DiagField("tdata", None, "min", None, output_name="tdata_min")
+        ]
+        diag_file.append_to_varlist(diag_fields)
+        diag_yaml.append_to_diag_files([diag_file])
+        out_dic.append_yaml([diag_yaml])
+
+        combined = out_dic.test_combine()
+        print(combined)
+        expected = TEST_SIMPLE_YAML_DEFS
+        self.assertDictEqual(
+            combined,
+            expected,
+            msg="Combined YAML output does not match expected structure.",
+        )
+
+    # Test with yamls that define the reduction, kind and module at the file level
+    def test_simple_yaml_defs_crash(self):
+        out_dic = DiagYamlFiles()
+
+        diag_yaml = DiagYamlFile()
+        diag_yaml.set_title_basedate()
+        diag_file = DiagFile("atmos_daily", "1 days", "time_units", "unlimid",
+                             module="ocn_mod", reduction="average", kind="r4")
+        diag_fields = [DiagField("tdata", None, None, None)]
+        diag_file.append_to_varlist(diag_fields)
+        diag_yaml.append_to_diag_files([diag_file])
+        out_dic.append_yaml([diag_yaml])
+
+        diag_yaml = DiagYamlFile()
+        diag_yaml.set_title_basedate()
+        diag_file = DiagFile("atmos_daily", "1 days", "time_units", "unlimid",
+                             module="ocn_mod", reduction="average", kind="r4")
+
+        # Crash because tdata is defined twice with a different reduction
+        # And not output_name 
+        diag_fields = [
+            DiagField("vdata", None, None, None),
+            DiagField("tdata", None, "min", None)
+        ]
+        diag_file.append_to_varlist(diag_fields)
+        diag_yaml.append_to_diag_files([diag_file])
+        out_dic.append_yaml([diag_yaml])
+
+        with self.assertRaises(DuplicateFieldError):
+            out_dic.test_combine()
+
     # Test the full combine cli
     def test_combine_yaml_cli(self):
         with tempfile.TemporaryDirectory() as testdir:
@@ -417,7 +508,8 @@ class DiagYamlFile:
 
 
 class DiagFile:
-    def __init__(self, file_name, freq, time_units, unlimdim, start_time=None):
+    def __init__(self, file_name, freq, time_units, unlimdim, 
+                 start_time=None, module=None, reduction=None, kind=None):
         self.varlist = []
 
         self.file_name = file_name
@@ -425,6 +517,9 @@ class DiagFile:
         self.time_units = time_units
         self.unlimdim = unlimdim
         self.start_time = start_time
+        self.module = module
+        self.reduction = reduction
+        self.kind = kind
 
     def append_to_varlist(self, vars):
         self.varlist.extend(vars)

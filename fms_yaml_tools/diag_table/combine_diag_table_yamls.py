@@ -26,6 +26,16 @@ import yaml
 from .. import __version__
 
 
+class InconsistentKeys(ValueError):
+    """Raised when diag_file contains a varlist and a modules list."""
+    def __init__(self, file_name):
+        message = (
+            f"The diag_file '{file_name}' defines both a top-level 'varlist' and a "
+            "'modules' block. These options are mutually exclusive — please choose one."
+        )
+        super().__init__(message)
+
+
 class DuplicateFieldError(ValueError):
     """Raised when a variable is defined twice with conflicting definitions."""
     pass
@@ -122,7 +132,7 @@ def compare_key_value_pairs(entry1, entry2, key, is_optional=False):
 
 def is_field_duplicate(diag_table, new_entry, file_name, verboseprint):
     var_name = new_entry['var_name']
-    module = new_entry['module']
+    module = new_entry.get('module')
 
     verboseprint(f"---> Checking if {var_name} is duplicated")
 
@@ -136,7 +146,7 @@ def is_field_duplicate(diag_table, new_entry, file_name, verboseprint):
             # If the variable name is not the same, then it is a brand new variable
             continue
 
-        if entry['module'] != module:
+        if entry.get('module') != module:
             # If the variable name is the same but it a different module, then it is a brand new variable
             continue
 
@@ -153,6 +163,15 @@ def is_field_duplicate(diag_table, new_entry, file_name, verboseprint):
     verboseprint(f"----> {var_name} is a new variable. Adding it")
     return False
 
+def flatten_varlist(varlist):
+    """Flattens a varlist that may contain nested lists."""
+    flattened = []
+    for item in varlist:
+        if isinstance(item, list):
+            flattened.extend(flatten_varlist(item))
+        else:
+            flattened.append(item)
+    return flattened
 
 def is_file_duplicate(diag_table, new_entry, verboseprint):
     # Check if a diag_table entry was already defined
@@ -188,9 +207,19 @@ def is_file_duplicate(diag_table, new_entry, verboseprint):
 
             # Since the file is the same, check if there are any new variables to add to the file:
             verboseprint(f"---> Looking for new variables for the file {new_entry['file_name']}")
-            for field_entry in new_entry['varlist']:
-                if not is_field_duplicate(entry['varlist'], field_entry, entry['file_name'], verboseprint):
-                    entry['varlist'].append(field_entry)
+            if "modules" in new_entry and "varlist" in new_entry:
+                raise InconsistentKeys(new_entry['file_name'])
+
+            if "varlist" in new_entry:
+                verboseprint("This file is using a varlist do define variables")
+                for field_entry in new_entry['varlist']:
+                    if not is_field_duplicate(entry['varlist'], field_entry, entry['file_name'], verboseprint):
+                        entry['varlist'].append(field_entry)
+            elif "modules" in new_entry:
+                verboseprint("This file is using modules to define variables")
+            else:
+                verboseprint("This file has no variables!")
+
             return True
     verboseprint(f"---> {new_entry['file_name']} is a new file. Adding it!")
     return False
@@ -227,12 +256,15 @@ def combine_yaml(files, verboseprint):
 
         if isinstance(my_table, str):
             raise Exception("ERROR: diagYaml contains incorrectly formatted key value pairs."
-                            " Make sure that entries are formatted as \"key: value\" and not \"key:value\" ")
+                            " Make sure that entries are formatted as \"key: value\" and not \"key:value\" ")  
 
+        verboseprint("Attempting to get the base_date")
         get_base_date(my_table, diag_table)
 
         diag_files = my_table['diag_files']
         for entry in diag_files:
+            if 'varlist' in entry:
+                entry['varlist'] = flatten_varlist(entry['varlist'])
             if not is_file_duplicate(diag_table['diag_files'], entry, verboseprint):
                 diag_table['diag_files'].append(entry)
 

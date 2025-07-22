@@ -101,3 +101,133 @@ TEST_COMBINE_DUPLICATE_DIAG_FILES = {
         }
     ],
 }
+
+TEST_DIAG_ANCHORS = {
+    'title': 'test_none',
+    'base_date': '2 1 1 0 0 0',
+    'diag_files': [
+        {
+            'file_name': 'atmos_daily',
+            'freq': '1 days',
+            'time_units': 'hours',
+            'unlimdim': 'time',
+            'module': 'ocn_mod',
+            'reduction': 'none',
+            'kind': 'r4',
+            'varlist': [
+                {'var_name': 'var0'},
+                {'var_name': 'var1'},
+                {'var_name': 'var2'},
+                {'var_name': 'var3'},
+                {'var_name': 'var4'},
+                {
+                    'var_name': 'var3',
+                    'output_name': 'var3_Z',
+                    'zbounds': '2. 3.'
+                },
+                {'var_name': 'var773'},
+                {'var_name': 'var609'}
+            ]
+        }
+    ]
+}
+
+DIAG_TABLE_YAML_ANCHORS = """\
+common_vars: &common_vars
+  - var_name: var0
+  - var_name: var1
+  - var_name: var2
+  - var_name: var3
+  - var_name: var4
+  - var_name: var3
+    output_name: var3_Z
+    zbounds: "2. 3."
+
+title: test_none
+base_date: "2 1 1 0 0 0"
+diag_files:
+  - file_name: atmos_daily
+    freq: 1 days
+    time_units: hours
+    unlimdim: time
+    module: ocn_mod
+    reduction: none
+    kind: r4
+    varlist:
+      - *common_vars
+      - var_name: var773
+"""
+
+DIAG_TABLE_YAML_ANCHORS2 = """\
+common_vars: &common_vars
+  - var_name: var0
+  - var_name: var1
+  - var_name: var2
+  - var_name: var3
+  - var_name: var4
+  - var_name: var3
+    output_name: var3_Z
+    zbounds: "2. 3."
+
+title: test_none
+base_date: "2 1 1 0 0 0"
+diag_files:
+  - file_name: atmos_daily
+    freq: 1 days
+    time_units: hours
+    unlimdim: time
+    module: ocn_mod
+    reduction: none
+    kind: r4
+    varlist:
+      - *common_vars
+      - var_name: var609
+"""
+
+TEST_SIMPLE_YAML_DEFS = {
+    'title': 'Very_Important_Title',
+    'base_date': '1 1 1 0 0 0',
+    'diag_files': [
+        {
+            'file_name': 'atmos_daily',
+            'freq': '1 days',
+            'time_units': 'time_units',
+            'unlimdim': 'unlimid',
+            'module': 'ocn_mod',
+            'reduction': 'average',
+            'kind': 'r4',
+            'varlist': [
+                {'var_name': 'tdata'},
+                {'var_name': 'vdata'},
+                {
+                    'var_name': 'tdata',
+                    'reduction': 'min',
+                    'output_name': 'tdata_min'
+                }
+            ]
+        }
+    ]
+}
+
+DIAG_TABLE_YAML_SIMPLE = """\
+diag_files:
+  - file_name: atmos_4xdaily
+    freq: 6 hours
+    time_units: hours
+    unlimdim: time
+    module: ocn_mod
+    reduction: none
+    kind: r4
+    varlist:
+    - var_name: var773
+
+  - file_name: atmos_daily
+    freq: 1 days
+    time_units: hours
+    unlimdim: time
+    module: ocn_mod
+    reduction: none
+    kind: r4
+    varlist:
+      - var_name: var609
+"""
