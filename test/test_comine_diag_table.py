@@ -31,17 +31,25 @@ from fms_yaml_tools.diag_table.combine_diag_table_yamls import (
     DuplicateFieldError,
     DuplicateKeyError,
     DuplicateOptionalKeyError,
+    InconsistentKeys,
     combine_yaml,
     combine_diag_table_yaml,
 )
 from fms_yaml_tools.diag_table.test_constants import (
-    DUPLICATE_DIAG_FILE_SAME_YAML,
-    TEST_COMBINE_TWO_SIMPLE_YAML_FILES,
-    TEST_COMBINE_DUPLICATE_DIAG_FILES,
+    COMBINE_DUPLICATE_DIAG_FILE_SAME_YAML,
+    COMBINE_TWO_SIMPLE_YAML_FILES,
+    COMBINE_DUPLICATE_DIAG_FILES,
+    COMBINE_WITH_ANCHORS,
+    COMBINED_WITH_MODULES_BLOCK,
+    COMBINE_WITH_SIMPLIFIED_YAML,
+    COMBINE_WITH_VARLIST_MODULES,
+    DIAG_TABLES_WITH_MODULE_BLOCKS_ANCHORS,
     DIAG_TABLE_YAML_ANCHORS,
     DIAG_TABLE_YAML_ANCHORS2,
-    TEST_DIAG_ANCHORS,
-    TEST_SIMPLE_YAML_DEFS,
+    DIAG_TABLE_YAML_INCONSISTENT_KEYS,
+    DIAG_TABLE_YAML_WITH_MODULE_BLOCK,
+    DIAG_TABLE_YAML_WITH_MODULE_BLOCK2,
+    DIAG_TABLES_WITH_VARLIST_MODULES,
 )
 
 
@@ -71,7 +79,7 @@ class TestDataTable(unittest.TestCase):
         self.assertIn("file1.yaml", str(context.exception))
 
     # Test with a yaml that is not propertly formatted
-    def test_bad_yaml(self):
+    def test_bad_formatted_yaml(self):
         with tempfile.TemporaryDirectory() as testdir:
             with test_directory(testdir):
                 with open("file1.yaml", "w") as file:
@@ -85,7 +93,7 @@ class TestDataTable(unittest.TestCase):
                 )
 
     # Test with a yaml that is not propertly formatted
-    def test_very_bad_yaml(self):
+    def test_bad_formatted_yaml2(self):
         bad_yaml = 'title: "this is not going to work'
 
         with tempfile.NamedTemporaryFile("w+", suffix=".yaml", delete=False) as tmp:
@@ -100,7 +108,7 @@ class TestDataTable(unittest.TestCase):
             )
 
     # Test with a yaml that does not include the title and the base_date
-    def test_no_title_basedate_crash(self):
+    def test_no_title_basedate(self):
         out_dic = DiagYamlFiles()
         diag_yaml = DiagYamlFile()
         diag_files = [DiagFile("atmos_daily", "1 days", "time_units", "unlimid")]
@@ -159,7 +167,7 @@ class TestDataTable(unittest.TestCase):
             out_dic.test_combine()
 
     # Test two yamls that have the same exact diag_file
-    def test_duplicate_diag_file_same_yaml(self):
+    def test_combine_duplicate_diag_file_same_yaml(self):
         out_dic = DiagYamlFiles()
 
         diag_yaml = DiagYamlFile()
@@ -173,7 +181,7 @@ class TestDataTable(unittest.TestCase):
         out_dic.append_yaml([diag_yaml])
 
         combined = out_dic.test_combine()
-        expected = DUPLICATE_DIAG_FILE_SAME_YAML
+        expected = COMBINE_DUPLICATE_DIAG_FILE_SAME_YAML
         self.assertDictEqual(
             combined,
             expected,
@@ -200,7 +208,7 @@ class TestDataTable(unittest.TestCase):
         out_dic.append_yaml([diag_yaml])
 
         combined = out_dic.test_combine()
-        expected = TEST_COMBINE_TWO_SIMPLE_YAML_FILES
+        expected = COMBINE_TWO_SIMPLE_YAML_FILES
         self.assertDictEqual(
             combined,
             expected,
@@ -232,7 +240,7 @@ class TestDataTable(unittest.TestCase):
         out_dic.append_yaml([diag_yaml])
 
         combined = out_dic.test_combine()
-        expected = TEST_COMBINE_DUPLICATE_DIAG_FILES
+        expected = COMBINE_DUPLICATE_DIAG_FILES
         self.assertDictEqual(
             combined,
             expected,
@@ -240,7 +248,7 @@ class TestDataTable(unittest.TestCase):
         )
 
     # Test two yamls with the same diag_file, they each have same diag_field, but with
-    # a different module (should still)
+    # a different module (should still work)
     def test_combine_duplicate_diag_fields_different_module(self):
         out_dic = create_base_input_yaml(diff_mod="ocn_z_mod")
         combined = out_dic.test_combine()
@@ -304,7 +312,7 @@ class TestDataTable(unittest.TestCase):
             out_dic.test_combine()
 
     # Test with a yaml that is using anchors
-    def test_combine_yaml_with_anchors(self):
+    def test_combine_with_anchors(self):
         with tempfile.TemporaryDirectory() as testdir:
             with test_directory(testdir):
                 # Create a yaml file with anchors
@@ -316,16 +324,15 @@ class TestDataTable(unittest.TestCase):
 
                 input_yamls_names = ["anchor_file.yaml", "anchor_file2.yaml"]
                 combined = combine_yaml(input_yamls_names, print)
-                print(combined)
-                expected = TEST_DIAG_ANCHORS
+                expected = COMBINE_WITH_ANCHORS
                 self.assertDictEqual(
                     combined,
                     expected,
-                    msg="Combined YAML output does not match expected structure."
+                    msg="Combined YAML output does not match expected structure.",
                 )
 
     # Test with yamls that define the reduction, kind and module at the file level
-    def test_simple_yaml_defs(self):
+    def test_combine_with_simplified_yaml(self):
         out_dic = DiagYamlFiles()
 
         diag_yaml = DiagYamlFile()
@@ -351,8 +358,7 @@ class TestDataTable(unittest.TestCase):
         out_dic.append_yaml([diag_yaml])
 
         combined = out_dic.test_combine()
-        print(combined)
-        expected = TEST_SIMPLE_YAML_DEFS
+        expected = COMBINE_WITH_SIMPLIFIED_YAML
         self.assertDictEqual(
             combined,
             expected,
@@ -360,7 +366,7 @@ class TestDataTable(unittest.TestCase):
         )
 
     # Test with yamls that define the reduction, kind and module at the file level
-    def test_simple_yaml_defs_crash(self):
+    def test_combine_with_simplified_yaml_crash(self):
         out_dic = DiagYamlFiles()
 
         diag_yaml = DiagYamlFile()
@@ -378,7 +384,7 @@ class TestDataTable(unittest.TestCase):
                              module="ocn_mod", reduction="average", kind="r4")
 
         # Crash because tdata is defined twice with a different reduction
-        # And not output_name 
+        # And not output_name
         diag_fields = [
             DiagField("vdata", None, None, None),
             DiagField("tdata", None, "min", None)
@@ -389,6 +395,65 @@ class TestDataTable(unittest.TestCase):
 
         with self.assertRaises(DuplicateFieldError):
             out_dic.test_combine()
+
+    # Yaml has both varlist and modules defined in the same file
+    def test_combined_with_inconsistent_keys(self):
+        with tempfile.TemporaryDirectory() as testdir:
+            with test_directory(testdir):
+                # Create a yaml file with anchors
+                with open("one.yaml", "w") as f:
+                    f.write(DIAG_TABLE_YAML_INCONSISTENT_KEYS)
+                with self.assertRaises(InconsistentKeys):
+                    combine_yaml(["one.yaml"], print)
+
+    # Combining two files that both use modules
+    def test_combined_with_modules_blocks(self):
+        with tempfile.TemporaryDirectory() as testdir:
+            with test_directory(testdir):
+                with open("one.yaml", "w") as f:
+                    f.write(DIAG_TABLE_YAML_WITH_MODULE_BLOCK)
+                with open("two.yaml", "w") as f:
+                    f.write(DIAG_TABLE_YAML_WITH_MODULE_BLOCK2)
+                combined = combine_yaml(["one.yaml", "two.yaml"], print)
+                expected = COMBINED_WITH_MODULES_BLOCK
+                self.assertDictEqual(
+                    combined,
+                    expected,
+                    msg="Combined YAML output does not match expected structure.",
+                )
+
+    # Combining two different files, one with a varlist and another one with modules
+    def test_combine_with_varlist_modules(self):
+        with tempfile.TemporaryDirectory() as testdir:
+            with test_directory(testdir):
+                with open("one.yaml", "w") as f:
+                    f.write(DIAG_TABLE_YAML_WITH_MODULE_BLOCK)
+                with open("two.yaml", "w") as f:
+                    f.write(DIAG_TABLES_WITH_VARLIST_MODULES)
+                combined = combine_yaml(["one.yaml", "two.yaml"], print)
+                expected = COMBINE_WITH_VARLIST_MODULES
+                self.assertDictEqual(
+                    combined,
+                    expected,
+                    msg="Combined YAML output does not match expected structure.",
+                )
+
+    # Combining file that uses anchors and modules
+    def test_combine_with_module_blocks_anchors(self):
+        with tempfile.TemporaryDirectory() as testdir:
+            with test_directory(testdir):
+                with open("one.yaml", "w") as f:
+                    f.write(DIAG_TABLES_WITH_MODULE_BLOCKS_ANCHORS)
+                combined = combine_yaml(["one.yaml"], print)
+                print(combined)
+                expected = COMBINE_WITH_VARLIST_MODULES
+                expected['diag_files'].pop(1)
+                print(expected)
+                self.assertDictEqual(
+                    combined,
+                    expected,
+                    msg="Combined YAML output does not match expected structure.",
+                )
 
     # Test the full combine cli
     def test_combine_yaml_cli(self):
@@ -508,7 +573,7 @@ class DiagYamlFile:
 
 
 class DiagFile:
-    def __init__(self, file_name, freq, time_units, unlimdim, 
+    def __init__(self, file_name, freq, time_units, unlimdim,
                  start_time=None, module=None, reduction=None, kind=None):
         self.varlist = []
 

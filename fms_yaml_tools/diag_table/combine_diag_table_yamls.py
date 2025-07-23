@@ -163,6 +163,7 @@ def is_field_duplicate(diag_table, new_entry, file_name, verboseprint):
     verboseprint(f"----> {var_name} is a new variable. Adding it")
     return False
 
+
 def flatten_varlist(varlist):
     """Flattens a varlist that may contain nested lists."""
     flattened = []
@@ -172,6 +173,26 @@ def flatten_varlist(varlist):
         else:
             flattened.append(item)
     return flattened
+
+
+def is_module_duplicate(diag_modules, module, file_name, verboseprint):
+    module_name = module['module']
+    verboseprint(f"---> Checking if {module_name} is duplicated")
+    for old_module in diag_modules:
+        if (old_module['module'] == module_name):
+            verboseprint(f"---> Found {module_name}. Checking if it has the same keys")
+
+            if old_module == module:
+                verboseprint(f"---> {module_name} is exactly the same as the previous one. Ignoring!")
+                return True
+            else:
+                verboseprint(f"---> {module_name} is not the same as the previous one. Checking for new variables!")
+                for field_entry in module['varlist']:
+                    if not is_field_duplicate(old_module['varlist'], field_entry, file_name, verboseprint):
+                        old_module['varlist'].append(field_entry)
+                        return True
+    return False
+
 
 def is_file_duplicate(diag_table, new_entry, verboseprint):
     # Check if a diag_table entry was already defined
@@ -207,9 +228,6 @@ def is_file_duplicate(diag_table, new_entry, verboseprint):
 
             # Since the file is the same, check if there are any new variables to add to the file:
             verboseprint(f"---> Looking for new variables for the file {new_entry['file_name']}")
-            if "modules" in new_entry and "varlist" in new_entry:
-                raise InconsistentKeys(new_entry['file_name'])
-
             if "varlist" in new_entry:
                 verboseprint("This file is using a varlist do define variables")
                 for field_entry in new_entry['varlist']:
@@ -217,8 +235,9 @@ def is_file_duplicate(diag_table, new_entry, verboseprint):
                         entry['varlist'].append(field_entry)
             elif "modules" in new_entry:
                 verboseprint("This file is using modules to define variables")
-            else:
-                verboseprint("This file has no variables!")
+                for module_entry in new_entry['modules']:
+                    if not is_module_duplicate(entry['modules'], module_entry, entry['file_name'], verboseprint):
+                        entry['modules'].append(module_entry)
 
             return True
     verboseprint(f"---> {new_entry['file_name']} is a new file. Adding it!")
@@ -230,6 +249,11 @@ def get_base_date(my_table, diag_table):
         diag_table['base_date'] = my_table['base_date']
     if 'title' in my_table:
         diag_table['title'] = my_table['title']
+
+
+def check_inconsistent_keys(entry):
+    if "modules" in entry and "varlist" in entry:
+        raise InconsistentKeys(entry['file_name'])
 
 
 def combine_yaml(files, verboseprint):
@@ -256,13 +280,14 @@ def combine_yaml(files, verboseprint):
 
         if isinstance(my_table, str):
             raise Exception("ERROR: diagYaml contains incorrectly formatted key value pairs."
-                            " Make sure that entries are formatted as \"key: value\" and not \"key:value\" ")  
+                            " Make sure that entries are formatted as \"key: value\" and not \"key:value\" ")
 
         verboseprint("Attempting to get the base_date")
         get_base_date(my_table, diag_table)
 
         diag_files = my_table['diag_files']
         for entry in diag_files:
+            check_inconsistent_keys(entry)
             if 'varlist' in entry:
                 entry['varlist'] = flatten_varlist(entry['varlist'])
             if not is_file_duplicate(diag_table['diag_files'], entry, verboseprint):

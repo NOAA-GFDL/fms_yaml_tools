@@ -20,7 +20,9 @@
 # ***********************************************************************
 
 # Constants for diag_table tests
-DUPLICATE_DIAG_FILE_SAME_YAML = {
+
+# Expected output for `test_duplicate_diag_file_same_yaml`
+COMBINE_DUPLICATE_DIAG_FILE_SAME_YAML = {
     "title": "Very_Important_Title",
     "base_date": "1 1 1 0 0 0",
     "diag_files": [
@@ -34,7 +36,8 @@ DUPLICATE_DIAG_FILE_SAME_YAML = {
     ],
 }
 
-TEST_COMBINE_TWO_SIMPLE_YAML_FILES = {
+# Expected output for `test_combine_duplicate_diag_files`
+COMBINE_TWO_SIMPLE_YAML_FILES = {
     "title": "Very_Important_Title",
     "base_date": "1 1 1 0 0 0",
     "diag_files": [
@@ -69,7 +72,8 @@ TEST_COMBINE_TWO_SIMPLE_YAML_FILES = {
     ],
 }
 
-TEST_COMBINE_DUPLICATE_DIAG_FILES = {
+# Expected output for `test_combine_duplicate_diag_files`
+COMBINE_DUPLICATE_DIAG_FILES = {
     "title": "Very_Important_Title",
     "base_date": "1 1 1 0 0 0",
     "diag_files": [
@@ -102,7 +106,8 @@ TEST_COMBINE_DUPLICATE_DIAG_FILES = {
     ],
 }
 
-TEST_DIAG_ANCHORS = {
+# Expected output for `test_combine_with_anchors`
+COMBINE_WITH_ANCHORS = {
     'title': 'test_none',
     'base_date': '2 1 1 0 0 0',
     'diag_files': [
@@ -132,6 +137,7 @@ TEST_DIAG_ANCHORS = {
     ]
 }
 
+# Input yaml for `test_combine_with_anchors`
 DIAG_TABLE_YAML_ANCHORS = """\
 common_vars: &common_vars
   - var_name: var0
@@ -158,6 +164,7 @@ diag_files:
       - var_name: var773
 """
 
+# Input yaml for `test_combine_with_anchors`
 DIAG_TABLE_YAML_ANCHORS2 = """\
 common_vars: &common_vars
   - var_name: var0
@@ -184,7 +191,8 @@ diag_files:
       - var_name: var609
 """
 
-TEST_SIMPLE_YAML_DEFS = {
+# Expected output for `test_simple_yaml_defs`
+COMBINE_WITH_SIMPLIFIED_YAML = {
     'title': 'Very_Important_Title',
     'base_date': '1 1 1 0 0 0',
     'diag_files': [
@@ -209,18 +217,49 @@ TEST_SIMPLE_YAML_DEFS = {
     ]
 }
 
-DIAG_TABLE_YAML_SIMPLE = """\
-diag_files:
-  - file_name: atmos_4xdaily
-    freq: 6 hours
-    time_units: hours
-    unlimdim: time
-    module: ocn_mod
-    reduction: none
-    kind: r4
-    varlist:
-    - var_name: var773
+# Expected output for `test_combined_with_modules_blocks`
+COMBINED_WITH_MODULES_BLOCK = {
+    'title': 'test_none',
+    'base_date': '2 1 1 0 0 0',
+    'diag_files': [
+        {
+            'file_name': 'test_4xdaily',
+            'freq': '6 hours',
+            'time_units': 'hours',
+            'unlimdim': 'time',
+            'reduction': 'none',
+            'kind': 'r4',
+            'modules': [
+                {
+                    'module': 'radiation_mod',
+                    'varlist': [
+                        {'var_name': 'var0'},
+                        {'var_name': 'var1'}
+                    ]
+                },
+                {
+                    'module': 'some_other_mod',
+                    'varlist': [
+                        {'var_name': 'var3'}
+                    ]
+                },
+                {
+                    'module': 'happy_mod',
+                    'varlist': [
+                        {'var_name': 'var4'}
+                    ]
+                }
+            ]
+        }
+    ]
+}
 
+# Input yaml for `test_combined_with_inconsistent_keys`
+DIAG_TABLE_YAML_INCONSISTENT_KEYS = """
+title: test_invalid
+base_date: 2 1 1 0 0 0
+
+diag_files:
   - file_name: atmos_daily
     freq: 1 days
     time_units: hours
@@ -229,5 +268,137 @@ diag_files:
     reduction: none
     kind: r4
     varlist:
-      - var_name: var609
+      - var_name: temp
+      - var_name: salt
+    modules:
+      - module_name: ocn_mod
+        varlist:
+          - var_name: u
+          - var_name: v
+"""
+
+# Input yaml for `test_combined_with_modules_blocks`
+DIAG_TABLE_YAML_WITH_MODULE_BLOCK = """
+title: test_none
+base_date: 2 1 1 0 0 0
+diag_files:
+- file_name: test_4xdaily
+  freq: 6 hours
+  time_units: hours
+  unlimdim: time
+  reduction: none
+  kind: r4
+  modules:
+  - module: radiation_mod
+    varlist:
+    - var_name: var0
+  - module: some_other_mod
+    varlist:
+    - var_name: var3
+"""
+
+# Input yaml for `test_combined_with_modules_blocks`
+DIAG_TABLE_YAML_WITH_MODULE_BLOCK2 = """
+title: test_none
+base_date: 2 1 1 0 0 0
+diag_files:
+- file_name: test_4xdaily
+  freq: 6 hours
+  time_units: hours
+  unlimdim: time
+  reduction: none
+  kind: r4
+  modules:
+  - module: radiation_mod
+    varlist:
+    - var_name: var1
+  - module: happy_mod
+    varlist:
+    - var_name: var4
+"""
+
+# Input yaml for test_combine_with_varlist_modules
+DIAG_TABLES_WITH_VARLIST_MODULES = """
+title: test_none
+base_date: 2 1 1 0 0 0
+diag_files:
+- file_name: test_daily
+  freq: 1 days
+  time_units: hours
+  unlimdim: time
+  reduction: none
+  kind: r4
+  module: radiation_mod
+  varlist:
+  - var_name: var1
+  - var_name: var4
+"""
+
+# Expected output for `test_combine_with_varlist_modules`
+COMBINE_WITH_VARLIST_MODULES = {
+    'title': 'test_none',
+    'base_date': '2 1 1 0 0 0',
+    'diag_files': [
+        {
+            'file_name': 'test_4xdaily',
+            'freq': '6 hours',
+            'time_units': 'hours',
+            'unlimdim': 'time',
+            'reduction': 'none',
+            'kind': 'r4',
+            'modules': [
+                {
+                    'module': 'radiation_mod',
+                    'varlist': [
+                        {'var_name': 'var0'}
+                    ]
+                },
+                {
+                    'module': 'some_other_mod',
+                    'varlist': [
+                        {'var_name': 'var3'}
+                    ]
+                }
+            ]
+        },
+        {
+            'file_name': 'test_daily',
+            'freq': '1 days',
+            'time_units': 'hours',
+            'unlimdim': 'time',
+            'reduction': 'none',
+            'kind': 'r4',
+            'module': 'radiation_mod',
+            'varlist': [
+                {'var_name': 'var1'},
+                {'var_name': 'var4'}
+            ]
+        }
+    ]
+}
+
+# Input for `test_combine_with_modules_block`
+DIAG_TABLES_WITH_MODULE_BLOCKS_ANCHORS = """
+radiation_mod: &radiation_mod
+  module: radiation_mod
+  varlist:
+    - var_name: var0
+
+some_other_mod: &some_other_mod
+  module: some_other_mod
+  varlist:
+    - var_name: var3
+
+title: test_none
+base_date: 2 1 1 0 0 0
+diag_files:
+  - file_name: test_4xdaily
+    freq: 6 hours
+    time_units: hours
+    unlimdim: time
+    reduction: none
+    kind: r4
+    modules:
+      - *radiation_mod
+      - *some_other_mod
 """
