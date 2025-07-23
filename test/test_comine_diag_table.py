@@ -20,6 +20,7 @@
 # ***********************************************************************
 
 import unittest
+import copy
 import tempfile
 import os
 import pathlib
@@ -49,7 +50,7 @@ from fms_yaml_tools.diag_table.test_constants import (
     DIAG_TABLE_YAML_INCONSISTENT_KEYS,
     DIAG_TABLE_YAML_WITH_MODULE_BLOCK,
     DIAG_TABLE_YAML_WITH_MODULE_BLOCK2,
-    DIAG_TABLES_WITH_VARLIST_MODULES,
+    DIAG_TABLE_YAML_WITH_VARLIST,
 )
 
 
@@ -429,7 +430,7 @@ class TestDataTable(unittest.TestCase):
                 with open("one.yaml", "w") as f:
                     f.write(DIAG_TABLE_YAML_WITH_MODULE_BLOCK)
                 with open("two.yaml", "w") as f:
-                    f.write(DIAG_TABLES_WITH_VARLIST_MODULES)
+                    f.write(DIAG_TABLE_YAML_WITH_VARLIST)
                 combined = combine_yaml(["one.yaml", "two.yaml"], print)
                 expected = COMBINE_WITH_VARLIST_MODULES
                 self.assertDictEqual(
@@ -445,10 +446,8 @@ class TestDataTable(unittest.TestCase):
                 with open("one.yaml", "w") as f:
                     f.write(DIAG_TABLES_WITH_MODULE_BLOCKS_ANCHORS)
                 combined = combine_yaml(["one.yaml"], print)
-                print(combined)
-                expected = COMBINE_WITH_VARLIST_MODULES
+                expected = copy.deepcopy(COMBINE_WITH_VARLIST_MODULES)
                 expected['diag_files'].pop(1)
-                print(expected)
                 self.assertDictEqual(
                     combined,
                     expected,

@@ -318,7 +318,7 @@ diag_files:
 """
 
 # Input yaml for test_combine_with_varlist_modules
-DIAG_TABLES_WITH_VARLIST_MODULES = """
+DIAG_TABLE_YAML_WITH_VARLIST = """
 title: test_none
 base_date: 2 1 1 0 0 0
 diag_files:
@@ -349,15 +349,11 @@ COMBINE_WITH_VARLIST_MODULES = {
             'modules': [
                 {
                     'module': 'radiation_mod',
-                    'varlist': [
-                        {'var_name': 'var0'}
-                    ]
+                    'varlist': [{'var_name': 'var0'}]
                 },
                 {
                     'module': 'some_other_mod',
-                    'varlist': [
-                        {'var_name': 'var3'}
-                    ]
+                    'varlist': [{'var_name': 'var3'}]
                 }
             ]
         },
