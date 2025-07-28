@@ -72,7 +72,7 @@ def test_directory(tmp_path: pathlib.Path):
         os.chdir(origin)
 
 
-class TestDataTable(unittest.TestCase):
+class TestCombineDiagTable(unittest.TestCase):
     # Test with a yaml that does not exist
     def test_missing_yaml(self):
         with self.assertRaises(FileNotFoundError) as context:
@@ -112,7 +112,7 @@ class TestDataTable(unittest.TestCase):
     def test_no_title_basedate(self):
         out_dic = DiagYamlFiles()
         diag_yaml = DiagYamlFile()
-        diag_files = [DiagFile("atmos_daily", "1 days", "time_units", "unlimid")]
+        diag_files = [DiagFile("atmos_daily", "1 days", "days", "days")]
         diag_yaml.append_to_diag_files(diag_files)
         out_dic.append_yaml([diag_yaml])
         with self.assertRaises(ValueError) as context:
@@ -126,12 +126,12 @@ class TestDataTable(unittest.TestCase):
 
         diag_yaml = DiagYamlFile()
         diag_yaml.set_title_basedate()
-        diag_file = DiagFile("atmos_daily", "1 days", "time_units", "unlimid")
+        diag_file = DiagFile("atmos_daily", "1 days", "days", "days")
         diag_yaml.append_to_diag_files([diag_file])
         out_dic.append_yaml([diag_yaml])
 
         diag_yaml = DiagYamlFile()
-        diag_file = DiagFile("atmos_daily", "666 days", "time_units", "unlimid")
+        diag_file = DiagFile("atmos_daily", "666 days", "days", "days")
         diag_yaml.append_to_diag_files([diag_file])
         out_dic.append_yaml([diag_yaml])
 
@@ -145,14 +145,14 @@ class TestDataTable(unittest.TestCase):
         diag_yaml = DiagYamlFile()
         diag_yaml.set_title_basedate()
         diag_file = DiagFile(
-            "atmos_daily", "1 days", "time_units", "unlimid", "2 1 1 0 0 0"
+            "atmos_daily", "1 days", "days", "days", "2 1 1 0 0 0"
         )
         diag_yaml.append_to_diag_files([diag_file])
         out_dic.append_yaml([diag_yaml])
 
         diag_yaml = DiagYamlFile()
         diag_file = DiagFile(
-            "atmos_daily", "1 days", "time_units", "unlimid", "2 2 1 0 0 0"
+            "atmos_daily", "1 days", "days", "days", "2 2 1 0 0 0"
         )
         diag_yaml.append_to_diag_files([diag_file])
         out_dic.append_yaml([diag_yaml])
@@ -175,14 +175,16 @@ class TestDataTable(unittest.TestCase):
         diag_yaml.set_title_basedate()
 
         diag_files = [
-            DiagFile("atmos_daily", "1 days", "time_units", "unlimid"),
-            DiagFile("atmos_daily", "1 days", "time_units", "unlimid"),
+            DiagFile("atmos_daily", "1 days", "days", "days"),
+            DiagFile("atmos_daily", "1 days", "days", "days"),
         ]
         diag_yaml.append_to_diag_files(diag_files)
         out_dic.append_yaml([diag_yaml])
 
         combined = out_dic.test_combine()
         expected = COMBINE_DUPLICATE_DIAG_FILE_SAME_YAML
+        print(combined)
+        print(expected)
         self.assertDictEqual(
             combined,
             expected,
@@ -195,14 +197,14 @@ class TestDataTable(unittest.TestCase):
 
         diag_yaml = DiagYamlFile()
         diag_yaml.set_title_basedate()
-        diag_file = DiagFile("atmos_daily", "1 days", "time_units", "unlimid")
+        diag_file = DiagFile("atmos_daily", "1 days", "days", "days")
         diag_fields = [DiagField("tdata", "ocn_mod", "average", "r4")]
         diag_file.append_to_varlist(diag_fields)
         diag_yaml.append_to_diag_files([diag_file])
         out_dic.append_yaml([diag_yaml])
 
         diag_yaml = DiagYamlFile()
-        diag_file = DiagFile("atmos_8xdaily", "8 hours", "time_units", "unlimid")
+        diag_file = DiagFile("atmos_8xdaily", "8 hours", "days", "days")
         diag_fields = [DiagField("tdata", "ocn_mod", "average", "r4")]
         diag_file.append_to_varlist(diag_fields)
         diag_yaml.append_to_diag_files([diag_file])
@@ -223,14 +225,14 @@ class TestDataTable(unittest.TestCase):
         diag_yaml = DiagYamlFile()
         diag_yaml.set_title_basedate()
 
-        diag_file = DiagFile("atmos_daily", "1 days", "time_units", "unlimid")
+        diag_file = DiagFile("atmos_daily", "1 days", "days", "days")
         diag_fields = [DiagField("tdata", "ocn_mod", "average", "r4")]
         diag_file.append_to_varlist(diag_fields)
         diag_yaml.append_to_diag_files([diag_file])
         out_dic.append_yaml([diag_yaml])
 
         diag_yaml = DiagYamlFile()
-        diag_file = DiagFile("atmos_daily", "1 days", "time_units", "unlimid")
+        diag_file = DiagFile("atmos_daily", "1 days", "days", "days")
         diag_fields = [
             DiagField("tdata", "ocn_mod", "average", "r4"),
             DiagField("pdata", "ocn_mod", "average", "r4"),
@@ -338,7 +340,7 @@ class TestDataTable(unittest.TestCase):
 
         diag_yaml = DiagYamlFile()
         diag_yaml.set_title_basedate()
-        diag_file = DiagFile("atmos_daily", "1 days", "time_units", "unlimid",
+        diag_file = DiagFile("atmos_daily", "1 days", "days", "days",
                              module="ocn_mod", reduction="average", kind="r4")
         diag_fields = [DiagField("tdata", None, None, None)]
         diag_file.append_to_varlist(diag_fields)
@@ -347,7 +349,7 @@ class TestDataTable(unittest.TestCase):
 
         diag_yaml = DiagYamlFile()
         diag_yaml.set_title_basedate()
-        diag_file = DiagFile("atmos_daily", "1 days", "time_units", "unlimid",
+        diag_file = DiagFile("atmos_daily", "1 days", "days", "days",
                              module="ocn_mod", reduction="average", kind="r4")
         diag_fields = [
             DiagField("vdata", None, None, None),
@@ -372,7 +374,7 @@ class TestDataTable(unittest.TestCase):
 
         diag_yaml = DiagYamlFile()
         diag_yaml.set_title_basedate()
-        diag_file = DiagFile("atmos_daily", "1 days", "time_units", "unlimid",
+        diag_file = DiagFile("atmos_daily", "1 days", "days", "days",
                              module="ocn_mod", reduction="average", kind="r4")
         diag_fields = [DiagField("tdata", None, None, None)]
         diag_file.append_to_varlist(diag_fields)
@@ -381,7 +383,7 @@ class TestDataTable(unittest.TestCase):
 
         diag_yaml = DiagYamlFile()
         diag_yaml.set_title_basedate()
-        diag_file = DiagFile("atmos_daily", "1 days", "time_units", "unlimid",
+        diag_file = DiagFile("atmos_daily", "1 days", "days", "days",
                              module="ocn_mod", reduction="average", kind="r4")
 
         # Crash because tdata is defined twice with a different reduction
@@ -662,8 +664,8 @@ def get_base_output_dic(mod2="ocn_mod", output_name1=None, output_name2=None):
             {
                 "file_name": "atmos_daily",
                 "freq": "1 days",
-                "time_units": "time_units",
-                "unlimdim": "unlimid",
+                "time_units": "days",
+                "unlimdim": "days",
                 "varlist": [var1, var2],
             }
         ],
@@ -678,14 +680,14 @@ def create_base_input_yaml(output_name1=None, output_name2=None, diff_mod="ocn_m
     diag_yaml = DiagYamlFile()
     diag_yaml.set_title_basedate()
 
-    diag_file = DiagFile("atmos_daily", "1 days", "time_units", "unlimid")
+    diag_file = DiagFile("atmos_daily", "1 days", "days", "days")
     diag_fields = [DiagField("tdata", "ocn_mod", "average", "r4", output_name1)]
     diag_file.append_to_varlist(diag_fields)
     diag_yaml.append_to_diag_files([diag_file])
     out_dic.append_yaml([diag_yaml])
 
     diag_yaml = DiagYamlFile()
-    diag_file = DiagFile("atmos_daily", "1 days", "time_units", "unlimid")
+    diag_file = DiagFile("atmos_daily", "1 days", "days", "days")
     diag_fields = [DiagField("tdata", diff_mod, "min", "r4", output_name2)]
     diag_file.append_to_varlist(diag_fields)
     diag_yaml.append_to_diag_files([diag_file])

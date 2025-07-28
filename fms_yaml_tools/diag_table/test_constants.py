@@ -29,8 +29,8 @@ COMBINE_DUPLICATE_DIAG_FILE_SAME_YAML = {
         {
             "file_name": "atmos_daily",
             "freq": "1 days",
-            "time_units": "time_units",
-            "unlimdim": "unlimid",
+            "time_units": "days",
+            "unlimdim": "days",
             "varlist": [],
         }
     ],
@@ -44,8 +44,8 @@ COMBINE_TWO_SIMPLE_YAML_FILES = {
         {
             "file_name": "atmos_daily",
             "freq": "1 days",
-            "time_units": "time_units",
-            "unlimdim": "unlimid",
+            "time_units": "days",
+            "unlimdim": "days",
             "varlist": [
                 {
                     "var_name": "tdata",
@@ -58,8 +58,8 @@ COMBINE_TWO_SIMPLE_YAML_FILES = {
         {
             "file_name": "atmos_8xdaily",
             "freq": "8 hours",
-            "time_units": "time_units",
-            "unlimdim": "unlimid",
+            "time_units": "days",
+            "unlimdim": "days",
             "varlist": [
                 {
                     "var_name": "tdata",
@@ -80,8 +80,8 @@ COMBINE_DUPLICATE_DIAG_FILES = {
         {
             "file_name": "atmos_daily",
             "freq": "1 days",
-            "time_units": "time_units",
-            "unlimdim": "unlimid",
+            "time_units": "days",
+            "unlimdim": "days",
             "varlist": [
                 {
                     "kind": "r4",
@@ -199,8 +199,8 @@ COMBINE_WITH_SIMPLIFIED_YAML = {
         {
             'file_name': 'atmos_daily',
             'freq': '1 days',
-            'time_units': 'time_units',
-            'unlimdim': 'unlimid',
+            'time_units': 'days',
+            'unlimdim': 'days',
             'module': 'ocn_mod',
             'reduction': 'average',
             'kind': 'r4',
