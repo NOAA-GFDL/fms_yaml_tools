@@ -90,6 +90,7 @@ class ValidateDiagYaml(unittest.TestCase):
                     msg=f"CLI failed:\n{result.output}"
                 )
     # These are all testing the valid output from test_combine_diag_table
+
     def test_valid_diag_yaml_two_simple_yaml_files(self):
         self._run_yaml_dict_test(COMBINE_TWO_SIMPLE_YAML_FILES)
 
@@ -111,4 +112,4 @@ class ValidateDiagYaml(unittest.TestCase):
     def test_valid_diag_yaml_with_anchors_raw(self):
         self._run_yaml_dict_test(DIAG_TABLES_WITH_MODULE_BLOCKS_ANCHORS)
 
-    #TODO Negative tests
+    # TODO Negative tests
