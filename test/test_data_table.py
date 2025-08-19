@@ -11,11 +11,11 @@ EXAMPLE_DIR = os.path.abspath(
 
 
 @contextmanager
-def test_directory(path: pathlib.Path):
+def test_directory(tmp_path: pathlib.Path):
     """Set the cwd to the path
 
     Args:
-        path (Path): The path to use
+        tmp_path (Path): The path to use
 
     Yields:
         None
@@ -23,7 +23,7 @@ def test_directory(path: pathlib.Path):
 
     origin = pathlib.Path().absolute()
     try:
-        os.chdir(path)
+        os.chdir(tmp_path)
         yield
     finally:
         os.chdir(origin)
