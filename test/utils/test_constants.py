@@ -19,7 +19,7 @@
 # * License along with FMS.  If not, see <http://www.gnu.org/licenses/>.
 # ***********************************************************************
 
-# Constants for diag_table tests
+# Constants to use for tests
 
 # Expected output for `test_duplicate_diag_file_same_yaml`
 COMBINE_DUPLICATE_DIAG_FILE_SAME_YAML = {

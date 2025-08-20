@@ -29,7 +29,7 @@ from click.testing import CliRunner
 from fms_yaml_tools.diag_table.is_valid_diag_table_yaml import (
    validate_diag_yaml,
 )
-from fms_yaml_tools.diag_table.test_constants import (
+from utils.test_constants import (
     COMBINE_TWO_SIMPLE_YAML_FILES,
     COMBINE_DUPLICATE_DIAG_FILES,
     COMBINE_WITH_ANCHORS,
