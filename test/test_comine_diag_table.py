@@ -37,7 +37,7 @@ from fms_yaml_tools.diag_table.combine_diag_table_yamls import (
     combine_diag_table_yaml,
 )
 
-from utils.test_constants import(
+from utils.test_constants import (
     COMBINE_DUPLICATE_DIAG_FILE_SAME_YAML,
     COMBINE_TWO_SIMPLE_YAML_FILES,
     COMBINE_DUPLICATE_DIAG_FILES,
@@ -52,6 +52,11 @@ from utils.test_constants import(
     DIAG_TABLE_YAML_WITH_MODULE_BLOCK,
     DIAG_TABLE_YAML_WITH_MODULE_BLOCK2,
     DIAG_TABLE_YAML_WITH_VARLIST,
+)
+from utils.test_classes import (
+    DiagField,
+    DiagFile,
+    DiagYamlFile
 )
 
 
@@ -548,67 +553,6 @@ class DiagYamlFiles:
                 combined = combine_yaml(yaml_file_names, print)
 
         return combined
-
-
-class DiagYamlFile:
-    def __init__(self):
-        self.diag_files = []
-
-    def set_title_basedate(self):
-        self.title = "Very_Important_Title"
-        self.base_date = "1 1 1 0 0 0"
-
-    def append_to_diag_files(self, diag_files):
-        for diag_file in diag_files:
-            self.diag_files.append(diag_file)
-
-    def to_dict(self):
-        # Return a plain dict with all the relevant data, recursively converting nested objects if needed
-        out = {}
-        if hasattr(self, "title") and self.title:
-            out["title"] = self.title
-        if hasattr(self, "base_date") and self.base_date:
-            out["base_date"] = self.base_date
-
-        out["diag_files"] = [df.to_dict() for df in self.diag_files]
-        return out
-
-
-class DiagFile:
-    def __init__(self, file_name, freq, time_units, unlimdim,
-                 start_time=None, module=None, reduction=None, kind=None):
-        self.varlist = []
-
-        self.file_name = file_name
-        self.freq = freq
-        self.time_units = time_units
-        self.unlimdim = unlimdim
-        self.start_time = start_time
-        self.module = module
-        self.reduction = reduction
-        self.kind = kind
-
-    def append_to_varlist(self, vars):
-        self.varlist.extend(vars)
-
-    def to_dict(self):
-        data = {
-            k: v for k, v in self.__dict__.items() if v is not None and k != "varlist"
-        }
-        data["varlist"] = [var.to_dict() for var in self.varlist]
-        return data
-
-
-class DiagField:
-    def __init__(self, var_name, module, reduction, kind, output_name=None):
-        self.var_name = var_name
-        self.module = module
-        self.reduction = reduction
-        self.kind = kind
-        self.output_name = output_name
-
-    def to_dict(self):
-        return {k: v for k, v in self.__dict__.items() if v is not None}
 
 
 def run_full_combine_cli_test(output_yaml_name=None, use_force=False):
