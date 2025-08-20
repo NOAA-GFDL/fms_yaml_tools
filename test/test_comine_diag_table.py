@@ -58,6 +58,7 @@ from utils.test_classes import (
     DiagYamlFile
 )
 
+
 @contextmanager
 def test_directory(tmp_path: pathlib.Path):
     """Set the cwd to the path
