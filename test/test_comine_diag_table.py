@@ -36,7 +36,7 @@ from fms_yaml_tools.diag_table.combine_diag_table_yamls import (
     combine_yaml,
     combine_diag_table_yaml,
 )
-from fms_yaml_tools.diag_table.test_constants import (
+from utils.test_constants import (
     COMBINE_DUPLICATE_DIAG_FILE_SAME_YAML,
     COMBINE_TWO_SIMPLE_YAML_FILES,
     COMBINE_DUPLICATE_DIAG_FILES,
