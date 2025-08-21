@@ -5,6 +5,7 @@ import copy
 from .. import __version__
 from collections import Counter
 
+
 @click.command()
 @click.argument('input_file', type=click.File('r'))
 @click.option('--output-yaml',  type=click.STRING, show_default=True, default="diag_table.yaml",
@@ -167,12 +168,12 @@ def simplify_diag_file(diag_file):
     simple_diag_file['reduction'] = reduction
 
     if len(modules) == 1:
-        logging.debug(f"There is only 1 unique module, so not grouping the variables by module")
+        logging.debug("There is only 1 unique module, so not grouping the variables by module")
         simple_diag_file['module'] = modules[0]
         for diag_field in simple_diag_file['varlist']:
-          remove_duplicates(diag_field, kind, reduction, modules[0])
+            remove_duplicates(diag_field, kind, reduction, modules[0])
     else:
-        logging.debug(f"There are multiple unique modules, so grouping the variables by module")
+        logging.debug("There are multiple unique modules, so grouping the variables by module")
         mods = sort_by_module(simple_diag_file, kind, reduction, modules)
         simple_diag_file.pop('varlist')
         simple_diag_file['modules'] = mods

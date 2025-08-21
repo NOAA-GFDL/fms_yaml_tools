@@ -21,6 +21,7 @@ from utils.test_constants import (
     TEST_SIMPLIFY_DIAG_TABLE_MULTIPLE_MODS
 )
 
+
 @contextmanager
 def create_directory(tmp_path: pathlib.Path):
     """Set the cwd to the path
