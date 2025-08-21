@@ -398,3 +398,57 @@ diag_files:
       - *radiation_mod
       - *some_other_mod
 """
+
+TEST_SIMPLIFY_DIAG_TABLE_1MOD = {
+    'title': 'Very_Important_Title',
+    'base_date': '1 1 1 0 0 0',
+    'diag_files': [
+        {
+            'file_name': 'atmos_daily',
+            'freq': '1 days',
+            'time_units': 'days',
+            'unlimdim': 'days',
+            'varlist': [
+                {'var_name': 'tdata'},
+                {'var_name': 'pdata'},
+                {'var_name': 'udata'}
+            ],
+            'kind': 'r4',
+            'reduction': 'average',
+            'module': 'ocn_mod'
+        }
+    ]
+}
+
+TEST_SIMPLIFY_DIAG_TABLE_MULTIPLE_MODS = {
+    'title': 'Very_Important_Title',
+    'base_date': '1 1 1 0 0 0',
+    'diag_files': [
+        {
+            'file_name': 'atmos_daily',
+            'freq': '1 days',
+            'time_units': 'days',
+            'unlimdim': 'days',
+            'kind': 'r4',
+            'reduction': 'average',
+            'modules': [
+                {
+                    'module': 'ocn_mod',
+                    'varlist': [
+                        {'var_name': 'tdata'},
+                        {'var_name': 'pdata'},
+                        {'var_name': 'udata'}
+                    ]
+                },
+                {
+                    'module': 'ocn_z_mod',
+                    'varlist': [
+                        {'var_name': 'tdata'},
+                        {'var_name': 'pdata'},
+                        {'var_name': 'udata'}
+                    ]
+                }
+            ]
+        }
+    ]
+}

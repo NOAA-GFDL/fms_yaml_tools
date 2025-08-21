@@ -35,8 +35,12 @@ class DiagField:
 
 class DiagFile:
     def __init__(self, file_name, freq, time_units, unlimdim,
-                 start_time=None, module=None, reduction=None, kind=None):
-        self.varlist = []
+                 start_time=None, module=None, reduction=None, kind=None,
+                 add_varlist = True):
+
+        self.varlist = None
+        if (add_varlist):
+            self.varlist = []
 
         self.file_name = file_name
         self.freq = freq
@@ -54,6 +58,10 @@ class DiagFile:
         data = {
             k: v for k, v in self.__dict__.items() if v is not None and k != "varlist"
         }
+
+        if self.varlist == None:
+            return data
+
         data["varlist"] = [var.to_dict() for var in self.varlist]
         return data
 

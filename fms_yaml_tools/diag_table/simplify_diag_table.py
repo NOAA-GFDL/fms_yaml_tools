@@ -28,6 +28,12 @@ def simplify_diag_table(input_file, debug, output_yaml, force_write):
     )
 
     logging.debug(f"Parsing the diag_table yaml: {input_file.name}")
+    my_table = parse_yaml(input_file)
+    simple_yaml = construct_yaml(my_table)
+    dump_output_yaml(simple_yaml, output_yaml, force_write)
+
+
+def parse_yaml(input_file):
     try:
         my_table = yaml.safe_load(input_file)
     except yaml.scanner.ScannerError as scanerr:
@@ -38,22 +44,24 @@ def simplify_diag_table(input_file, debug, output_yaml, force_write):
     if isinstance(my_table, str):
         raise Exception("ERROR: diagYaml contains incorrectly formatted key value pairs."
                         " Make sure that entries are formatted as \"key: value\" and not \"key:value\" ")
+    return my_table
 
-    diag_files = my_table.get('diag_files', [])
+
+def construct_yaml(diag_yaml_file):
+    diag_files = diag_yaml_file.get('diag_files', [])
 
     # Construct the new simple yaml:
     simple_yaml = {}
-    if "title" in my_table:
-        simple_yaml['title'] = my_table['title']
-    if "base_date" in my_table:
-        simple_yaml['base_date'] = my_table['base_date']
+    if "title" in diag_yaml_file:
+        simple_yaml['title'] = diag_yaml_file['title']
+    if "base_date" in diag_yaml_file:
+        simple_yaml['base_date'] = diag_yaml_file['base_date']
 
     simple_yaml['diag_files'] = []
     for diag_file in diag_files:
         simple_diag_file = simplify_diag_file(diag_file)
         simple_yaml['diag_files'].append(simple_diag_file)
-
-    dump_output_yaml(simple_yaml, output_yaml, force_write)
+    return simple_yaml
 
 
 def dump_output_yaml(yaml_out, yaml_name, force_write):
@@ -140,9 +148,12 @@ def simplify_diag_file(diag_file):
     # Determine the most common kind, reduction, and unique module names
     info = get_diag_file_info(diag_file)
 
+    # Construct the new diag_file object:
+    simple_diag_file = copy.deepcopy(diag_file)
+
     # If nothing was returned the diag file has no variables defined so skipping
     if info is None:
-        return
+        return simple_diag_file
 
     kind = info['kind']
     reduction = info['reduction']
@@ -151,9 +162,6 @@ def simplify_diag_file(diag_file):
     logging.debug(f"The most common kind is {kind}")
     logging.debug(f"The most common reduction is {reduction}")
     logging.debug(f"The modules in the file are {modules}")
-
-    # Construct the new diag_file object:
-    simple_diag_file = copy.deepcopy(diag_file)
 
     simple_diag_file['kind'] = kind
     simple_diag_file['reduction'] = reduction
