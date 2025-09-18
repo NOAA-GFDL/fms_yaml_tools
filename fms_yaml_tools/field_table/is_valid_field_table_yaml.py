@@ -20,7 +20,7 @@
 # ***********************************************************************
 
 import click
-import pkg_resources
+import importlib.resources
 from fms_yaml_tools.schema.validate_schema import validate_yaml
 
 
@@ -37,7 +37,7 @@ def validate_field_yaml(ypath, debug, success):
     """ Validates a field_table.yaml based on a schema to check for any errors. \n
         YPATH - Path to the field_table.yaml file to be validated against the schema \n
     """
-    data_path = pkg_resources.resource_filename('fms_yaml_tools', '')
+    data_path = str(importlib.resources.files('fms_yaml_tools'))
     validate_yaml(ypath, data_path + "/schema/gfdl_msd_schemas/FMS/field_table.json", debug, success)
 
 
