@@ -37,8 +37,8 @@ def validate_data_yaml(ypath, debug, success):
     """ Validates a data_table.yaml based on a schema to check for any errors. \n
         YPATH - Path to the data_table.yaml file to be validated against the schema \n
     """
-    data_path = str(importlib.resources.files('fms_yaml_tools'))
-    validate_yaml(ypath, data_path + "/schema/gfdl_msd_schemas/FMS/data_table.json", debug, success)
+    schema_path = importlib.resources.files('fms_yaml_tools') / "schema/gfdl_msd_schemas/FMS/data_table.json"
+    validate_yaml(ypath, schema_path, debug, success)
 
 
 if __name__ == "__main__":
