@@ -64,13 +64,24 @@ def validate_yaml(ypath, spath, debug, success):
         debug: Deprecated parameter, kept for backward compatibility (ignored)
         success: Whether to print success message
     """
+    # The debug messages are basically comments showing what the code is doing
+
+    # Print only when debug is True
+    verboseprint = print if debug else lambda *a, **k: None
+
+    verboseprint("Open "+str(ypath))
     with open(ypath, 'r') as file:
+        verboseprint("Load "+str(ypath))
         y = yaml.safe_load(file)
 
+    verboseprint("Open "+str(spath))
     with open(spath, 'r') as f:
+        verboseprint("Read "+str(spath))
         s = f.read()
 
+    verboseprint("Load "+str(spath))
     schema = json.loads(s)
+    verboseprint("Validate "+str(ypath)+" against "+str(spath))
 
     try:
         validate(instance=y, schema=schema)
@@ -83,7 +94,7 @@ def validate_yaml(ypath, spath, debug, success):
             print("(" + str(i) + ") " + err.message + "---" + str(err.path))
             i = i + 1
         sys.exit("ERROR " + str(ypath) + " is not a valid yaml")
-    if success:
+    if success or debug:
         print(str(ypath)+" was successfully validated against the schema "+str(spath))
 
 
