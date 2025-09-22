@@ -57,14 +57,13 @@ def valyaml(ypath, spath, debug, success):
 
 def validate_yaml(ypath, spath, debug, success):
     """Validate a YAML file against a JSON schema.
-    
+
     Args:
         ypath: Path to the YAML file to validate (string or Path object)
-        spath: Path to the schema file (string or Path object)  
+        spath: Path to the schema file (string or Path object)
         debug: Deprecated parameter, kept for backward compatibility (ignored)
         success: Whether to print success message
     """
-    
     with open(ypath, 'r') as file:
         y = yaml.safe_load(file)
 
