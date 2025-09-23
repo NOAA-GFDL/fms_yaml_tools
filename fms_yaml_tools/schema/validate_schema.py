@@ -56,24 +56,32 @@ def valyaml(ypath, spath, debug, success):
 
 
 def validate_yaml(ypath, spath, debug, success):
+    """Validate a YAML file against a JSON schema.
+
+    Args:
+        ypath: Path to the YAML file to validate (string or Path object)
+        spath: Path to the schema file (string or Path object)
+        debug: Deprecated parameter, kept for backward compatibility (ignored)
+        success: Whether to print success message
+    """
     # The debug messages are basically comments showing what the code is doing
 
     # Print only when debug is True
     verboseprint = print if debug else lambda *a, **k: None
 
-    verboseprint("Open "+ypath)
+    verboseprint("Open "+str(ypath))
     with open(ypath, 'r') as file:
-        verboseprint("Load "+ypath)
+        verboseprint("Load "+str(ypath))
         y = yaml.safe_load(file)
 
-    verboseprint("Open "+spath)
+    verboseprint("Open "+str(spath))
     with open(spath, 'r') as f:
-        verboseprint("Read "+spath)
+        verboseprint("Read "+str(spath))
         s = f.read()
 
-    verboseprint("Load "+spath)
+    verboseprint("Load "+str(spath))
     schema = json.loads(s)
-    verboseprint("Validate "+ypath+" against "+spath)
+    verboseprint("Validate "+str(ypath)+" against "+str(spath))
 
     try:
         validate(instance=y, schema=schema)
@@ -85,9 +93,9 @@ def validate_yaml(ypath, spath, debug, success):
         for err in errors:
             print("(" + str(i) + ") " + err.message + "---" + str(err.path))
             i = i + 1
-        sys.exit("ERROR " + ypath + " is not a valid yaml")
+        sys.exit("ERROR " + str(ypath) + " is not a valid yaml")
     if success or debug:
-        print(ypath+" was successfully validated against the schema "+spath)
+        print(str(ypath)+" was successfully validated against the schema "+str(spath))
 
 
 if __name__ == '__main__':
