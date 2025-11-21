@@ -577,7 +577,7 @@ class DiagTableVar(DiagTableBase):
     def render(self, abstract=None):
         """Return a dictionary representation of the object"""
         if abstract and abstract.get("var"):
-            return self.var_name
+            return self.var_name if self.output_name is None else self.output_name
         else:
             var = self.strip_none()
             if "attributes" in var:
