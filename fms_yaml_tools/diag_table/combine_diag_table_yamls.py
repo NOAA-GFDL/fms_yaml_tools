@@ -285,7 +285,7 @@ def combine_yaml(files, verboseprint):
         verboseprint("Attempting to get the base_date")
         get_base_date(my_table, diag_table)
 
-        diag_files = my_table['diag_files']
+        diag_files = my_table.get('diag_files', [])
         for entry in diag_files:
             check_inconsistent_keys(entry)
             if 'varlist' in entry:
