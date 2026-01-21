@@ -130,7 +130,7 @@ def get_obj_generic(yaml):
 
 
 @click.group()
-@click.version_option("alpha1", "-V", "--version")
+@click.version_option("2026.01", "-V", "--version")
 @click.help_option("-h", "--help")
 @click.option("-i", "--in-place", is_flag=True, default=False,
               help="Overwrite the existing table, rather than writing to standard output")

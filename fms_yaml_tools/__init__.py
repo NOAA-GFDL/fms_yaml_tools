@@ -1,5 +1,5 @@
 # Following information from PEP 440 (https://peps.python.org/pep-0440/)
-__version__ = "2024.03"
+__version__ = "2026.01"
 
 
 class TableParseError(Exception):
