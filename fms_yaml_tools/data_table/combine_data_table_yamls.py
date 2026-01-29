@@ -48,7 +48,7 @@ def combine_data_table_yaml(in_files, debug, output_yaml, force_write):
             out_file_op = "w"
         verboseprint("Writing the output yaml: " + output_yaml)
         with open(output_yaml, out_file_op) as myfile:
-            yaml.dump(data_table, myfile, default_flow_style=False)
+            yaml.dump(data_table, myfile, default_flow_style=False, sort_keys=False)
 
     except Exception as err:
         raise SystemExit(err)
