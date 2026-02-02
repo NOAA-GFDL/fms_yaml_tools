@@ -262,7 +262,7 @@ class FieldYaml:
 
     def writeyaml(self, output_yaml="field_table.yaml", force_write=False):
         """ Write yaml out to file """
-        raw_out = yaml.dump(self.lists_wh_yaml, None, default_flow_style=False)
+        raw_out = yaml.dump(self.lists_wh_yaml, None, default_flow_style=False, sort_keys=False)
         out_file_op = "x"  # Exclusive write
         if force_write:
             out_file_op = "w"
